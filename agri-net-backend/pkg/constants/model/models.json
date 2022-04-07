@@ -1,0 +1,83 @@
+[
+    {
+        "id": 0,
+        "city": "",
+        "country": "",
+        "region": "",
+        "zone": "",
+        "woreda": "",
+        "kebele": "",
+        "unique_address_name": ""
+    },
+    {
+        "id": 0,
+        "reason": "",
+        "description": "",
+        "amount": 0,
+        "approved": false,
+        "withdrawed_by": 0
+    },
+    {
+        "id": 0,
+        "amount": 0,
+        "recieved_by": 0,
+        "payed_by": 0,
+        "date": "0001-01-01T00:00:00Z",
+        "round": 0,
+        "approved": false
+    },
+    {
+        "id": 0,
+        "fullname": "",
+        "age": 0,
+        "birth": {
+            "id": 0,
+            "year": 0,
+            "month": 0,
+            "date": 0,
+            "calendar": 0
+        },
+        "acc_status": "",
+        "training_type": "",
+        "address": {
+            "id": 0,
+            "city": "",
+            "country": "",
+            "region": "",
+            "zone": "",
+            "woreda": "",
+            "kebele": "",
+            "unique_address_name": ""
+        },
+        "phone": "",
+        "paid_amount": "",
+        "status": 0,
+        "registered_by": 0,
+        "round_id": 0,
+        "lang": "",
+        "identification_card_img": "",
+        "imgurl": ""
+    },
+    {
+        "id": 0,
+        "category": "",
+        "students": 0,
+        "active_amount": 0,
+        "active": false
+    },
+    {
+        "id": 0,
+        "fullname": "",
+        "email": "",
+        "password": "",
+        "lang": ""
+    },
+    {
+        "id": 0,
+        "fullname": "",
+        "email": "",
+        "password": "",
+        "lang": "",
+        "imgulr": ""
+    }
+]

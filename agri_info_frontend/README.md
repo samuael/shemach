@@ -1,2 +1,0 @@
-## Agri-Infor Frontend
-
