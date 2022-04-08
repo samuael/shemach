@@ -6,7 +6,6 @@ package model
 type AdminLoginResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-	Admin   *Admin `json:"admin"`
 }
 
 // LoginResponse to be usedby the admin response class

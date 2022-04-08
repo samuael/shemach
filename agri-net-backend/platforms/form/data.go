@@ -10,8 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
-	// "github.com/samuael/Project/CarInspection/pkg/constants/state"
-	// "github.com/samuael/Project/CarInspection/platforms/helper"
 )
 
 // ImageExtensions list of valid image extensions
