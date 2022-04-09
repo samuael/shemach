@@ -20,6 +20,14 @@ create table tempo_subscriber(
     unix integer not null
 );
 
+
+create table tempo_subscribers_login(
+    id serial primary key,
+    phone varchar(13) not null,
+    confirmation char(5) not null,
+    unix integer not null
+);
+
 -- create table 
 -- name: create-categories
 -- CREATE TABLE category(

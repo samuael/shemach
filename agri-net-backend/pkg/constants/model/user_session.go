@@ -8,13 +8,24 @@ import (
 
 // Session representing the Session to Be sent with the request body
 // no saving of a session in the database so i Will use this session in place of
+const (
+	SUPERADMIN = iota
+)
+
 type (
 	Session struct {
 		jwt.StandardClaims
 		ID       uint64
 		Email    string
 		Password string
-		Role     string
+		Role     int
+	}
+
+	SubscriberSession struct {
+		jwt.StandardClaims
+		ID    uint64
+		Phone string
+		Role  int
 	}
 
 	ForgotPasswordSession struct {

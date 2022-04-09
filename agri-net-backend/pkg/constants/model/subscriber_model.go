@@ -15,8 +15,14 @@ type TempoSubscriber struct {
 	Lang             string `json:"lang"`
 	Role             uint8  `json:"role"`
 	Phone            string `json:"phone"`
-	ConfirmationCode uint   `json:"confirmation_number"`
+	ConfirmationCode string `json:"confirmation_number"`
 	Unix             int64  `json:"time_stamp_of_creation"`
+}
+type TempoSubscriberLogin struct {
+	ID           int    `json:"id"`
+	Phone        string `json:"phone"`
+	Unix         uint64 `json:"unix"`
+	Confirmation string `json:"confirmation_code"`
 }
 
 type TeldaOTP struct {
@@ -39,13 +45,13 @@ type TeldaOTPResponse struct {
 	MsGReceiverPhone string `json:"msG_RecieverPhone"`
 	MsgOperator      string `json:"msG_Operator"`
 	MsgText          string `json:"msG_Text"`
-	MsgISO3166       string `json:"msG_ISO3166"`
-	MsgSendDate      string `json:"msG_SendDate"`
-	MsgReference     uint   `json:"msG_Reference"`
-	MsgErrorCode     string `json:"msG_ErrorCode"`
-	MsgShortMessage  string `json:"msG_ShortMessage"`
-	MsgLongMessage   string `json:"msG_LongMessage"`
-	RemainingSMS     string `json:"remaining_SMS"`
+	// MsgISO3166       string `json:"msG_ISO3166"`
+	MsgSendDate     string `json:"msG_SendDate"`
+	MsgReference    uint   `json:"msG_Reference"`
+	MsgErrorCode    string `json:"msG_ErrorCode"`
+	MsgShortMessage string `json:"msG_ShortMessage"`
+	MsgLongMessage  string `json:"msG_LongMessage"`
+	RemainingSMS    string `json:"remaining_SMS"`
 }
 
 /*

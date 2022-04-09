@@ -2,14 +2,12 @@ package subscriber
 
 import (
 	"context"
-
-	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 )
 
 type ISubscriberService interface {
-	// RegisterSubscriber uses "tempo_subscription"  of type *mode.TempoSubscription to save and return the subscription instance.
+	// RegisterSubscriber uses "tempo_subscriber"  of type *mode.TempoSubscription to save and return the subscription instance.
 	// with the information of status code , error : ---
-	RegisterSubscriber(ctx context.Context) (*model.TempoSubscriber, int, error)
+	RegisterSubscriber(ctx context.Context) (int, error)
 	// CheckTheExistanceOfPhone uses 'phone'  string
 	// returns int status 0 == database query error , 1== already registerd ,  2== already in a pending state ofconfirmation , or 3== the phoen is naither in the subscribers nor in the tempo_subscriber
 	// error == returning the internal problems which has happened qhile querying.
@@ -28,7 +26,7 @@ func NewSubscriberService(repo ISubscriberRepo) ISubscriberService {
 	}
 }
 
-func (subscriptionService *SubscriberService) RegisterSubscriber(ctx context.Context) (*model.TempoSubscriber, int, error) {
+func (subscriptionService *SubscriberService) RegisterSubscriber(ctx context.Context) (int, error) {
 	return subscriptionService.Repo.RegisterSubscriber(ctx)
 }
 
