@@ -24,7 +24,10 @@ func Route(rules middleware.Rules, subscriberhandler ISubscriberHandler) *gin.En
 	}))
 
 	router.POST("/api/info/register", subscriberhandler.RegisterSubscriber)
-
+	router.POST("/api/subscription/registration/confirm", subscriberhandler.ConfirmRegistrationSubscription)
+	router.POST("/api/subscription/login", subscriberhandler.SubscriberLoginWithPhone)
+	router.POST("/api/subscription/confirm", subscriberhandler.ConfirmLoginSubscription)
+	// -------------------------------------------------------------------------------
 	router.RouterGroup.Use(FilterDirectory())
 	{
 		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"images/"))

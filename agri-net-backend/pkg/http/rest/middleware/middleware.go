@@ -2,15 +2,14 @@ package middleware
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/samuael/Project/RegistrationSystem/pkg/constants/model"
-	"github.com/samuael/Project/RegistrationSystem/pkg/constants/state"
-	"github.com/samuael/Project/RegistrationSystem/pkg/http/rest/auth"
-	"github.com/samuael/Project/RegistrationSystem/platforms/helper"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 type Rules interface {
@@ -49,7 +48,6 @@ func (m rules) Authenticated() gin.HandlerFunc {
 		}
 		// ctx.Deadline( time.Now().Add(time.Second * 5))
 		c.Request = c.Request.WithContext(ctx)
-		log.Println(" Authenticated ... ")
 		c.Next()
 	}
 }
@@ -67,7 +65,7 @@ func (m *rules) Authorized() gin.HandlerFunc {
 			return
 		}
 		role := session.Role
-		permitted := m.HasPermission(c.Request.URL.Path, role, c.Request.Method)
+		permitted := m.HasPermission(c.Request.URL.Path, state.ROLES[role], c.Request.Method)
 		if !permitted {
 			http.Error(c.Writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			c.Abort()
@@ -81,7 +79,6 @@ func (m *rules) Authorized() gin.HandlerFunc {
 				return
 			}
 		}
-		println(" Authorized ... ")
 		c.Next()
 	}
 }

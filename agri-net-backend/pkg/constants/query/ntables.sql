@@ -4,8 +4,8 @@ CREATE TABLE subscriber (
     fullname VARCHAR(250) NOT NULL,
     Phone VARCHAR(250) NOT NULL UNIQUE,
     lang text NOT NULL,
-    role smallint not null default 2, 
-    subscriptions smallint []
+    role smallint not null default 2,
+    subscriptions smallint [] default array[]::smallint[];
 );
 
 
@@ -25,8 +25,11 @@ create table tempo_subscribers_login(
     id serial primary key,
     phone varchar(13) not null,
     confirmation char(5) not null,
-    unix integer not null
+    unix integer not null,
+    trials smallint default 0
 );
+
+
 
 -- create table 
 -- name: create-categories

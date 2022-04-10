@@ -23,9 +23,9 @@ type (
 
 	SubscriberSession struct {
 		jwt.StandardClaims
-		ID    uint64
-		Phone string
-		Role  int
+		ID       uint64
+		Phone    string
+		Fullname string
 	}
 
 	ForgotPasswordSession struct {

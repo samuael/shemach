@@ -46,6 +46,30 @@ var DICTIONARY = map[string]map[string]string{
 		"oro": "የማረጋገጫ መልእክት የያዘ የሴኤምኤስ መልእክት ይደርስዎታል። እባክዎ በ 30 ደቂቃዎች ውስጥ ቁጥሩን በማስገባት ባለቤትነትዎን ያረጋግጡ።",
 		"tig": "የማረጋገጫ መልእክት የያዘ የሴኤምኤስ መልእክት ይደርስዎታል። እባክዎ በ 30 ደቂቃዎች ውስጥ ቁጥሩን በማስገባት ባለቤትነትዎን ያረጋግጡ።",
 	},
+	"this is your login confirmation code from agri-info systems": {
+		"amh": "ይህ የአግሪ-ኢንፎ የማረጋገጫ ቁጥርዎ ነው።",
+		"tig": "ይህ የአግሪ-ኢንፎ የማረጋገጫ ቁጥርዎ ነው።",
+		"oro": "ይህ የአግሪ-ኢንፎ የማረጋገጫ ቁጥርዎ ነው።",
+	},
+	"you are registered succesfuly. welcome!": {
+		"amh": "bemigeba temezgbewal",
+		"tig": "nay temezgebna dehan",
+		"oro": "sinmezegebi succesfulida",
+	},
+	"please complete your registration!": {
+		"amh": "ebakwo mejemeria mzgebawn yichersu",
+		"oro": "ebakwo mejemeria mzgebawn yichersu",
+		"tig": "ebakwo mejemeria mzgebawn yichersu",
+	},
+}
+
+func TranslateIt(sentence string) string {
+	str := sentence
+	sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["amh"])
+	if sentence == "" {
+		return str
+	}
+	return sentence
 }
 
 // Translate  function to change the word to the needed Language Representation

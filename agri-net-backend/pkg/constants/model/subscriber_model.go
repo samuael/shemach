@@ -17,8 +17,20 @@ type TempoSubscriber struct {
 	Phone            string `json:"phone"`
 	ConfirmationCode string `json:"confirmation_number"`
 	Unix             int64  `json:"time_stamp_of_creation"`
+	Trials           uint8  `json:"trials"`
 }
-type TempoSubscriberLogin struct {
+
+func (ts *TempoSubscriber) GetSubscriber() *Subscriber {
+	return &Subscriber{
+		Fullname:      ts.Fullname,
+		Lang:          ts.Lang,
+		Subscriptions: []uint8{},
+		Role:          ts.Role,
+		Phone:         ts.Phone,
+	}
+}
+
+type TempoLoginSubscriber struct {
 	ID           int    `json:"id"`
 	Phone        string `json:"phone"`
 	Unix         uint64 `json:"unix"`

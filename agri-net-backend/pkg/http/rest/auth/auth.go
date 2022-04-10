@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/samuael/Project/RegistrationSystem/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	// "github.com/samuael/Project/RegistrationSystem/platforms/helper"
 )
 
 // Authenticator representing the Methods to be implemented by the authenticators
 type Authenticator interface {
+	SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
 	SaveSession(writer http.ResponseWriter, session *model.Session) bool
 	DeleteSession(writer http.ResponseWriter, request *http.Request) bool
 	GetSession(request *http.Request) (*model.Session, error)
@@ -32,6 +33,37 @@ func NewAuthenticator() Authenticator {
 
 // SaveSession to save the Session in the User Session Header
 func (sessh *authenticator) SaveSession(writer http.ResponseWriter, session *model.Session) bool {
+	// Declare the expiration time of the token
+	expirationTime := time.Now().Add(24 * time.Hour)
+	session.StandardClaims = jwt.StandardClaims{
+		// In JWT, the expiry time is expressed as unix milliseconds
+		ExpiresAt: expirationTime.Unix(),
+		// HttpOnly:  true,
+	}
+	// Declare the token with the algorithm used for signing, and the claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, session)
+	// Create the JWT string
+	tokenString, err := token.SignedString([]byte(os.Getenv("SESSION_SECRET_KEY")))
+	if err != nil {
+		return false
+	}
+	// Setting the bearer Authorization Token to  the header
+	writer.Header().Set("Authorization", "Bearer "+tokenString)
+	// Finally, we set the client cookie for "token" as the JWT we just generated
+	// we also set an expiry time which is the same as the token itself
+	cookie := http.Cookie{
+		Name:     os.Getenv("COOKIE_NAME"),
+		Value:    tokenString,
+		Expires:  expirationTime,
+		HttpOnly: true,
+		Path:     "/",
+	}
+	http.SetCookie(writer, &cookie)
+	return true
+}
+
+// SaveSubscriberSession to save the Session in the User Session Header
+func (sessh *authenticator) SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool {
 	// Declare the expiration time of the token
 	expirationTime := time.Now().Add(24 * time.Hour)
 	session.StandardClaims = jwt.StandardClaims{
