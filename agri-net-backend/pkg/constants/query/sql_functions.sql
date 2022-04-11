@@ -72,3 +72,25 @@ $$ language plpgsql;
 -- CREATE TRIGGER incrementRegistrationTempoRequestTrial 
 -- AFTER SELECT ON tempo_subscriber FOR EACH 
 -- ROW EXECUTE PROCEDURE incrementOrDeleteTempoSubscriberInfo();
+
+
+-- This function returns 
+-- 0 if the user doesn't exist in the superadmins 
+-- 1 if found in the user and 
+-- 2 if no user instance was found with this email address.
+create or replace function checkTheExistanceOfUser(iemail varchar) returns integer as 
+$$
+    declare 
+        theuserid integer;
+    begin
+        select id into theuserid from superadmin where email = iemail;
+        if found then
+            return 0;
+        end if;
+        select id into theuserid from users where email=iemail;
+        if found then
+            return 1;
+        end if;
+        return 2;
+    end;
+$$ language plpgsql;

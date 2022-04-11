@@ -29,6 +29,39 @@ create table tempo_subscribers_login(
     trials smallint default 0
 );
 
+create table users(
+    id serial primary key,
+    firstname varchar(70)  not null,
+    lastname varchar(70) not null,
+    phone   varchar(13) unique  not null,
+    email varchar(50)  unique not null,
+    created_at integer default ROUND(extract(epoch from now())),
+    password text not null
+);
+
+create table superadmin(
+    registered_admins integer default 0,
+    registered_products integer default 0
+) inherits(users);
+
+
+
+create table product(
+    id serial primary key;
+    name varchar(200) not null,
+    production_area  varchar(200) not null,
+    current_price float default 0.0,
+    created_by integer,
+    created_at integer default ROUND(extract( epoch  from now())),
+    last_updated_time integer
+);
+
+
+create table admin(
+    -- merchants_created integer default 0,
+    -- stores
+) inherits(user);
+
 
 
 -- create table 
