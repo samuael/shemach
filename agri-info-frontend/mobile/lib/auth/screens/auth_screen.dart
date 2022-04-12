@@ -10,56 +10,129 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool right = false;
+  PageController pageController = PageController();
+
+  int index = 1;
+  void changeWidget() {
+    if (index == 1) {
+      pageController.animateToPage(index + 1,
+          duration: Duration(seconds: 2), curve: Curves.elasticOut);
+      index = 2;
+    } else if (index == 2) {
+      pageController.previousPage(
+          duration: Duration(seconds: 2), curve: Curves.elasticOut);
+      index = 1;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Naty"),
-        elevation: 0,
-        centerTitle: true,
-      ),
-      drawer: HomeNavigationDrawer(),
-      body: Container(
-        child: Center(
-          child: Row(
-            children: [
-              AnimatedContainer(
-                duration: Duration(
-                  milliseconds: 400,
+      body: Center(
+        child: Stack(
+          children: [
+            Container(
+              color: Theme.of(context).primaryColor,
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  MediaQuery.of(context).padding.bottom,
+              width: double.infinity,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      color: Colors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.elliptical(300, 100)),
+                        child: Container(
+                          color: Theme.of(context).primaryColor,
+                          height: MediaQuery.of(context).size.height * 0.1,
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.elliptical(190, 100)),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            top: BorderSide(
+                                style: BorderStyle.none,
+                                width: 0,
+                                color: Colors.grey),
+                          ),
+                        ),
+                        height: MediaQuery.of(context).size.height * 0.75,
+                      ),
+                    )
+                  ],
                 ),
-                color: Colors.yellow,
-                width: MediaQuery.of(context).size.width * (right ? 0.3 : 0.7),
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        right = false;
-                      });
-                    },
-                    child: Text("Click Me"),
+              ),
+            ),
+            Center(
+              child: SizedBox(
+                height:MediaQuery.of(context).size.height * 0.65,
+                // color: Colors.white,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // SizedBox(
+                      //   height: 60,
+                      // ),
+                      Stack(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Positioned(
+                            child: Container(
+                              padding: EdgeInsets.only(top: 60),
+                              height:  MediaQuery.of(context).size.height * 0.55,
+                              width:MediaQuery.of(context).size.width * 0.9,
+                              child: Center(
+                                child: Card(
+                                  elevation: 5,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 30),
+                                      child: LoginWidget(changeWidget, context),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Positioned(
+                          //   child: ClipRRect(
+                          //     borderRadius: BorderRadius.circular(40),
+                          //     child: Container(
+                          //       decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(40),
+                          //         border: Border.all(
+                          //           color: Colors.black,
+                          //         ),
+                          //         color: Colors.white,
+                          //       ),
+                          //       child: Image.asset(
+                          //         "assets/icon_images/agri_net_final_temporary_logo.png",
+                          //         width: 80,
+                          //         height: 80,
+                          //       ),
+                          //     ),
+                          //   ),
+                          //   top: 0,
+                          //   left: MediaQuery.of(context).size.width * 0.4 - 10,
+                          // ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-              AnimatedContainer(
-                duration: Duration(
-                  milliseconds: 400,
-                ),
-                width: MediaQuery.of(context).size.width * (right ? 0.7 : 0.3),
-                color: Colors.blue,
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        right = true;
-                      });
-                    },
-                    child: Text("clieck meeey"),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
