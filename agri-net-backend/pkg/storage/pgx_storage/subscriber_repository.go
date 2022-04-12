@@ -3,6 +3,7 @@ package pgx_storage
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/jackc/pgx/pgxpool"
 	"github.com/samuael/Project/RegistrationSystem/pkg/constants/state"
@@ -38,8 +39,10 @@ func (repo *SubscriberRepo) CheckTheExistanceOfPhone(ctx context.Context) (int, 
 	status := 0
 	er := repo.DB.QueryRow(ctx, "select * from checkTheExistanceOfSubscriberByPhone($1)", phone).Scan(&status)
 	if er != nil {
-		return 0, er
+		println(er.Error())
+		return -1, er
 	}
+	println("The Status Code is: ", strconv.Itoa(status))
 	return status, nil
 }
 

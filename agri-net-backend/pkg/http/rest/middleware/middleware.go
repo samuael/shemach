@@ -64,8 +64,7 @@ func (m *rules) Authorized() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		role := session.Role
-		permitted := m.HasPermission(c.Request.URL.Path, state.ROLES[role], c.Request.Method)
+		permitted := m.HasPermission(c.Request.URL.Path, session.Role, c.Request.Method)
 		if !permitted {
 			http.Error(c.Writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			c.Abort()

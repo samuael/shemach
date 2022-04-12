@@ -12,11 +12,12 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/superadmin"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
 type ISuperadminHandler interface {
-	SuperadmnLogin(c *gin.Context)
+	SuperadminLogin(c *gin.Context)
 	SuperadminRegistration(c *gin.Context)
 }
 type SuperadminHandler struct {
@@ -32,7 +33,7 @@ func NewSuperadminHandler(
 		Authenticator: authenticator,
 	}
 }
-func (suhandler *SuperadminHandler) SuperadmnLogin(c *gin.Context) {
+func (suhandler *SuperadminHandler) SuperadminLogin(c *gin.Context) {
 	ctx := c.Request.Context()
 	input := &struct {
 		Email    string `json:"email"`
@@ -93,6 +94,12 @@ func (suhandler *SuperadminHandler) SuperadmnLogin(c *gin.Context) {
 		}
 		res.StatusCode = http.StatusNotFound
 		res.Msg = translation.TranslateIt("user not found")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	if !(helper.CompareHash(superadmin.Password, input.Password)) {
+		res.Msg = translation.TranslateIt("invalid email or password")
+		res.StatusCode = http.StatusBadRequest
 		c.JSON(res.StatusCode, res)
 		return
 	}

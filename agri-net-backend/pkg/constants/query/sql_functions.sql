@@ -75,7 +75,7 @@ $$ language plpgsql;
 
 
 -- This function returns 
--- 0 if the user doesn't exist in the superadmins 
+-- 0 if the user does exist in the superadmins 
 -- 1 if found in the user and 
 -- 2 if no user instance was found with this email address.
 create or replace function checkTheExistanceOfUser(iemail varchar) returns integer as 

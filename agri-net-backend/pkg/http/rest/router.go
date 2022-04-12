@@ -14,7 +14,7 @@ import (
 )
 
 // Route returns an http handler for the api.
-func Route(rules middleware.Rules, subscriberhandler ISubscriberHandler) *gin.Engine {
+func Route(rules middleware.Rules, subscriberhandler ISubscriberHandler, superadminhandler ISuperadminHandler) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "OPTIONS"},
@@ -28,6 +28,8 @@ func Route(rules middleware.Rules, subscriberhandler ISubscriberHandler) *gin.En
 	router.POST("/api/subscription/login", subscriberhandler.SubscriberLoginWithPhone)
 	router.POST("/api/subscription/confirm", subscriberhandler.ConfirmLoginSubscription)
 	// -------------------------------------------------------------------------------
+	router.POST("/api/superadmin/login", superadminhandler.SuperadminLogin)
+
 	router.RouterGroup.Use(FilterDirectory())
 	{
 		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"images/"))

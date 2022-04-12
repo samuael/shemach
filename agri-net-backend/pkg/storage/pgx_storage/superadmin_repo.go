@@ -24,6 +24,7 @@ func (repo *SuperadminRepo) CheckTheExistanceOfSuperadmin(ctx context.Context) i
 	var status int
 	er := repo.DB.QueryRow(ctx, "SELECT * FROM checkTheExistanceOfUser($1)", email).Scan(&status)
 	if er != nil {
+		println(er.Error())
 		return -1
 	}
 	return status
