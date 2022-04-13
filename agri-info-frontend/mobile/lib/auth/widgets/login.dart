@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 import "../../libs.dart";
 
 class LoginWidget extends StatefulWidget {
@@ -54,14 +56,19 @@ class _LoginWidgetState extends State<LoginWidget> {
             horizontal: 20,
           ),
           child: TextField(
+            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.number,
             cursorColor: Theme.of(context).primaryColorLight,
             controller: emailController,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
             decoration: InputDecoration(
               labelText: "Phone",
               fillColor: Colors.lightBlue,
               hoverColor: Colors.lightBlue,
               prefix: Container(
-                padding : EdgeInsets.symmetric(horizontal:5),
+                padding: EdgeInsets.symmetric(horizontal: 5),
                 child: Text(
                   "+251",
                   style: TextStyle(
@@ -126,21 +133,21 @@ class _LoginWidgetState extends State<LoginWidget> {
                 ),
               ),
             )),
-        // GestureDetector(
-        //   onTap: () {
-        //     widget.forgotFunction();
-        //   },
-        //   child: Container(
-        //     padding: EdgeInsets.all(10),
-        //     child: Text(
-        //       "forgot password ",
-        //       style: TextStyle(
-        //         fontWeight: FontWeight.bold,
-        //         color: Theme.of(context).primaryColor,
-        //       ),
-        //     ),
-        //   ),
-        // )
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(RegistrationScreen.RouteName);
+          },
+          child: Container(
+            padding: EdgeInsets.all(10),
+            child: Text(
+              "Registration",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

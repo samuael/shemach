@@ -14,9 +14,29 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.brown,
       ),
       initialRoute: AuthScreen.RouteName,
-      routes: {
-        AuthScreen.RouteName : (context){
-          return AuthScreen();
+      // routes: {
+      //   AuthScreen.RouteName : (context){
+      //     return AuthScreen();
+      //   }
+      // },
+      onGenerateRoute: (setting){
+        switch(setting.name){
+          case RegistrationScreen.RouteName:{
+            return MaterialPageRoute(builder: (context){
+              return RegistrationScreen();
+            });
+          }
+          case AuthScreen.RouteName : {
+            return MaterialPageRoute(builder: (context){
+              return AuthScreen();
+            });
+          }
+          case ConfirmationScreen.RouteName : {
+            return MaterialPageRoute( builder : (context){
+              final String phone = (setting.arguments as Map<String,dynamic>)["phone"];
+              return ConfirmationScreen(phone);
+            });
+          }
         }
       },
     );
