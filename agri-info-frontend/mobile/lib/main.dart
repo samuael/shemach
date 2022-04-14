@@ -9,16 +9,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Agri-Net',
       theme: ThemeData(
         primarySwatch: Colors.brown,
       ),
       initialRoute: AuthScreen.RouteName,
-      // routes: {
-      //   AuthScreen.RouteName : (context){
-      //     return AuthScreen();
-      //   }
-      // },
       onGenerateRoute: (setting){
         switch(setting.name){
           case RegistrationScreen.RouteName:{

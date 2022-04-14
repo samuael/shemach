@@ -85,7 +85,7 @@ func Translate(lang string, sentence string) string {
 		sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["oro"])
 		return sentence
 	case "tigr", "tig", "tigray", "tigrigna":
-		sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["oro"])
+		sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["tig"])
 		return sentence
 	}
 	if sentence == "" {

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 
 import "../../libs.dart";
 
@@ -15,6 +15,13 @@ class ConfirmationScreen extends StatefulWidget {
 
 class _ConfirmationScreenState extends State<ConfirmationScreen> {
   _ConfirmationScreenState();
+
+  // ---emails controller
+  TextEditingController controller1 = TextEditingController();
+  TextEditingController controller2 = TextEditingController();
+  TextEditingController controller3 = TextEditingController();
+  TextEditingController controller4 = TextEditingController();
+  TextEditingController controller5 = TextEditingController();
 
   late DateTime _initialTime;
   late Timer _timer;
@@ -102,22 +109,181 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               ),
             ),
             Container(
-              padding : EdgeInsets.symmetric(horizontal:30, vertical:20,),
-              child: Row(
-                children : [
-                  Expanded(flex: 1, child:Container(margin:EdgeInsets.symmetric(horizontal:5,),decoration:BoxDecoration(border:Border.all(color:Theme.of(context).primaryColor, )  ), width:40, height:40, child:TextField(cursorHeight: 25,cursorWidth: 3,style:TextStyle(fontWeight:FontWeight.bold,fontSize: 25,)),),),
-                  Expanded(flex: 1, child:Container(margin:EdgeInsets.symmetric(horizontal:5,),decoration:BoxDecoration(border:Border.all(color:Theme.of(context).primaryColor, )  ), width:40, height:40, child:TextField(cursorHeight: 25,cursorWidth: 3,style:TextStyle(fontWeight:FontWeight.bold,fontSize: 25,)),),),
-                  Expanded(flex: 1, child:Container(margin:EdgeInsets.symmetric(horizontal:5,),decoration:BoxDecoration(border:Border.all(color:Theme.of(context).primaryColor, )  ), width:40, height:40, child:TextField(cursorHeight: 25,cursorWidth: 3,style:TextStyle(fontWeight:FontWeight.bold,fontSize: 25,)),),),
-                  Expanded(flex: 1, child:Container(margin:EdgeInsets.symmetric(horizontal:5,),decoration:BoxDecoration(border:Border.all(color:Theme.of(context).primaryColor, )  ), width:40, height:40, child:TextField(cursorHeight: 25,cursorWidth: 3,style:TextStyle(fontWeight:FontWeight.bold,fontSize: 25,)),),),
-                  Expanded(flex: 1, child:Container(margin:EdgeInsets.symmetric(horizontal:5,),decoration:BoxDecoration(border:Border.all(color:Theme.of(context).primaryColor, )  ), width:40, height:40, child:TextField(cursorHeight: 25,cursorWidth: 3,style:TextStyle(fontWeight:FontWeight.bold,fontSize: 25,)),),),
-                ]
-              )
-            ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 20,
+                ),
+                child: Row(children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 5,
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      )),
+                      width: 40,
+                      height: 40,
+                      child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                          textAlignVertical: TextAlignVertical.center,
+                          textAlign: TextAlign.center,keyboardType: TextInputType.number,
+                          maxLength: 1,
+                          controller: controller1,
+                          cursorHeight: 25,
+                          cursorWidth: 3,
+                          maxLengthEnforced: true,
+                          decoration: InputDecoration(
+                            counter: Offstage(),
+                          ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          )),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 5,
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      )),
+                      width: 40,
+                      height: 40,
+                      child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                          decoration: InputDecoration(
+                            counter: Offstage(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          textAlignVertical: TextAlignVertical.center,
+                          textAlign: TextAlign.center,maxLength: 1,
+                          controller: controller2,
+                          cursorHeight: 25,
+                          cursorWidth: 3,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          )),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 5,
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      )),
+                      width: 40,
+                      height: 40,
+                      child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                          decoration: InputDecoration(
+                            counter: Offstage(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          textAlignVertical: TextAlignVertical.center,
+                          textAlign: TextAlign.center,maxLength: 1,
+                          controller: controller3,
+                          cursorHeight: 25,
+                          cursorWidth: 3,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          )),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 5,
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      )),
+                      width: 40,
+                      height: 40,
+                      child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                          decoration: InputDecoration(
+                            counter: Offstage(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          textAlignVertical: TextAlignVertical.center,
+                          textAlign: TextAlign.center,maxLength: 1,
+                          controller: controller4,
+                          cursorHeight: 25,
+                          cursorWidth: 3,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          )),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 5,
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      )),
+                      width: 40,
+                      height: 40,
+                      child: TextField(
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(1),
+                          ],
+                          decoration: InputDecoration(
+                            counter: Offstage(),
+                            counterText: ""
+                          ),
+                          textAlignVertical: TextAlignVertical.center,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          
+                          maxLength: 1,
+                          controller: controller5,
+                          cursorHeight: 25,
+                          cursorWidth: 3,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          )),
+                    ),
+                  ),
+                ])),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal : 10),
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   child: Text(
                     "Don't recieve the code?",
                     style: TextStyle(
