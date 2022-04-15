@@ -16,7 +16,10 @@ const (
 	// This constant values listed below are roles of the system
 	// those who directly interact with the system .
 
+	LANGUAGE_ALL = "all"
+
 	SUPERADMIN = "superadmin"
+	SUBSCRIBER = "subscriber"
 	// ADMIN ...
 	ADMIN = "admin"
 	// SECRETARY ...

@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/samuael/agri-net/agri-net-backend/api"
+	"github.com/samuael/agri-net/agri-net-backend/cmd/server/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
 )
 
@@ -18,7 +19,9 @@ func Route(
 	rules middleware.Rules,
 	subscriberhandler ISubscriberHandler,
 	superadminhandler ISuperadminHandler,
-	producthandler IProductHandler) *gin.Engine {
+	producthandler IProductHandler,
+	communicationHandler message_broadcast_service.IClientConnetionHandler,
+) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "OPTIONS"},
@@ -39,6 +42,9 @@ func Route(
 	router.GET("/api/products", producthandler.GetProducts)
 	router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
 	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
+
+	// router.GET("/api/connections/", rules.Authenticated(), func(c *gin.Context) gin.HandlerFunc {
+	// })
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

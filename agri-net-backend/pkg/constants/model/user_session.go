@@ -15,10 +15,12 @@ const (
 type (
 	Session struct {
 		jwt.StandardClaims
-		ID    uint64
-		Email string
-		Role  string
-		Lang  string
+		ID        uint64
+		Firstname string
+		Lastname  string
+		Email     string
+		Role      string
+		Lang      string
 	}
 
 	SubscriberSession struct {

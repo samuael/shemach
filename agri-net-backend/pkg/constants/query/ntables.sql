@@ -62,10 +62,23 @@ create table product(
     last_updated_time integer default ROUND(extract( epoch  from now()))
 );
 
+create table messages (
+    id serial primary key,
+    targets integer[] not null default array[-1]::smallint[],
+    lang varchar(5) not null,
+    data text not null,
+    created_by integer not null,
+    created_at integer not null default ROUND( extract(epoch from now()))
+);
+
+create table infoadmin(
+    messages_count integer default 0,
+
+) inherits(users);
 
 create table admin(
-    -- merchants_created integer default 0,
-    -- stores integer default 0
-) inherits(user);
-
+    merchants_created integer default 0,
+    
+    stores integer default 0
+) inherits(users);
 

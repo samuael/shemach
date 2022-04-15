@@ -1,10 +1,10 @@
 package model
 
 type Subscriber struct {
-	ID            uint64 `json:"id"`
-	Fullname      string `json:"fullname"`
-	Lang          string `json:"lang"`
-	Subscriptions []byte `json:"subscriptions"`
+	ID            uint64  `json:"id"`
+	Fullname      string  `json:"fullname"`
+	Lang          string  `json:"lang"`
+	Subscriptions []uint8 `json:"subscriptions"`
 	Role          uint8
 	Phone         string `json:"phone"`
 }
