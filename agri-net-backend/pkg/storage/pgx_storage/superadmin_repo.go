@@ -37,7 +37,7 @@ func (repo *SuperadminRepo) GetSuperadminByEmail(ctx context.Context) (*model.Su
 		Scan(&(superadmin.ID), &(superadmin.Firstname), &(superadmin.Lastname), &(superadmin.Phone), &(superadmin.Email), &(superadmin.CreatedAtUnix),
 			&(superadmin.Password), &(superadmin.RegisteredAdmins), &(superadmin.RegisteredProducts))
 	if er != nil {
-		return superadmin, state.DT_STATUS_DBQUERY_ERROR, er
+		return superadmin, state.STATUS_DBQUERY_ERROR, er
 	}
-	return superadmin, state.DT_STATUS_OK, nil
+	return superadmin, state.STATUS_OK, nil
 }

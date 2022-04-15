@@ -52,13 +52,14 @@ create table superadmin(
 -- I have not decided on what and how the unit should be DECLARED
 
 create table product(
-    id serial primary key;
+    id serial primary key,
     name varchar(200) not null,
     production_area  varchar(200) not null,
+    unit_id integer not null,
     current_price float default 0.0,
     created_by integer,
     created_at integer default ROUND(extract( epoch  from now())),
-    last_updated_time integer
+    last_updated_time integer default ROUND(extract( epoch  from now()))
 );
 
 
@@ -66,3 +67,5 @@ create table admin(
     -- merchants_created integer default 0,
     -- stores integer default 0
 ) inherits(user);
+
+

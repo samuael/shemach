@@ -16,8 +16,10 @@ import (
 type Authenticator interface {
 	SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
 	SaveSession(writer http.ResponseWriter, session *model.Session) bool
+	// SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
 	DeleteSession(writer http.ResponseWriter, request *http.Request) bool
 	GetSession(request *http.Request) (*model.Session, error)
+	GetSubscriberSession(request *http.Request) (*model.SubscriberSession, error)
 	RandomToken() string
 	ValidateToken(tokenstring string) bool
 }
@@ -145,6 +147,46 @@ func (sessh *authenticator) GetSession(request *http.Request) (*model.Session, e
 	}
 	tknStr := cookie.Value
 	session := &model.Session{}
+	tkn, err := jwt.ParseWithClaims(tknStr, session, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SESSION_SECRET_KEY")), nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return nil, err
+		}
+		return nil, err
+	}
+	if !tkn.Valid {
+		return nil, err
+	}
+	return session, nil
+}
+
+// GetSubscriberSession(request *http.Request) (*model.Session, error)
+func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.SubscriberSession, error) {
+	cookie, err := request.Cookie(os.Getenv("COOKIE_NAME"))
+	defer recover()
+	if err != nil {
+		// go and check for the authorization header
+		token := request.Header.Get("Authorization")
+		token = strings.Trim(strings.TrimPrefix(token, "Bearer "), " ")
+		if token == "" {
+			return nil, nil
+		}
+		session := &model.SubscriberSession{}
+		tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("SESSION_SECRET_KEY")), nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		if tkn.Valid {
+			return session, nil
+		}
+		return nil, errors.New(" invalid login session ")
+	}
+	tknStr := cookie.Value
+	session := &model.SubscriberSession{}
 	tkn, err := jwt.ParseWithClaims(tknStr, session, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SESSION_SECRET_KEY")), nil
 	})

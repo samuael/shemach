@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
@@ -14,6 +15,7 @@ import (
 
 type Rules interface {
 	Authenticated() gin.HandlerFunc
+	AuthenticatedSubscriber() gin.HandlerFunc
 	Authorized() gin.HandlerFunc
 	HasPermission(path, role, method string) bool
 }
@@ -42,6 +44,31 @@ func (m rules) Authenticated() gin.HandlerFunc {
 		}
 		ctx := context.WithValue(c.Request.Context(), "session", t)
 		success := m.auth.SaveSession(c.Writer, t)
+		if !success {
+			c.Abort()
+			return
+		}
+		ctx, _ = context.WithDeadline(ctx, time.Now().Add(time.Second*2))
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
+
+func (m rules) AuthenticatedSubscriber() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		t, err := m.auth.GetSubscriberSession(c.Request)
+		if err != nil || t == nil {
+			if err != nil {
+				println(err.Error())
+			} else {
+				println("The session is nil")
+			}
+			http.Error(c.Writer, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			c.Abort()
+			return
+		}
+		ctx := context.WithValue(c.Request.Context(), "session", t)
+		success := m.auth.SaveSubscriberSession(c.Writer, t)
 		if !success {
 			c.Abort()
 			return
@@ -86,9 +113,9 @@ func (m *rules) HasPermission(path, role, method string) bool {
 	// method = strings.ToUpper(method)
 
 	// if permission := state.Authorities[path]; permission != nil {
-	if strings.HasPrefix(path, "/api/admin/") && (role == state.SUPERADMIN) {
+	if strings.HasPrefix(path, "/api/superadmin/") && (role == state.SUPERADMIN) {
 		return true
-	} else if strings.HasPrefix(path, "/api/") && !(strings.HasPrefix(path, "/api/admin/")) && (role == state.ADMIN || role == state.SUPERADMIN) {
+	} else if strings.HasPrefix(path, "/api/admin") && !(strings.HasPrefix(path, "/api/admin/")) && (role == state.ADMIN || role == state.SUPERADMIN) {
 		return true
 	}
 	return false

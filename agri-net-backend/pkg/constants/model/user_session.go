@@ -18,6 +18,7 @@ type (
 		ID    uint64
 		Email string
 		Role  string
+		Lang  string
 	}
 
 	SubscriberSession struct {
@@ -25,6 +26,7 @@ type (
 		ID       uint64
 		Phone    string
 		Fullname string
+		Lang     string
 	}
 
 	ForgotPasswordSession struct {

@@ -14,3 +14,8 @@ insert into payin(amount,recieved_by, payed_by, created_at, roundid, status, uch
 grant all on payin to tamdes;
 select checktheexsistanceofpayment(cast ('xf' as char(2)),19,16, 2014,6,29,17,36,10);
 select createPayinTransaction( cast('bf'as char(2)),8,21,16,2014,7,20,7,24,6,2000);
+
+-- for creating a product instance information.
+select createProduct( cast ( 'Tef' as varchar) , cast ( 'Gojam' as varchar),2,cast ( 0.0 as decimal),1,cast (ROUND(extract(epoch from now())) as integer), cast ( ROUND(extract(epoch from now())) as integer));
+
+-- update subscriber set subscriptions=array_remove(subscriptions, 2::smallint);

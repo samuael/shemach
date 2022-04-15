@@ -94,3 +94,119 @@ $$
         return 2;
     end;
 $$ language plpgsql;
+
+
+
+create or replace function createProduct(
+    iname varchar , 
+    iproduction_area varchar, 
+    iunit_id integer,
+    icurrent_price decimal,
+    icreated_by integer, 
+    icreated_at integer, 
+    ilast_updated_time integer) returns integer as 
+$$
+    declare
+        theproduct product;
+        theid integer;
+        theadmin superadmin;
+    begin
+        select * from product into theproduct where name=iname and production_area=iproduction_area  and unit_id=iunit_id;
+        if found then
+            return -1;
+        end if;
+        insert into product(
+            name,
+            production_area,
+            unit_id,
+            current_price,
+            created_by,
+            created_at,
+            last_updated_time)values(
+                iname,
+                iproduction_area,
+                iunit_id,
+                icurrent_price,
+                icreated_by,
+                icreated_at,
+                ilast_updated_time) returning id into theid;
+            if not found then
+                return -2;
+            end if;
+
+            select * into theadmin from superadmin where id=icreated_by;
+            if not found then
+                return -3;
+            end if;
+
+            return theid;
+    end;
+$$ language plpgsql;
+
+create or replace function checkTheExistanceOfProduct( iname varchar(200), iproduction_area varchar(200),iunit_id integer) returns boolean as 
+$$
+    declare 
+        productid integer;
+    begin
+        select id into productid from product where name=iname and production_area=iproduction_area and unit_id=iunit_id;
+        if found then
+            return true;
+        end if;
+        return false; 
+    end;
+$$ language plpgsql;
+
+
+
+create or replace function createNewSubscription( isubscriberid integer, productid smallint ) returns integer as 
+$$
+    declare
+        subscriberid integer;
+        statustrack integer;
+    begin
+        select id into subscriberid from subscriber where id=isubscriberid;
+        if not found then
+            return -1;
+        end if;
+        select id into statustrack from product where id =productid;
+        if not found then
+            return -2;
+        end if;
+        with rows as ( update subscriber set subscriptions = array_append(subscriptions, productid::smallint)
+         where (not productid::smallint = any( subscriptions )) and id = isubscriberid returning 1)
+        select count(*) into statustrack from rows;
+        if not found or statustrack = 0 then
+            return -3;
+        end if;
+        return 0;
+    end;
+$$ language plpgsql;
+
+
+create or replace function UnSubscribeToProduct(isubscriberid integer,productid smallint) returns integer as 
+$$
+    declare
+        subscriberid integer;
+        statustrack integer;
+    begin
+        select id into subscriberid from subscriber where id=isubscriberid;
+        if not found then
+            return -1;
+        end if;
+        select id into statustrack from product where id =productid;
+        if not found then
+            return -2;
+        end if;
+        
+        with rows as ( update subscriber set subscriptions = array_remove(subscriptions, productid::smallint)
+         where (productid::smallint = any( subscriptions )) and id = isubscriberid returning 1)
+        
+        select count(*) into statustrack from rows;
+        
+        if (not found or statustrack = 0) then
+            return -3;
+        end if;
+
+        return 0;
+    end;
+$$ language plpgsql;

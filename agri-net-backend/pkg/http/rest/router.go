@@ -14,7 +14,11 @@ import (
 )
 
 // Route returns an http handler for the api.
-func Route(rules middleware.Rules, subscriberhandler ISubscriberHandler, superadminhandler ISuperadminHandler) *gin.Engine {
+func Route(
+	rules middleware.Rules,
+	subscriberhandler ISubscriberHandler,
+	superadminhandler ISuperadminHandler,
+	producthandler IProductHandler) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "OPTIONS"},
@@ -29,6 +33,12 @@ func Route(rules middleware.Rules, subscriberhandler ISubscriberHandler, superad
 	router.POST("/api/subscription/confirm", subscriberhandler.ConfirmLoginSubscription)
 	// -------------------------------------------------------------------------------
 	router.POST("/api/superadmin/login", superadminhandler.SuperadminLogin)
+
+	router.POST("/api/superadmin/product/new", rules.Authenticated(), rules.Authorized(), producthandler.CreateProductInstance)
+	router.GET("/api/product", producthandler.GetProductByID)
+	router.GET("/api/products", producthandler.GetProducts)
+	router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
+	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

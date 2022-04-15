@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -153,7 +154,7 @@ func (shan *SubscriberHandler) RegisterSubscriber(c *gin.Context) {
 	if er != nil {
 		println(er.Error())
 	}
-	if status == state.DT_STATUS_DBQUERY_ERROR || er != nil {
+	if status == state.STATUS_DBQUERY_ERROR || er != nil {
 		if err != nil {
 			println(err.Error())
 		}
@@ -211,7 +212,7 @@ func (shan *SubscriberHandler) SubscriberLoginWithPhone(c *gin.Context) {
 			} else if status == 1 {
 				ctx = context.WithValue(ctx, "subscriber_phone", input.Phone)
 				subscriber, status, era = shan.Service.GetSubscriberByPhone(ctx)
-				if status != state.DT_STATUS_OK || era != nil {
+				if status != state.STATUS_OK || era != nil {
 					if era != nil {
 						println(era.Error())
 					}
@@ -275,7 +276,7 @@ func (shan *SubscriberHandler) SubscriberLoginWithPhone(c *gin.Context) {
 	if er != nil {
 		println(er.Error())
 	}
-	if status == state.DT_STATUS_DBQUERY_ERROR || er != nil {
+	if status == state.STATUS_DBQUERY_ERROR || er != nil {
 		if err != nil {
 			println(err.Error())
 		}
@@ -352,7 +353,7 @@ func (shan *SubscriberHandler) ConfirmRegistrationSubscription(c *gin.Context) {
 	}
 	ctx = context.WithValue(ctx, "subscriber_phone", input.Phone)
 	pendingRegistrationSubscription, status, er := shan.Service.GetPendingRegistrationSubscriptionByPhone(ctx)
-	if status != state.DT_STATUS_OK || er != nil {
+	if status != state.STATUS_OK || er != nil {
 		res.StatusCode = http.StatusNotFound
 		res.Msg = translation.TranslateIt("no pending subscription with this phone number")
 		c.JSON(res.StatusCode, res)
@@ -369,7 +370,7 @@ func (shan *SubscriberHandler) ConfirmRegistrationSubscription(c *gin.Context) {
 		}
 		ctx = context.WithValue(ctx, "subscriber", subscriber)
 		sub, status, er := shan.Service.RegisterSubscriber(ctx)
-		if er != nil || status != state.DT_STATUS_OK {
+		if er != nil || status != state.STATUS_OK {
 			res.StatusCode = http.StatusInternalServerError
 			res.Msg = translation.
 				Translate(pendingRegistrationSubscription.Lang, "internal problem, please try again later")
@@ -385,8 +386,12 @@ func (shan *SubscriberHandler) ConfirmRegistrationSubscription(c *gin.Context) {
 			ID:       sub.ID,
 			Phone:    sub.Phone,
 			Fullname: sub.Fullname,
+			Lang:     sub.Lang,
 		}
-		shan.Authenticator.SaveSubscriberSession(c.Writer, subscriberSession)
+		saved := shan.Authenticator.SaveSubscriberSession(c.Writer, subscriberSession)
+		if !saved {
+			println("Subscription was not succesful")
+		}
 		res.Token = strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer ")
 		c.JSON(res.StatusCode, res)
 		return
@@ -459,7 +464,7 @@ func (shan *SubscriberHandler) ConfirmLoginSubscription(c *gin.Context) {
 	}
 	ctx = context.WithValue(ctx, "subscriber_phone", input.Phone)
 	pendingRegistrationSubscription, status, er := shan.Service.GetPendingLoginSubscriptionByPhone(ctx)
-	if status != state.DT_STATUS_OK || er != nil {
+	if status != state.STATUS_OK || er != nil {
 		res.StatusCode = http.StatusNotFound
 		res.Msg = translation.TranslateIt("no pending subscription with this phone number")
 		c.JSON(res.StatusCode, res)
@@ -467,7 +472,7 @@ func (shan *SubscriberHandler) ConfirmLoginSubscription(c *gin.Context) {
 	}
 	if input.Confirmation == pendingRegistrationSubscription.Confirmation {
 		subscriber, status, er := shan.Service.GetSubscriberByPhone(ctx)
-		if status != state.DT_STATUS_OK || er != nil {
+		if status != state.STATUS_OK || er != nil {
 			res.StatusCode = http.StatusInternalServerError
 			res.Msg = translation.TranslateIt("Internal problem, please try again later!")
 			c.JSON(res.StatusCode, res)
@@ -485,8 +490,12 @@ func (shan *SubscriberHandler) ConfirmLoginSubscription(c *gin.Context) {
 			ID:       subscriber.ID,
 			Phone:    subscriber.Phone,
 			Fullname: subscriber.Fullname,
+			Lang:     subscriber.Lang,
 		}
-		shan.Authenticator.SaveSubscriberSession(c.Writer, subscriberSession)
+		subscribed := shan.Authenticator.SaveSubscriberSession(c.Writer, subscriberSession)
+		if !subscribed {
+			log.Println("User Authentication Failed Bro")
+		}
 		res.Token = strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer ")
 		c.JSON(res.StatusCode, res)
 		return

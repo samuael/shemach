@@ -4,8 +4,9 @@ type Product struct {
 	ID             uint    `json:"id"`
 	Name           string  `json:"name"`
 	ProductionArea string  `json:"production_area"`
+	UnitID         uint8   `json:"unit_id"`
 	CurrentPrice   float64 `json:"current_price"`
-	CreatedAt      uint64  `json:"created_at"`
 	CreatedBy      uint64  `json:"created_by"`
+	CreatedAt      uint64  `json:"created_at"`
 	LastUpdateTime uint64  `json:"last_update_time"`
 }

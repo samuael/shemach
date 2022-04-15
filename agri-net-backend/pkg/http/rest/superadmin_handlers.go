@@ -88,7 +88,7 @@ func (suhandler *SuperadminHandler) SuperadminLogin(c *gin.Context) {
 	superadmin, status, er := suhandler.Service.GetSuperadminByEmail(ctx)
 	if (superadmin == nil) ||
 		(er != nil) ||
-		(status != state.DT_STATUS_OK) {
+		(status != state.STATUS_OK) {
 		if er != nil {
 			println(er.Error())
 		}
@@ -106,7 +106,8 @@ func (suhandler *SuperadminHandler) SuperadminLogin(c *gin.Context) {
 	session := &model.Session{
 		ID:    superadmin.ID,
 		Email: superadmin.Email,
-		Role:  "superamdin",
+		Role:  state.SUPERADMIN,
+		Lang:  "eng",
 	}
 	suhandler.Authenticator.SaveSession(c.Writer, session)
 	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")
