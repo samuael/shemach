@@ -43,8 +43,8 @@ func Route(
 	router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
 	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
 
-	// router.GET("/api/connections/", rules.Authenticated(), func(c *gin.Context) gin.HandlerFunc {
-	// })
+	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
+	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{
