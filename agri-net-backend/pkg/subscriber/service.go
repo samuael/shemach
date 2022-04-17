@@ -21,6 +21,8 @@ type ISubscriberService interface {
 	RemoveExpiredTempoSubscription(unixTime uint64) (numberOfDeletedConfirmations int, issue error)
 	// GetSubscriberByPhone uses "subscriber_phone"  type string
 	GetSubscriberByPhone(ctx context.Context) (*model.Subscriber, int, error)
+	// GetSubscriberByID uses "subscriber_id"  type uint64
+	GetSubscriberByID(ctx context.Context) (*model.Subscriber, int, error)
 	// DeleteTempoLoginSubscriber returns the number of rows and error if exist.
 	DeleteTempoLoginSubscriber(unix uint64) (int, error)
 	// RegisterTempoLoginSubcriber uses "login_tempo_subscriber" of type *mdoel.TempoLoginSubscriber
@@ -87,4 +89,7 @@ func (subscriptionService *SubscriberService) DeletePendingLoginSubscriptionByID
 // GetPendingLoginSubscriptionByPhone
 func (subscriptionService *SubscriberService) GetPendingLoginSubscriptionByPhone(ctx context.Context) (*model.TempoLoginSubscriber, int, error) {
 	return subscriptionService.Repo.GetPendingLoginSubscriptionByPhone(ctx)
+}
+func (subscriptionService *SubscriberService) GetSubscriberByID(ctx context.Context) (*model.Subscriber, int, error) {
+	return subscriptionService.Repo.GetSubscriberByID(ctx)
 }

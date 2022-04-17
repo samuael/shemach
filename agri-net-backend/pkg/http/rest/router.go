@@ -21,6 +21,7 @@ func Route(
 	superadminhandler ISuperadminHandler,
 	producthandler IProductHandler,
 	communicationHandler message_broadcast_service.IClientConnetionHandler,
+	messagehandler IMessageHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -45,6 +46,8 @@ func Route(
 
 	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
 	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
+
+	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

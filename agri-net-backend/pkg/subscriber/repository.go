@@ -19,4 +19,5 @@ type ISubscriberRepo interface {
 	DeletePendingRegistrationSubscriptionByID(ctx context.Context) (int, error)
 	DeletePendingLoginSubscriptionByID(ctx context.Context) (int, error)
 	GetPendingLoginSubscriptionByPhone(ctx context.Context) (*model.TempoLoginSubscriber, int, error)
+	GetSubscriberByID(ctx context.Context) (*model.Subscriber, int, error)
 }

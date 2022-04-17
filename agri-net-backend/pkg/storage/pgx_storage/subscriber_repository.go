@@ -135,3 +135,13 @@ func (repo *SubscriberRepo) GetPendingLoginSubscriptionByPhone(ctx context.Conte
 	}
 	return subscriber, state.STATUS_OK, nil
 }
+
+func (repo *SubscriberRepo) GetSubscriberByID(ctx context.Context) (*model.Subscriber, int, error) {
+	subscriber := &model.Subscriber{}
+	id := ctx.Value("subscriber_id").(uint64)
+	if er := repo.DB.QueryRow(ctx, "select id,fullname,lang,role,phone,subscriptions from subscriber where id=$1", id).
+		Scan(&(subscriber.ID), &(subscriber.Fullname), &(subscriber.Lang), &(subscriber.Role), &(subscriber.Phone), &(subscriber.Subscriptions)); er != nil {
+		return subscriber, state.STATUS_DBQUERY_ERROR, er
+	}
+	return subscriber, state.STATUS_OK, nil
+}

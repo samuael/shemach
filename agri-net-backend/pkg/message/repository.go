@@ -8,4 +8,5 @@ import (
 
 type IMessageRepo interface {
 	SaveMessage(ctx context.Context) (*model.Message, int, error)
+	GetRecentMessages(ctx context.Context) ([]*model.Message, int, error)
 }

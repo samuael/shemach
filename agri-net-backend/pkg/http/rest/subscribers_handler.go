@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/server/service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
@@ -487,10 +488,11 @@ func (shan *SubscriberHandler) ConfirmLoginSubscription(c *gin.Context) {
 		res.StatusCode = http.StatusOK
 		res.Msg = translation.Translate(subscriber.Lang, "You are registered succesfuly. welcome!")
 		subscriberSession := &model.SubscriberSession{
-			ID:       subscriber.ID,
-			Phone:    subscriber.Phone,
-			Fullname: subscriber.Fullname,
-			Lang:     subscriber.Lang,
+			ID:             subscriber.ID,
+			Phone:          subscriber.Phone,
+			Fullname:       subscriber.Fullname,
+			Lang:           subscriber.Lang,
+			StandardClaims: jwt.StandardClaims{},
 		}
 		subscribed := shan.Authenticator.SaveSubscriberSession(c.Writer, subscriberSession)
 		if !subscribed {
