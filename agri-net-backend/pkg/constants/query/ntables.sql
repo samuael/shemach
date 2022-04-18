@@ -40,6 +40,16 @@ create table users(
     password text not null
 );
 
+create table infoadmin(
+    messages_count integer default 0,
+    created_by integer not null
+) inherits(users);
+
+
+create tempo_infoadmin (
+    registration_second
+);
+
 create table superadmin(
     registered_admins integer default 0,
     registered_products integer default 0
@@ -62,6 +72,8 @@ create table product(
     last_updated_time integer default ROUND(extract( epoch  from now()))
 );
 
+
+
 create table messages (
     id serial primary key,
     targets integer[] not null default array[-1]::smallint[],
@@ -70,11 +82,6 @@ create table messages (
     created_by integer not null,
     created_at integer not null default ROUND( extract(epoch from now()))
 );
-
-create table infoadmin(
-    messages_count integer default 0,
-
-) inherits(users);
 
 create table admin(
     merchants_created integer default 0,

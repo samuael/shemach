@@ -22,6 +22,7 @@ func Route(
 	producthandler IProductHandler,
 	communicationHandler message_broadcast_service.IClientConnetionHandler,
 	messagehandler IMessageHandler,
+	infoadminhandler IInfoadminHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -48,6 +49,7 @@ func Route(
 	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
 
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
+	router.POST("/api/infoadmin/new", rules.Authenticated(), infoadminhandler.Registerinfoadmin)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

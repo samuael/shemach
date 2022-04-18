@@ -41,7 +41,7 @@ func (repo *MessageRepo) GetRecentMessages(ctx context.Context) ([]*model.Messag
 	unixTime := ctx.Value("unix_time").(uint64)
 	subscriptions := ctx.Value("subscriptions").([]int)
 	lang := ctx.Value("lang").(string)
-
+	// ------------------------------
 	var rows pgx.Rows
 	var er error
 

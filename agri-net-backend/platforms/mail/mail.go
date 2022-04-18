@@ -24,12 +24,10 @@ var dpassword = `<!DOCTYPE html>
 	Forgot Password {{end}}</title>
 </head>
 <body>
-    <h1 style="background-color:#006699";color:#fff >  Shambel Registrar  </h1>
+    <h1 style="background-color:#006699";color:#fff >  Agri-Net  </h1>
     {{if .NewPassword}}
-		<p> Hi, According to your action in the Shambel Registrar System this email is used to register a User named {{.Fullname }} in the system .<br>
+		<p> Hi, According to your action in the Agri-info Systems this email is used to register a User named {{.Fullname }} in the system .<br>
 		we have sent you a password to be used when login with <br>
-		If you think that this email is not yours , confirm that by clicking on the link below.
-		<a href="{{.HOST}}/api/deactivate/?email='{{.Email}}&password={{.Password}}'" > Not Mine </a>
 		</p>
 	{{else }}
 	 <p> Hi {{.Fullname }}  , According Your Request of forgot password this email is sent to you.</p>
@@ -38,7 +36,7 @@ var dpassword = `<!DOCTYPE html>
     <p> <i> Use this password to log in and change the password ASAP.</i> </p>
 	<p>  If this password doesn't work try to get a new password again using forgot password or Use the previous password if you still remember it.</p>
 	<hr>
-	<i> Shambel Drivers Training Institute Registrar System </i> 
+	<i> Agri-Info Systems <small>  Agri-Net ( Agricultural Products commecrial netword systems ) </small> </i> 
 	<hr>
 	</body>
 </html>`
