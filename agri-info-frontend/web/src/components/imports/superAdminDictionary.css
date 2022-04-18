@@ -1,0 +1,48 @@
+#dict form {
+    justify-content: center;
+}
+
+#dict .topic {
+    margin-top: 5rem;
+    margin-left: 5rem;
+    font-style: italic;
+    font-weight: bold;
+
+}
+#dict .dictionary {
+    margin-top: 1rem;
+    margin-left: 4rem;
+    box-shadow: 0 0 45px rgba(131, 79, 79, 0.4);
+    border-radius: 10px;
+    max-width: 800px;
+}
+
+#dict .form-group {
+    width: 100%;
+    margin-bottom: 2rem;
+   
+ }
+
+#lang {
+    margin-left: 10px;
+}
+
+#lang label {
+    font-size: 1rem;
+  }
+
+#dict .input,
+textarea {
+  font-size: 15px;
+  /* padding: 1.2rem; */
+  color: var(--gray-1);
+  background-color: var(--deep-dark);
+  outline: none;
+  border: none;
+  border-radius: 8px;
+  /* margin-top: 1rem; */
+}
+
+#dict .addbutton {
+    margin-left: 0px;
+}

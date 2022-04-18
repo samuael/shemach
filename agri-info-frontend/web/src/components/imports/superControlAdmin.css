@@ -1,0 +1,146 @@
+#supercontroladmins .list {
+    text-align: left;
+    max-width: 1000px;
+    max-height: 500px;
+    margin: auto;
+  }
+
+  /* #supercontroladmins .leftpart {
+      justify-content: start;
+
+} */
+
+#supercontroladmins .adminlistcontainer {
+    margin-bottom: 20px;
+}
+
+  #supercontroladmins .form-control {
+      margin-top: 5%;
+      
+  }
+
+  #supercontroladmins .input-group-append .searchbuttom{
+    margin-top: 39%;
+}
+
+#supercontroladmins .add-button {
+    align-items: flex-start;
+    margin-top: 10%;
+    margin-left: 150px;
+    text-align: center;
+    background-color: aliceblue;
+   
+
+
+}
+
+.linkadd {
+    text-decoration: none;
+}
+
+/* .fa-plus {
+    margin-right: 4px;
+} */
+
+/* #supercontroladmins .list-group-comp {
+
+} */
+
+#supercontroladmins .list-group {
+  /* max-width: 960px; */
+  /* justify-content: start; */
+  /* width: 30rem; */
+  /* margin: 0 auto; */
+  box-shadow: 0 0 35px rgba(71, 58, 58, 0.4);
+  border-radius: 10px;
+
+}
+/* 
+.list-group-comp{
+  align-content: flex-end;
+
+} */
+
+#supercontroladmins .adminimg {
+    height: 8rem;
+    width: 6rem;
+    margin-bottom: 5px;
+    border-radius: 15px;
+
+}
+#supercontroladmins .adminimglarge {
+    height: 10rem;
+    width: 15rem;
+    margin-bottom: 5px;
+    border-radius: 15px;
+
+}
+#supercontroladmins .list-group-item {
+  height: 200px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* #supercontroladmins .message {
+  overflow: hidden;
+
+} */
+#supercontroladmins .Name {
+  font-weight: bold;
+  font-size: 20px;
+
+ }
+
+ #supercontroladmins .Time {
+  font-weight: lighter;
+  font-size: 15px;
+
+ }
+
+ #supercontroladmins .message {
+   font-style: italic;
+
+}
+#supercontroladmins .description {
+  background: white;
+  max-width: 500px;
+  /* max-width: 500px; */
+  height: fit-content;
+  margin-top: 2.5rem;
+  padding: 1rem 1rem;
+
+  
+  /* width: 90rem; */
+  /* margin: 0 auto; */
+  align-content: center;
+  box-shadow: 0 0 45px rgba(131, 79, 79, 0.4);
+  border-radius: 10px;
+  text-align: justify;
+
+}
+  
+#supercontroladmins .submit-form {
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  #supercontroladmins .edit-form {
+    max-width: 300px;
+    margin: auto;
+  }
+
+  #supercontroladmins .badge {
+      background: rgb(6, 156, 243);
+      margin-left: 10px;
+      height: 2rem;
+      text-align: center;
+      text-decoration: none;
+  }
+
+  #supercontroladmins .clickon {
+    width: 500px;
+  }
+
+
+ 

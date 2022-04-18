@@ -1,0 +1,60 @@
+/* .list {
+    text-align: left;
+    max-width: 750px;
+    margin: auto;
+ 
+  }
+  
+  .submit-form {
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  .edit-form {
+    max-width: 300px;
+    margin: auto;
+
+  }
+
+  .badge {
+      margin: 5px;
+  } */
+  
+  /* #supereditproduct {
+
+  } */
+
+  /* form {
+    justify-content: center;
+} */
+
+  #superproedit .supeditform {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding-top: 10px;
+    max-width: 100%;
+    box-shadow: 0 0 45px rgba(131, 79, 79, 0.4);
+    border-radius: 10px;
+
+  }
+
+  #superproedit .badge {
+    background: rgb(6, 156, 243);
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+  /* .createform {
+    margin-top: 10rem;
+    margin-left: 10rem;
+    max-width: 800px;
+    height: fit-content;
+    box-shadow: 0 0 45px rgba(131, 79, 79, 0.4);
+    border-radius: 10px;
+}
+
+#supereditproduct .form-group {
+    width: 100%;
+    margin-bottom: 2rem;
+   
+ } */

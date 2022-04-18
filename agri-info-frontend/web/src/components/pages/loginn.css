@@ -1,0 +1,19 @@
+#login {
+  /* min-height: 100vh;  Overflow ballessa */
+  margin-top: 11%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  text-align: center;
+  /* overflow: hidden; */
+}
+
+.login-box {
+  max-width: 960px;
+  /* width: 90rem; */
+  margin: 0 auto;
+  box-shadow: 0 0 35px rgba(131, 79, 79, 0.4);
+  border-radius: 10px;
+
+}

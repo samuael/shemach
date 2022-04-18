@@ -1,0 +1,95 @@
+#navbrod .navbar { background-color: #484848; }
+#navbrod .navbar .navbar-nav .nav-link { color: #fff; }
+#navbrod .navbar .navbar-nav .nav-link:hover { color: #fbc531; }
+#navbrod .navbar .navbar-nav .active > .nav-link { color: #fbc531; }
+
+#navbrod .navbar {
+    /* background: linear-gradient(90deg, rgb(28, 27, 27) 0%, rgb(26, 23, 23) 100%); */
+    /* background:#020c1b; */
+    background: #172a45;
+    height: 80px;
+    display: flex;
+    justify-content: flex;
+    align-items: center;
+    font-size: 1.2rem;
+   
+  }
+  #navbrod   .navbar-logoo {
+    color: #fff;
+    justify-self: start;
+    justify-content: start;
+    text-decoration: none;
+    /* display: flex; */
+    /* margin-left: 30px; */
+
+  }
+  
+  #navbrod .navbar-brand {
+    color: #fff;
+    align-content: start;
+  }
+
+  #navbrod .fa-product-hunt {
+    /* margin-left: 0.8rem; */
+    margin-right: 0.5rem;
+  }
+  
+  #navbrod .fa-folder-open {
+    /* margin-left: 0.8rem; */
+    margin-right: 0.3rem;
+  }
+
+  #navbrod .fa-calendar-plus {
+    /* margin-left: 0.8rem; */
+    margin-right: 0.3rem;
+  }
+
+  #navbrod .fa-envelope-circle-check {
+    /* margin-left: 0.8rem; */
+    margin-right: 0.3rem;
+  }
+
+  #navbrod .nav-menu {
+    display: grid;
+    /* grid-template-columns: repeat(5, auto);
+    grid-gap: 10px; */
+    list-style: none;
+    text-align: center;
+    /* width: 70vw; */
+    justify-content: start;
+    margin-left: 21rem;
+    /* margin-right: 0rem; */
+  }
+  
+  #navbrod .nav-item {
+    display: flex;
+    align-items: center;
+    height: 80px;
+  }
+  
+  /* .nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+  }
+  
+  .nav-link:hover {
+    background-color: #1888ff;
+    border-radius: 4px;
+    transition: all 0.2s ease-out;
+  } */
+
+  #navbrod .circle {
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    /* padding: 10px; */
+    background: #fff;
+    border: 3px solid #000;
+    color: #000;
+    text-align: center;
+    /* font: 32px Arial, sans-serif; */
+}
+  
+
+  

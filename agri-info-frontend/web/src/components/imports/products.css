@@ -1,0 +1,83 @@
+#productsmain .list {
+    text-align: left;
+    max-width: 750px;
+    margin: auto;
+  }
+
+  #productsmain .form-control {
+      margin-top: 5%;
+  }
+
+  #productsmain .input-group-append .searchbuttom{
+    margin-top: 33%;
+}
+
+
+
+#productsmain .description {
+  background: cyan;
+  max-width: 200px;
+  height: fit-content;
+  margin-top: 2rem;
+  padding: 1rem 1rem;
+  align-content: center;
+  box-shadow: 0 0 45px rgba(131, 79, 79, 0.4);
+  border-radius: 10px;
+
+}
+  
+#productsmain .submit-form {
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  #productsmain .edit-form {
+    max-width: 300px;
+    margin: auto;
+  }
+
+  #productsmain .badge {
+      background: rgb(6, 156, 243);
+      text-decoration: none;
+  }
+
+  #productsmain .clickon {
+    width: 300px;
+  }
+
+
+  #productsmain .list-group {
+    /* max-width: 960px; */
+    /* justify-content: start; */
+    /* width: 30rem; */
+    /* margin: 0 auto; */
+    box-shadow: 0 0 35px rgba(131, 79, 79, 0.4);
+    border-radius: 10px;
+  
+  }
+
+  
+  #productsmain .list-group-item {
+    height: 100px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  /* #productsmain .message {
+    overflow: hidden;
+  
+  } */
+  #productsmain .Name {
+    font-weight: bold;
+    font-size: 20px;
+  
+   }
+  
+   #productsmain .Time {
+    font-weight: lighter;
+    font-size: 15px;
+  
+   }
+
+ 
