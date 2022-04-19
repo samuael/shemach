@@ -37,7 +37,8 @@ create table users(
     email varchar(50)  unique not null,
     imageurl varchar(200) default "",
     created_at integer default ROUND(extract(epoch from now())),
-    password text not null
+    password text not null,
+    lang char(3) default 'amh'
 );
 
 create table infoadmin(

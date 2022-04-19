@@ -141,3 +141,22 @@ func (repo *ProductRepo) UnsubscribeProduct(ctx context.Context) (status int) {
 	}
 	return status
 }
+
+func (repo *ProductRepo) UpdateProductPrice(ctx context.Context) (int, int, error) {
+	productID := ctx.Value("product_id").(uint8)
+	price := ctx.Value("product_price").(float64)
+	result := 0
+	er := repo.DB.QueryRow(ctx, "select * from updateProductPrice($1, $2)", productID, price).Scan(&result)
+	if er != nil {
+		return -4, state.STATUS_DBQUERY_ERROR, er
+	}
+	if result == 0 {
+		return result, state.STATUS_OK, nil
+	} else if result == -1 {
+		return result, state.STATUS_RECORD_NOT_FOUND, nil
+	} else if result == -2 {
+		return result, state.STATUS_NO_RECORD_UPDATED, nil
+	} else {
+		return result, state.STATUS_CONFLICT_ON_UPDATE, nil
+	}
+}

@@ -210,3 +210,48 @@ $$
         return 0;
     end;
 $$ language plpgsql;
+
+
+
+
+create or replace function getTheRoleOfUserByIdOrEmail( userid integer , iemail varchar)  returns integer as 
+$$
+    declare
+        theid varchar;
+    begin
+        select id into theid from superadmin where id=userid or email=iemail;
+        if found then
+            return 1;
+        end if;
+        select id into theid from infoadmin where id=userid or email=iemail;
+        if found then
+            return 2;
+        end if;
+        return 0;
+    end;
+$$ language plpgsql;
+
+
+create or replace function updateProductPrice( productid integer , new_price decimal ) returns integer as 
+$$
+    declare
+        cost integer;
+        updated_count integer;
+    begin
+        select current_price into cost from product where id=productid;
+        if not found then 
+            return -1;
+        end if;
+        if cost = new_price then 
+            return -2;
+        end if;
+        with rowss as (
+            update product set current_price=new_price , last_updated_time=ROUND(extract( epoch  from now())) where id=productid returning id
+        )
+        select COUNT(*) into updated_count from rowss;
+        if not found then
+            return -3;
+        end if;
+        return 0;
+    end;
+$$ language plpgsql;

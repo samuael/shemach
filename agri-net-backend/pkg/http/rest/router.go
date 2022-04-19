@@ -37,7 +37,7 @@ func Route(
 	router.POST("/api/subscription/login", subscriberhandler.SubscriberLoginWithPhone)
 	router.POST("/api/subscription/confirm", subscriberhandler.ConfirmLoginSubscription)
 	// -------------------------------------------------------------------------------
-	router.POST("/api/superadmin/login", superadminhandler.SuperadminLogin)
+	router.POST("/api/login", superadminhandler.AdminsLogin)
 
 	router.POST("/api/superadmin/product/new", rules.Authenticated(), rules.Authorized(), producthandler.CreateProductInstance)
 	router.GET("/api/product", producthandler.GetProductByID)
