@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/pgxpool"
+	pgx "github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"

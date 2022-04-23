@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/samuael/Project/mellaye/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 )
 
@@ -112,7 +111,7 @@ func IsValidDate(date string) (info string, success bool) {
 	date = strings.Trim(date, ".")
 	date = strings.Trim(date, "/")
 	data := strings.Split(date, "/")
-	println(string(helper.MarshalThis(data)))
+	println(string(MarshalThis(data)))
 	separators := []string{",", "-", "_", ".", ":", ";", "~", "/"}
 	combination := map[int]string{1: "day", 2: "month", 3: "day and month", 4: "year", 5: "day and year", 6: "month and year", 7: "day,month,and year"}
 	er := 0

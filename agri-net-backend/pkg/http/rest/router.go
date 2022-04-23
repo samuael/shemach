@@ -44,12 +44,14 @@ func Route(
 	router.GET("/api/products", producthandler.GetProducts)
 	router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
 	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
+	router.GET("/api/product/search", producthandler.SearchProduct)
 
 	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
 	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
 
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
 	router.POST("/api/infoadmin/new", rules.Authenticated(), infoadminhandler.Registerinfoadmin)
+	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

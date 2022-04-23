@@ -10,3 +10,8 @@ type Product struct {
 	CreatedAt      uint64  `json:"created_at"`
 	LastUpdateTime uint64  `json:"last_update_time"`
 }
+
+type ProductUpdate struct {
+	ID    uint8   `json:"id"`
+	Price float64 `json:"cost"`
+}

@@ -22,7 +22,7 @@ const (
 	SUBSCRIBER = "subscriber"
 	// ADMIN ...
 	ADMIN      = "admin"
-	INFO_ADMIN = "admin"
+	INFO_ADMIN = "infoadmin"
 	// SECRETARY ...
 	SECRETARY = "secretary"
 	// STUDENT

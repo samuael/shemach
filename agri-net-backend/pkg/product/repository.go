@@ -15,4 +15,5 @@ type IProductRepo interface {
 	CreateSubscriptions(ctx context.Context) (status int)
 	UnsubscribeProduct(ctx context.Context) (status int)
 	UpdateProductPrice(ctx context.Context) (int, int, error)
+	SearchProductsByText(ctx context.Context) ([]*model.Product, int, error)
 }

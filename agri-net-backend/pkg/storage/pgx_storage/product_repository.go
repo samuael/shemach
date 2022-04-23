@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/pgxpool"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
@@ -159,4 +159,30 @@ func (repo *ProductRepo) UpdateProductPrice(ctx context.Context) (int, int, erro
 	} else {
 		return result, state.STATUS_CONFLICT_ON_UPDATE, nil
 	}
+}
+
+func (repo *ProductRepo) SearchProductsByText(ctx context.Context) ([]*model.Product, int, error) {
+	text := ctx.Value("text").(string)
+	products := []*model.Product{}
+	println(text)
+	rows, er := repo.DB.Query(ctx, `SELECT id,name,production_area,unit_id,current_price,created_by,created_at,last_updated_time 
+	FROM product
+	where name LIKE $1 or production_area LIKE $1
+	`, "%"+text+"%")
+	if er != nil {
+		println(er.Error())
+		return products, state.STATUS_DBQUERY_ERROR, er
+	}
+	for rows.Next() {
+		product := &model.Product{}
+		er := rows.Scan(&(product.ID), &(product.Name), &(product.ProductionArea), &(product.UnitID), &(product.CurrentPrice), &(product.CreatedAt), &(product.LastUpdateTime))
+		if er != nil {
+			continue
+		}
+		products = append(products, product)
+	}
+	if len(products) == 0 {
+		return products, state.STATUS_NO_RECORD_FOUND, fmt.Errorf("no product instance was found")
+	}
+	return products, state.STATUS_OK, nil
 }

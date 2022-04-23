@@ -115,6 +115,8 @@ func (m *rules) HasPermission(path, role, method string) bool {
 	// if permission := state.Authorities[path]; permission != nil {
 	if strings.HasPrefix(path, "/api/superadmin/") && (role == state.SUPERADMIN) {
 		return true
+	} else if strings.HasPrefix(path, "/api/infoadmin/") && (role == state.INFO_ADMIN) {
+		return true
 	} else if strings.HasPrefix(path, "/api/admin") && !(strings.HasPrefix(path, "/api/admin/")) && (role == state.ADMIN || role == state.SUPERADMIN) {
 		return true
 	}

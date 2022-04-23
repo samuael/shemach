@@ -4,8 +4,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/samuael/Project/CarInspection/platforms/helper"
+	// "github.com/samuael/Project/CarInspection/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 func main() {
