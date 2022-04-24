@@ -8,8 +8,6 @@ CREATE TABLE subscriber (
     subscriptions smallint [] default array[]::smallint[];
 );
 
-
-
 create table tempo_subscriber(
     id serial primary key , 
     fullname VARCHAR(250) NOT NULL,
@@ -19,7 +17,6 @@ create table tempo_subscriber(
     confirmation char(5) not null,
     unix integer not null
 );
-
 
 create table tempo_subscribers_login(
     id serial primary key,
@@ -54,10 +51,7 @@ create tempo_infoadmin (
 create table superadmin(
     registered_admins integer default 0,
     registered_products integer default 0
-
 ) inherits(users);
-
-
 
 -- Here we need the unit to be specified.
 -- I have not decided on what and how the unit should be DECLARED
@@ -73,8 +67,6 @@ create table product(
     last_updated_time integer default ROUND(extract( epoch  from now()))
 );
 
-
-
 create table messages (
     id serial primary key,
     targets integer[] not null default array[-1]::smallint[],
@@ -89,4 +81,3 @@ create table admin(
     
     stores integer default 0
 ) inherits(users);
-

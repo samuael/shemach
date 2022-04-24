@@ -164,19 +164,18 @@ func (repo *ProductRepo) UpdateProductPrice(ctx context.Context) (int, int, erro
 func (repo *ProductRepo) SearchProductsByText(ctx context.Context) ([]*model.Product, int, error) {
 	text := ctx.Value("text").(string)
 	products := []*model.Product{}
-	println(text)
 	rows, er := repo.DB.Query(ctx, `SELECT id,name,production_area,unit_id,current_price,created_by,created_at,last_updated_time 
 	FROM product
-	where name LIKE $1 or production_area LIKE $1
-	`, "%"+text+"%")
+	where name ILIKE $1 or production_area ILIKE $1`, "%"+text+"%")
 	if er != nil {
 		println(er.Error())
 		return products, state.STATUS_DBQUERY_ERROR, er
 	}
 	for rows.Next() {
 		product := &model.Product{}
-		er := rows.Scan(&(product.ID), &(product.Name), &(product.ProductionArea), &(product.UnitID), &(product.CurrentPrice), &(product.CreatedAt), &(product.LastUpdateTime))
+		er := rows.Scan(&(product.ID), &(product.Name), &(product.ProductionArea), &(product.UnitID), &(product.CurrentPrice), &(product.CreatedBy), &(product.CreatedAt), &(product.LastUpdateTime))
 		if er != nil {
+			println(er.Error)
 			continue
 		}
 		products = append(products, product)

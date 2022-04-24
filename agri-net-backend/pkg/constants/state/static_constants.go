@@ -19,9 +19,11 @@ const (
 	LANGUAGE_ALL = "all"
 
 	SUPERADMIN = "superadmin"
+	// SUPERADMIN
 	SUBSCRIBER = "subscriber"
 	// ADMIN ...
 	ADMIN      = "admin"
+	// INFO_ADMIN = "infoadmin"
 	INFO_ADMIN = "infoadmin"
 	// SECRETARY ...
 	SECRETARY = "secretary"
