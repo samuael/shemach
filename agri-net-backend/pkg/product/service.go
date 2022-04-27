@@ -27,6 +27,10 @@ type IProductService interface {
 	CreateSubscriptions(ctx context.Context) (status int)
 	// UnsubscribeProduct  uses "product_id" type uint8 and "subscriber_id" of type uint64
 	UnsubscribeProduct(ctx context.Context) (status int)
+	// UpdateProductPrice uses "product_id" of type uint8 and "product_price" of type float64
+	UpdateProductPrice(ctx context.Context) (int, int, error)
+	// SearchProductsByText uses "text" string to return list of products, status code int , and error
+	SearchProductsByText(ctx context.Context) ([]*model.Product, int, error)
 }
 
 type ProductService struct {
@@ -124,4 +128,11 @@ func (pser *ProductService) CreateSubscriptions(ctx context.Context) (status int
 
 func (pser *ProductService) UnsubscribeProduct(ctx context.Context) (status int) {
 	return pser.Repo.UnsubscribeProduct(ctx)
+}
+
+func (pser *ProductService) UpdateProductPrice(ctx context.Context) (int, int, error) {
+	return pser.Repo.UpdateProductPrice(ctx)
+}
+func (pser *ProductService) SearchProductsByText(ctx context.Context) ([]*model.Product, int, error) {
+	return pser.Repo.SearchProductsByText(ctx)
 }

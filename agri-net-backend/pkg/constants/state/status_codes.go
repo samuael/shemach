@@ -2,6 +2,7 @@ package state
 
 const (
 	STATUS_OK = iota
+	STATUS_CONFLICT_ON_UPDATE
 	STATUS_RECORD_NOT_FOUND
 	STATUS_DBQUERY_ERROR
 	STATUS_NO_RECORD_UPDATED
@@ -19,6 +20,7 @@ const (
 
 var (
 	STATUS = map[int]string{
+		STATUS_CONFLICT_ON_UPDATE:              "CONFLICT ON UPDATING THE DATA",
 		STATUS_RECORD_NOT_FOUND:                "status record not found",
 		STATUS_DBQUERY_ERROR:                   "status database query error",
 		STATUS_OK:                              "db query ok",

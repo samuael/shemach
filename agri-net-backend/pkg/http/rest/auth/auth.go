@@ -76,7 +76,7 @@ func (sessh *authenticator) SaveSubscriberSession(writer http.ResponseWriter, se
 	// Declare the token with the algorithm used for signing, and the claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, session)
 	// Create the JWT string
-	tokenString, err := token.SignedString([]byte(os.Getenv("SESSION_SECRET_KEY")))
+	tokenString, err := token.SignedString([]byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")))
 	if err != nil {
 		return false
 	}
@@ -175,7 +175,7 @@ func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.
 		}
 		session := &model.SubscriberSession{}
 		tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("SESSION_SECRET_KEY")), nil
+			return []byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")), nil
 		})
 		if err != nil {
 			return nil, err
@@ -188,7 +188,7 @@ func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.
 	tknStr := cookie.Value
 	session := &model.SubscriberSession{}
 	tkn, err := jwt.ParseWithClaims(tknStr, session, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SESSION_SECRET_KEY")), nil
+		return []byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")), nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {

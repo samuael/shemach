@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
-	"github.com/samuael/Project/CarInspection/platforms/helper"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 // GetThePdf function

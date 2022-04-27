@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/pgxpool"
+	pgx "github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"
@@ -41,7 +41,7 @@ func (repo *MessageRepo) GetRecentMessages(ctx context.Context) ([]*model.Messag
 	unixTime := ctx.Value("unix_time").(uint64)
 	subscriptions := ctx.Value("subscriptions").([]int)
 	lang := ctx.Value("lang").(string)
-
+	// ------------------------------
 	var rows pgx.Rows
 	var er error
 
