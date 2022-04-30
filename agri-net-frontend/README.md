@@ -1,2 +1,0 @@
-## Agri-Net Frontend
-
