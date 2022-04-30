@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -10,10 +11,13 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
 type IInfoadminHandler interface {
 	Registerinfoadmin(c *gin.Context)
+	ListInfoadmins(c *gin.Context)
+	DeleteInfoadminByID(c *gin.Context)
 }
 
 // InfoAdminHandler
@@ -108,4 +112,55 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusBadRequest, resp)
+}
+
+func (ihandler *InfoadminHandler) ListInfoadmins(c *gin.Context) {
+	ctx := c.Request.Context()
+	error_res := &struct {
+		Msg        string `json:"msg"`
+		StatusCode int    `json:"status_code"`
+	}{}
+	var infoadmins []*model.Infoadmin
+	infoadmins, er := ihandler.Service.GetInfoadmins(ctx)
+	if er != nil {
+		error_res.Msg = translation.TranslateIt("record  not found ")
+		error_res.StatusCode = http.StatusNotFound
+		c.JSON(error_res.StatusCode, error_res)
+		return
+	}
+	c.JSON(http.StatusOK, infoadmins)
+}
+
+func (ihandler *InfoadminHandler) DeleteInfoadminByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	res := &struct {
+		Msg        string            `json:"msg"`
+		StatusCode int               `json:"status_code"`
+		Errors     map[string]string `json:"errors,omitempty"`
+	}{
+		Errors: map[string]string{},
+	}
+	id, er := strconv.Atoi(c.Query("id"))
+	if er != nil || id < 0 {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.TranslateIt("missing important parameter")
+		res.Errors["id"] = translation.TranslateIt("parameter infoadmin \"id\" of type {{integer}} >0 must be provided")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	ctx = context.WithValue(ctx, "infoadmin_id", uint64(id))
+	status, er := ihandler.Service.DeleteInfoadminByID(ctx)
+	if er != nil || status != 0 {
+		if status == -1 {
+			res.StatusCode = http.StatusNotFound
+			res.Msg = translation.TranslateIt("Info admin with the specified ID does not exist")
+		} else {
+			res.StatusCode = http.StatusInternalServerError
+			res.Msg = translation.TranslateIt("internal problem, please try again later")
+		}
+		c.JSON(res.StatusCode, res)
+	}
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.TranslateIt("info admin deleted succesfuly")
+	c.JSON(res.StatusCode, res)
 }

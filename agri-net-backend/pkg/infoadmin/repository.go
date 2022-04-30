@@ -9,4 +9,6 @@ import (
 type IInfoadminRepo interface {
 	GetInfoadminByEmail(ctx context.Context) (*model.Infoadmin, error)
 	CreateInfoadmin(ctx context.Context) (*model.Infoadmin, error)
+	GetInfoadmins(ctx context.Context) ([]*model.Infoadmin, error)
+	DeleteInfoadminByID(ctx context.Context) (int, error)
 }

@@ -11,6 +11,9 @@ type IInfoadminService interface {
 	GetInfoadminByEmail(ctx context.Context) (*model.Infoadmin, error)
 	// CreateInfoadmin uses "info_admin" of type *model.Infoadmin
 	CreateInfoadmin(ctx context.Context) (*model.Infoadmin, error)
+	// GetInfoadmins
+	GetInfoadmins(ctx context.Context) ([]*model.Infoadmin, error)
+	DeleteInfoadminByID(ctx context.Context) (int, error)
 }
 
 type InfoadminService struct {
@@ -29,4 +32,10 @@ func (service InfoadminService) GetInfoadminByEmail(ctx context.Context) (*model
 
 func (service InfoadminService) CreateInfoadmin(ctx context.Context) (*model.Infoadmin, error) {
 	return service.Repo.CreateInfoadmin(ctx)
+}
+func (service InfoadminService) GetInfoadmins(ctx context.Context) ([]*model.Infoadmin, error) {
+	return service.Repo.GetInfoadmins(ctx)
+}
+func (service InfoadminService) DeleteInfoadminByID(ctx context.Context) (int, error) {
+	return service.Repo.DeleteInfoadminByID(ctx)
 }

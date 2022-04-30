@@ -2,6 +2,7 @@ package pgx_storage
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
@@ -39,4 +40,16 @@ func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User,
 		return nil, role, state.STATUS_DBQUERY_ERROR, er
 	}
 	return user, role, state.STATUS_OK, nil
+}
+
+func (repo *UserRepo) UpdatePassword(ctx context.Context) error {
+	userid := ctx.Value("user_id").(uint64)
+	password := ctx.Value("new_password").(string)
+	uc, er := repo.DB.Exec(ctx, "Update users set password=$1 where id=$2", password, userid)
+	if er != nil {
+		return er
+	} else if uc.RowsAffected() == 0 {
+		return errors.New("no row affected")
+	}
+	return nil
 }

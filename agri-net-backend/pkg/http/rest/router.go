@@ -23,6 +23,7 @@ func Route(
 	communicationHandler message_broadcast_service.IClientConnetionHandler,
 	messagehandler IMessageHandler,
 	infoadminhandler IInfoadminHandler,
+	userhandler IUserHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -52,6 +53,11 @@ func Route(
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
 	router.POST("/api/infoadmin/new", rules.Authenticated(), infoadminhandler.Registerinfoadmin)
 	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
+	router.GET("/api/infoadmins", infoadminhandler.ListInfoadmins)
+	router.DELETE("/api/superadmin/infoadmin", infoadminhandler.DeleteInfoadminByID)
+
+	// user realted methods
+	router.PUT("/api/user/password", rules.Authenticated(), userhandler.ChangePassword)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

@@ -38,3 +38,30 @@ func (repo *InfoadminRepo) CreateInfoadmin(ctx context.Context) (*model.Infoadmi
 	).Scan(&(infoadmin.ID))
 	return infoadmin, er
 }
+func (repo *InfoadminRepo) GetInfoadmins(ctx context.Context) ([]*model.Infoadmin, error) {
+	infoadmins := []*model.Infoadmin{}
+	row, er := repo.DB.Query(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,lang,messages_count,created_by from infoadmin")
+	if er != nil {
+		return nil, er
+	}
+	for row.Next() {
+		infoadmin := &model.Infoadmin{}
+		er := row.Scan(&(infoadmin.ID), &(infoadmin.Firstname), &(infoadmin.Lastname), &(infoadmin.Phone), &(infoadmin.Email),
+			&(infoadmin.Imgurl), &(infoadmin.CreatedAt), &(infoadmin.Lang), &(infoadmin.BroadcastedMessagesCount), &(infoadmin.Createdby))
+		if er != nil {
+			continue
+		}
+		infoadmins = append(infoadmins, infoadmin)
+	}
+	return infoadmins, nil
+}
+
+func (repo *InfoadminRepo) DeleteInfoadminByID(ctx context.Context) (int, error) {
+	infoadminID := ctx.Value("infoadmin_id").(uint64)
+	status := 0
+	er := repo.DB.QueryRow(ctx, "select * from deleteinfoadminById($1)", infoadminID).Scan(&status)
+	if er != nil {
+		return status, er
+	}
+	return status, nil
+}

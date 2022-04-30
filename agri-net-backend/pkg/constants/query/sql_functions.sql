@@ -255,3 +255,28 @@ $$
         return 0;
     end;
 $$ language plpgsql;
+
+
+
+create or replace function deleteinfoadminById(did integer) returns integer as 
+$$
+    declare
+        statusCode integer;
+        theid integer;
+    begin
+        select id into theid from infoadmin where id=did;
+        if not found then
+            return -1;
+        end if;
+
+        with rows as (
+            delete from infoadmin where id=did returning id
+        )
+        select count(*) into theid from rows;
+        if not found then
+            return -2;
+        else 
+            return 0;
+        end if;
+    end;
+$$ language plpgsql;
