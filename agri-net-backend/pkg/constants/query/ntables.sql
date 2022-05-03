@@ -5,7 +5,7 @@ CREATE TABLE subscriber (
     Phone VARCHAR(250) NOT NULL UNIQUE,
     lang text NOT NULL,
     role smallint not null default 2,
-    subscriptions smallint [] default array[]::smallint[];
+    subscriptions smallint [] default array[]::smallint[]
 );
 
 create table tempo_subscriber(
@@ -32,7 +32,7 @@ create table users(
     lastname varchar(70) not null,
     phone   varchar(13) unique  not null,
     email varchar(50)  unique not null,
-    imageurl varchar(200) default "",
+    imageurl varchar(200) default '',
     created_at integer default ROUND(extract(epoch from now())),
     password text not null,
     lang char(3) default 'amh'
@@ -78,6 +78,15 @@ create table messages (
 
 create table admin(
     merchants_created integer default 0,
-    
     stores integer default 0
 ) inherits(users);
+
+
+create table emailInConfirmation(
+    id serial primary key,
+    userid integer not null,
+    new_email varchar(100) not null unique,
+    is_new_account boolean default false,
+    old_email varchar(100),
+    created_at integer not null default ROUND(extract(epoch from now()))
+);

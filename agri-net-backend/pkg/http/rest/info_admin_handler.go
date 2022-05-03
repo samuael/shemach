@@ -159,6 +159,7 @@ func (ihandler *InfoadminHandler) DeleteInfoadminByID(c *gin.Context) {
 			res.Msg = translation.TranslateIt("internal problem, please try again later")
 		}
 		c.JSON(res.StatusCode, res)
+		return
 	}
 	res.StatusCode = http.StatusOK
 	res.Msg = translation.TranslateIt("info admin deleted succesfuly")

@@ -280,3 +280,54 @@ $$
         end if;
     end;
 $$ language plpgsql;
+
+
+create or replace function insertEmailInConfirmation(iuserid integer, inewemail varchar, inewaccount boolean, ioldemail varchar) returns integer as 
+$$
+    declare
+        duserid integer;
+        theid integer;
+    begin
+        select id into duserid from users where id=iuserid;
+        if not found then
+            return -1;
+        end if;
+        insert into emailInConfirmation(userid, new_email,is_new_account, old_email)
+            values(iuserid , inewemail , inewaccount, ioldemail ) returning id into theid;
+        if not found then
+            return -2;
+        end if;
+        return theid;
+    end;
+$$ language plpgsql;
+
+
+create or replace function commitEmailChange(  confirmNewEmail varchar)   returns integer as 
+$$
+    declare
+        ec_id integer;
+        counts integer;
+        duserid integer;
+    begin
+        select id, userid into ec_id,duserid  from emailInConfirmation where new_email=confirmNewEmail;
+        if not found then
+            return -1;
+        end if;
+        -- 
+        select id into duserid from users where id=duserid;
+        if not found then
+            return -2;
+        end if;
+        -- 
+        with rows as (
+            update users set email=confirmNewEmail where id=duserid returning id
+        )
+        select COUNT(*) into counts from rows;
+        if counts = 0 then
+            return -3;
+        end if;
+        raise notice 'the id is %',ec_id; 
+        delete from emailInConfirmation where id=ec_id;
+        return 0;
+    end;
+$$ language plpgsql;

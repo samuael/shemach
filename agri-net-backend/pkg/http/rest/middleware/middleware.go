@@ -79,6 +79,29 @@ func (m rules) AuthenticatedSubscriber() gin.HandlerFunc {
 	}
 }
 
+func (m rules) AuthenticatedEmail() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := strings.Trim(" ", strings.TrimPrefix("Bearer ", (c.Request.Header.Get("Authorization"))))
+		t, err := m.auth.GetEmailSession(token)
+		if err != nil || t == nil {
+			if err != nil {
+				println(err.Error())
+			}
+			http.Error(c.Writer, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			c.Abort()
+			return
+		}
+		ctx := context.WithValue(c.Request.Context(), "session", t)
+		_, success := m.auth.SaveEmailConfirmationSession(t)
+		if !success {
+			c.Abort()
+			return
+		}
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
+
 // Authorized checks if a user has proper authority to access a give route
 func (m *rules) Authorized() gin.HandlerFunc {
 	return func(c *gin.Context) {

@@ -58,6 +58,8 @@ func Route(
 
 	// user realted methods
 	router.PUT("/api/user/password", rules.Authenticated(), userhandler.ChangePassword)
+	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
+	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

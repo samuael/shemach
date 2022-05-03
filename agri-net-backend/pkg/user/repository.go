@@ -9,4 +9,8 @@ import (
 type IUserRepo interface {
 	GetUserByEmailOrID(ctx context.Context) (user *model.User, role int, status int, ers error)
 	UpdatePassword(ctx context.Context) error
+	GetImageUrl(ctx context.Context) string
+	ChangeImageUrl(ctx context.Context) error
+	DeletePendingEmailConfirmation(timestamp uint64) error
+	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) error
 }

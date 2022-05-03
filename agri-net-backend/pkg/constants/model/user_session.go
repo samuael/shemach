@@ -22,7 +22,7 @@ type (
 		Role      string
 		Lang      string
 	}
-
+	// SubscriberSession
 	SubscriberSession struct {
 		jwt.StandardClaims
 		ID       uint64
@@ -30,11 +30,25 @@ type (
 		Fullname string
 		Lang     string
 	}
-
+	// ForgotPasswordSession
 	ForgotPasswordSession struct {
 		jwt.StandardClaims
 		ID    uint64
 		Email string
 		Time  time.Time
+	}
+	// EmailConfirmationSession
+	EmailConfirmationSession struct {
+		jwt.StandardClaims
+		*EmailConfirmation
+	}
+	// EmailConfirmation
+	EmailConfirmation struct {
+		ID           string `json:"id"`
+		UserID       string `json:"user_id"`
+		Email        string `json:"email"`
+		OldEmail     string `json:"old_email"`
+		CreatedAt    uint64 `json:"created_at"`
+		IsNewAccount bool   `json:"is_new_account"`
 	}
 )

@@ -157,3 +157,5 @@ func SendEmailChangeSMTP(to []string, password, fullname, host string) bool {
 	}
 	return true
 }
+
+// func ConfirmUpdateEmailAccount()

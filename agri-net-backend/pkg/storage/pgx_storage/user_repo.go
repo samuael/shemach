@@ -21,13 +21,17 @@ func NewUserRepo(db *pgxpool.Pool) user.IUserRepo {
 }
 
 func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User, role int, status int, ers error) {
-	idinterface := ctx.Value("user_id")
-	var id uint64
-	id = 0
-	if idinterface != nil {
-		id = idinterface.(uint64)
+	id, ok := ctx.Value("user_id").(uint64)
+	if !ok {
+		id = 0
 	}
-	email := ctx.Value("user_email").(string)
+	email, ok := ctx.Value("user_email").(string)
+	if !ok {
+		if id == 0 {
+			return nil, 0, state.STATUS_RECORD_NOT_FOUND, errors.New("missing important parameter")
+		}
+		email = ""
+	}
 	role = 0
 	er := repo.DB.QueryRow(ctx, "select * from getTheRoleOfUserByIdOrEmail( $1,$2);", id, email).Scan(&role)
 	if er != nil {
@@ -42,6 +46,7 @@ func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User,
 	return user, role, state.STATUS_OK, nil
 }
 
+// UpdatePassword ...
 func (repo *UserRepo) UpdatePassword(ctx context.Context) error {
 	userid := ctx.Value("user_id").(uint64)
 	password := ctx.Value("new_password").(string)
@@ -52,4 +57,37 @@ func (repo *UserRepo) UpdatePassword(ctx context.Context) error {
 		return errors.New("no row affected")
 	}
 	return nil
+}
+
+// GetImageUrl ...  |
+func (repo *UserRepo) GetImageUrl(ctx context.Context) string {
+	userId := ctx.Value("user_id").(uint64)
+	var imgurl string
+	repo.DB.QueryRow(ctx, "select imageurl from users where id=$1", userId).Scan(&imgurl)
+	return imgurl
+}
+func (repo *UserRepo) ChangeImageUrl(ctx context.Context) error {
+	userId := ctx.Value("user_id").(uint64)
+	imgurl := ctx.Value("image_url").(string)
+
+	if er := repo.DB.QueryRow(ctx, "update users set imageurl=$1 where id=$2 returning id", imgurl, userId).Scan(&userId); er != nil {
+		return er
+	}
+	return nil
+}
+
+// DeletePedingEmailConfirmation
+func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
+	deleted := 0
+	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where createdat >$1", timestamp).Scan(&deleted)
+	if er != nil || deleted == 0 {
+		return errors.New("no row deleted ")
+	}
+	return nil
+}
+
+// SaveEmailConfirmation
+func (repo *UserRepo) SaveEmailConfirmation(ctx context.Context, ec *model.EmailConfirmation) error {
+	er := repo.DB.QueryRow(ctx, "select * from insertEmailInConfirmation($1, $2,$3,$4)", ec.UserID, ec.Email, ec.IsNewAccount, ec.OldEmail).Scan(&ec.ID)
+	return er
 }

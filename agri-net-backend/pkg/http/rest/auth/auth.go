@@ -15,11 +15,15 @@ import (
 // Authenticator representing the Methods to be implemented by the authenticators
 type Authenticator interface {
 	SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
+	SaveEmailConfirmationSession(session *model.EmailConfirmationSession) (string, bool)
 	SaveSession(writer http.ResponseWriter, session *model.Session) bool
 	// SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
 	DeleteSession(writer http.ResponseWriter, request *http.Request) bool
+
 	GetSession(request *http.Request) (*model.Session, error)
 	GetSubscriberSession(request *http.Request) (*model.SubscriberSession, error)
+	GetEmailSession(token string) (*model.EmailConfirmationSession, error)
+
 	RandomToken() string
 	ValidateToken(tokenstring string) bool
 }
@@ -93,6 +97,25 @@ func (sessh *authenticator) SaveSubscriberSession(writer http.ResponseWriter, se
 	}
 	http.SetCookie(writer, &cookie)
 	return true
+}
+
+// SaveEmailConfirmationSession to save the Session in the User Session Header
+func (sessh *authenticator) SaveEmailConfirmationSession(session *model.EmailConfirmationSession) (string, bool) {
+	// Declare the expiration time of the token
+	expirationTime := time.Now().Add(24 * time.Hour)
+	session.StandardClaims = jwt.StandardClaims{
+		// In JWT, the expiry time is expressed as unix milliseconds
+		ExpiresAt: expirationTime.Unix(),
+		// HttpOnly:  true,
+	}
+	// Declare the token with the algorithm used for signing, and the claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, session)
+	// Create the JWT string
+	tokenString, err := token.SignedString([]byte(os.Getenv("SESSION_EMAIL_CONFIRMATION_KEY")))
+	if err != nil {
+		return tokenString, false
+	}
+	return tokenString, true
 }
 
 // DeleteSession representing del
@@ -200,6 +223,25 @@ func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.
 		return nil, err
 	}
 	return session, nil
+}
+
+// GetEmailSession(request *http.Request) (*model.Session, error)
+func (sessh *authenticator) GetEmailSession(token string) (*model.EmailConfirmationSession, error) {
+	// go and check for the authorization header
+	if token == "" {
+		return nil, nil
+	}
+	session := &model.EmailConfirmationSession{}
+	tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SESSION_EMAIL_CONFIRMATION_KEY")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if tkn.Valid {
+		return session, nil
+	}
+	return nil, errors.New("invalid login session")
 }
 
 // RandomToken random token Generator for CSRF and related technologies
