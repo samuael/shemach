@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/samuael/agri-net/agri-net-backend/cmd/server/service"
-	"github.com/samuael/agri-net/agri-net-backend/cmd/server/service/message_broadcast_service"
+	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service"
+	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
