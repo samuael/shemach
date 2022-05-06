@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/samuael/agri-net/agri-net-backend/api"
-	"github.com/samuael/agri-net/agri-net-backend/cmd/server/service/message_broadcast_service"
+	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
 )
 
