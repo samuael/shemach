@@ -1,3 +1,15 @@
+create table address (
+    address_id serial primary key,
+    kebele varchar(100),
+    woreda varchar(100),
+    city varchar(100),
+    region varchar(100),
+    unique_name  varchar(100),
+    latitude varchar(20),
+    zone varchar(20),
+    longitude varchar(20)
+);
+
 -- name: create-admin
 CREATE TABLE subscriber (
     id SERIAL PRIMARY KEY,
@@ -78,7 +90,9 @@ create table messages (
 
 create table admin(
     merchants_created integer default 0,
-    stores integer default 0
+    stores_created integer default 0,
+    address_id integer references address(address_id),
+    created_by integer not null
 ) inherits(users);
 
 

@@ -7,32 +7,32 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
-	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/mail"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
-type IInfoadminHandler interface {
-	Registerinfoadmin(c *gin.Context)
-	ListInfoadmins(c *gin.Context)
-	DeleteInfoadminByID(c *gin.Context)
+type IAdminHandler interface {
+	RegisterAdmin(c *gin.Context)
+	ListAdmins(c *gin.Context)
+	DeleteAdminByID(c *gin.Context)
 }
 
 // InfoAdminHandler
-type InfoadminHandler struct {
-	Service infoadmin.IInfoadminService
+type AdminHandler struct {
+	Service admin.IAdminService
 }
 
-func NewInfoAdminHandler(ser infoadmin.IInfoadminService) IInfoadminHandler {
-	return &InfoadminHandler{
+func NewAdminHandler(ser admin.IAdminService) IAdminHandler {
+	return &AdminHandler{
 		Service: ser,
 	}
 }
 
-func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
+func (ahandler AdminHandler) RegisterAdmin(c *gin.Context) {
 	input := &struct {
 		Firstname string `json:"firstname"`
 		Lastname  string `json:"lastname"`
@@ -42,10 +42,13 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 		Msg        string            `json:"msg"`
 		StatusCode int               `json:"status_code"`
 		Errors     map[string]string `json:"errors"`
-		Infoadmin  *model.Infoadmin  `json:"info_admin"`
+		Admin      *model.Admin      `json:"info_admin"`
 	}{
 		Errors: map[string]string{},
 	}
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+
 	if er := c.BindJSON(input); er == nil {
 		fail := false
 		if !form.MatchesPattern(input.Email, form.EmailRX) {
@@ -65,9 +68,9 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 			fail = true
 		}
 		if !fail {
-			ctx := c.Request.Context()
-			ctx = context.WithValue(ctx, "infoadmin_email", input.Email)
-			if admin, err := ihandler.Service.GetInfoadminByEmail(ctx); admin != nil && err == nil {
+
+			// ctx = context.WithValue(ctx, "infoadmin_email", input.Email)
+			if admin, err := ahandler.Service.GetAdminByEmail(ctx, input.Email); admin != nil && err == nil {
 				println(admin.ID, admin.Email, admin.Phone, admin.Password)
 				resp.Msg = "account with this email already exist."
 				c.JSON(http.StatusUnauthorized, resp)
@@ -81,7 +84,7 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 			random := "admin" //helper.GenerateRandomString(5, helper.CHARACTERS)
 			hashed, _ := helper.HashPassword(random)
 
-			admin := &model.Infoadmin{}
+			admin := &model.Admin{}
 			admin.Firstname = input.Firstname
 			admin.Lastname = input.Lastname
 			admin.Email = input.Email //
@@ -91,18 +94,27 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 			if success := mail.SendPasswordEmailSMTP([]string{admin.Email}, random, true, admin.Firstname+" "+admin.Lastname, c.Request.Host); success {
 				ctx = c.Request.Context()
 				ctx = context.WithValue(ctx, "info_admin", admin)
-				if admin, er = ihandler.Service.CreateInfoadmin(ctx); admin != nil && er == nil {
+				adminID, addressID, er := ahandler.Service.CreateAdmin(ctx, admin)
+				if admin != nil && er == nil {
 					resp.Msg = " Info admin  created succesfully!"
-					resp.Infoadmin = admin
-					c.JSON(http.StatusOK, resp)
+					resp.StatusCode = http.StatusOK
+					admin.ID = uint64(adminID)
+					admin.FieldAddress.ID = uint(addressID)
+					resp.Admin = admin
+					c.JSON(resp.StatusCode, resp)
 					return
 				} else {
-					if admin != nil && er != nil {
-						resp.Msg = er.Error()
+					if adminID == -1 {
+						resp.StatusCode = http.StatusUnauthorized
+						resp.Msg = translation.TranslateIt(er.Error())
+					} else if adminID == -2 {
+						resp.StatusCode = http.StatusInternalServerError
+						resp.Msg = translation.Translate(session.Lang, er.Error())
 					} else {
-						resp.Msg = "Internal server error!"
+						resp.StatusCode = http.StatusInternalServerError
+						resp.Msg = translation.Translate(session.Lang, "Internal server error, please try again later")
 					}
-					c.JSON(http.StatusInternalServerError, resp)
+					c.JSON(resp.StatusCode, resp)
 					return
 				}
 			} else {
@@ -115,14 +127,14 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 	c.JSON(http.StatusBadRequest, resp)
 }
 
-func (ihandler *InfoadminHandler) ListInfoadmins(c *gin.Context) {
+func (ahandler *AdminHandler) ListAdmins(c *gin.Context) {
 	ctx := c.Request.Context()
 	error_res := &struct {
 		Msg        string `json:"msg"`
 		StatusCode int    `json:"status_code"`
 	}{}
-	var infoadmins []*model.Infoadmin
-	infoadmins, er := ihandler.Service.GetInfoadmins(ctx)
+	var infoadmins []*model.Admin
+	infoadmins, er := ahandler.Service.GetAdmins(ctx, 0, 0)
 	if er != nil {
 		error_res.Msg = translation.TranslateIt("record  not found ")
 		error_res.StatusCode = http.StatusNotFound
@@ -132,7 +144,7 @@ func (ihandler *InfoadminHandler) ListInfoadmins(c *gin.Context) {
 	c.JSON(http.StatusOK, infoadmins)
 }
 
-func (ihandler *InfoadminHandler) DeleteInfoadminByID(c *gin.Context) {
+func (ahandler *AdminHandler) DeleteAdminByID(c *gin.Context) {
 	ctx := c.Request.Context()
 	res := &struct {
 		Msg        string            `json:"msg"`
@@ -149,8 +161,8 @@ func (ihandler *InfoadminHandler) DeleteInfoadminByID(c *gin.Context) {
 		c.JSON(res.StatusCode, res)
 		return
 	}
-	ctx = context.WithValue(ctx, "infoadmin_id", uint64(id))
-	status, er := ihandler.Service.DeleteInfoadminByID(ctx)
+	// ctx = context.WithValue(ctx, "admin_id", uint64(id))
+	status, er := ahandler.Service.DeleteAdminByID(ctx, uint64(id))
 	if er != nil || status != 0 {
 		if status == -1 {
 			res.StatusCode = http.StatusNotFound

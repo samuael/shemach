@@ -21,6 +21,11 @@ require (
 require (
 	github.com/d5/tengo/v2 v2.10.1 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
+	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.7.2 // indirect
+	github.com/Showmax/go-fqdn v1.0.0 // indirect
+	github.com/buger/goterm v1.0.4 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect

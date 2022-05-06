@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -55,7 +56,10 @@ func (otpSer *OtpService) Run() {
 
 				// Email Confirmation Service functionalities
 				etimestamp := time.Now().Unix() - int64(pendingEmailConfirmationsDuration*60)
-				otpSer.UserService.DeletePendingEmailConfirmation(uint64(etimestamp))
+				er = otpSer.UserService.DeletePendingEmailConfirmation(uint64(etimestamp))
+				if er != nil {
+					fmt.Printf("Deleting Pending Email In Confiramtions %v Before %d \n", er.Error(), etimestamp)
+				}
 			}
 		case mresp := <-otpSer.OTPResponse:
 			{

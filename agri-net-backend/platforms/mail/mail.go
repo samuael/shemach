@@ -47,16 +47,18 @@ var emailupdate = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Email Account Change </title>
+    <title> Email Account Confirmation </title>
 </head>
 <body>
-    <h1 style="background-color:#006699";color:#fff >  Shambel Registrar  </h1>
-		<p> Hi, According to your action of email change in the Shambel Registrar System this email is used to identify a user named {{.Fullname }} in the system .<br>
-		If you think that this email is sent by fault, confirm that by clicking on the link below.
-		<a href="{{.HOST}}/api/deactivate/?email={{.Email}}&password={{.Password}}" > Not Mine </a>
+    <h1 style="background-color:#006699";color:#fff > Agri-net Systems </h1>
+		<p> Hi {{.Fullname }}, According to your action in agri-net systems, this email is sent to confirm the email address.<br>
+		<p><b> Please Make Sure You confirm your email with is 3- Minutes.</b></p>
+		To Confirm your Email, click the link below
+		<a href="{{.HOST}}/api/account/confirm/?token={{.TOKEN}}" > Not Mine </a>
 		</p>
 	<hr>
-	<i> Shambel Drivers Training Institute Registrar System </i> 
+	<i> Agri-Net Systems </i>
+	<small> We Provide a reliable agricultural products exchange method </small>
 	<hr>
 	</body>
 </html>`
@@ -158,4 +160,31 @@ func SendEmailChangeSMTP(to []string, password, fullname, host string) bool {
 	return true
 }
 
-// func ConfirmUpdateEmailAccount()
+func ConfirmUpdateEmailAccount(to []string, token, fullname, host string) bool {
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587"
+	from := os.Getenv("EMAIL_ADDRESS")
+	auth := smtp.PlainAuth("", from, os.Getenv("EMAIL_PASSWORD"), smtpHost)
+	t, _ := template.New("email-update").Parse(emailupdate)
+	var body bytes.Buffer
+	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+	subject := " Email account Confirmation "
+	body.Write([]byte(fmt.Sprintf("Subject: %s \n%s\n\n", subject, mimeHeaders)))
+	t.Execute(&body, struct {
+		Email    string
+		HOST     string
+		Fullname string
+		Password string
+	}{
+		Fullname: fullname,
+		Email:    to[0],
+		HOST:     state.HOST,
+		Password: token,
+	})
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, body.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return true
+}

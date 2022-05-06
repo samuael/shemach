@@ -60,6 +60,7 @@ func Route(
 	router.PUT("/api/user/password", rules.Authenticated(), userhandler.ChangePassword)
 	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
+	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

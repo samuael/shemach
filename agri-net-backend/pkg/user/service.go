@@ -19,7 +19,9 @@ type IUserService interface {
 	// DeletePendingEmailConfirmation usess a positional argument
 	DeletePendingEmailConfirmation(timestamp uint64) error
 	// SaveEmailConfirmation ...
-	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) error
+	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) (int, error)
+	// UpdateUser used *model.User
+	UpdateUser(ctx context.Context, user *model.User) (int, error)
 }
 
 type UserService struct {
@@ -51,6 +53,9 @@ func (service *UserService) DeletePendingEmailConfirmation(timestamp uint64) err
 	return service.Repo.DeletePendingEmailConfirmation(timestamp)
 }
 
-func (service *UserService) SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) error {
+func (service *UserService) SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) (int, error) {
 	return service.Repo.SaveEmailConfirmation(ctx, emailc)
+}
+func (service *UserService) UpdateUser(ctx context.Context, user *model.User) (int, error) {
+	return service.Repo.UpdateUser(ctx, user)
 }

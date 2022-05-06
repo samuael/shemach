@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/mail"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
@@ -208,11 +210,11 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 	ctx := c.Request.Context()
 	session := ctx.Value("session").(*model.Session)
 	input := &struct {
-		Firstname string
-		Lastname  string
-		Email     string
-		Phone     string
-		Lang      string
+		Firstname string `json:"firstname"`
+		Lastname  string `json:"lastname"`
+		Email     string `json:"email"`
+		Phone     string `json:"phone"`
+		Lang      string `json:"lang"`
 	}{}
 	res := &struct {
 		Msg        string
@@ -233,6 +235,9 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 	user, _, status, er := uhandler.Service.GetUserByEmailOrID(ctx)
 	updated := false
 	if er != nil || status != state.STATUS_OK {
+		if er != nil {
+			println()
+		}
 		res.Msg = translation.TranslateIt("record not found")
 		res.StatusCode = http.StatusNotFound
 		c.JSON(res.StatusCode, res)
@@ -246,15 +251,14 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 		user.Lastname = input.Lastname
 		updated = true
 	}
-	// oldEmail := ""
-	if helper.MatchesPattern(input.Email, helper.EmailRX) && input.Email != user.Email {
-		// oldEmail = user.Email
-		user.Email = input.Email
-		updated = true
-	}
+
 	if helper.MatchesPattern(input.Phone, helper.PhoneRX) && input.Phone != user.Phone {
 		updated = true
 		user.Phone = input.Phone
+	}
+	if helper.MatchesPattern(input.Email, helper.EmailRX) && input.Email != user.Email {
+		// user.Email = input.Email
+		updated = true
 	}
 	if !updated {
 		res.StatusCode = http.StatusNotModified
@@ -262,8 +266,77 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 		c.JSON(res.StatusCode, res)
 		return
 	}
-	//
-	//   Pass this to the email confirmation
-	//
+	println(input.Email, user.Email)
+	if len(strings.Trim(input.Email, " ")) > 0 && helper.MatchesPattern(input.Email, helper.EmailRX) && (input.Email != user.Email) {
+		println("Email Changed")
+		emailInConfirmation := &model.EmailConfirmation{
+			UserID:       user.ID,
+			Email:        input.Email,
+			OldEmail:     user.Email,
+			CreatedAt:    uint64(time.Now().Unix()),
+			IsNewAccount: false,
+		}
+		status, err := uhandler.Service.SaveEmailConfirmation(ctx, emailInConfirmation)
+		if err != nil {
+			message := translation.TranslateIt("update was not succesful, please trya again later")
+			if status < 0 {
+				if status == -1 {
+					res.StatusCode = http.StatusNotFound
+				} else if status == -2 {
+					res.StatusCode = http.StatusConflict
+				}
+				message = translation.Translate(session.Lang, err.Error())
+			} else {
+				res.StatusCode = http.StatusNotModified
+			}
+			res.Msg = message
+			res.Errors["email"] = translation.Translate(session.Lang, err.Error())
+			c.JSON(res.StatusCode, res)
+			return
+		}
+		emailInConfirmationSession := &model.EmailConfirmationSession{
+			EmailConfirmation: emailInConfirmation,
+			StandardClaims:    jwt.StandardClaims{},
+		}
+		tokent, success := uhandler.Authenticator.SaveEmailConfirmationSession(emailInConfirmationSession)
+		if !success && tokent == "" {
+			message := translation.TranslateIt("internal problem, please trya again later")
+			println("Save Email Confirmation Session")
+			res.Msg = message
+			res.StatusCode = http.StatusInternalServerError
+			c.JSON(res.StatusCode, res)
+			return
+		}
+		println(" The Token :", tokent)
+		// Now I am gonna send the Confirmation Link and the token to e clicked by the email owner through his email.
+		success = mail.ConfirmUpdateEmailAccount([]string{input.Email}, tokent, user.Firstname, "127.0.0.1")
+		if !success {
+			println("Sending an Email ")
+			res.Msg = translation.TranslateIt("internal problem, please trya again later")
+			res.StatusCode = http.StatusInternalServerError
+			c.JSON(res.StatusCode, res)
+			return
+		}
+		updated = true
+	}
+	status, er = uhandler.Service.UpdateUser(ctx, user)
+	if (er != nil) || (status != state.STATUS_OK) {
+		print("Updating User ", er.Error())
+		if er != nil {
+			println(er.Error())
+		}
+		res.StatusCode = http.StatusInternalServerError
+		res.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.Translate(session.Lang, "user updated succesfuly")
+	c.JSON(res.StatusCode, res)
+}
 
+func (uhandler *UserHandler) ConfirmEmail(c *gin.Context) {
+	//
+	// ctx := c.Request.Context()
+	//
 }

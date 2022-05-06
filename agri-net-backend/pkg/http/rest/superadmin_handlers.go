@@ -49,6 +49,7 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 		Msg        string            `json:"msg"`
 		Errors     map[string]string `json:"errors"`
 		StatusCode int               `json:"status_code"`
+		User       *model.User       `json:"user,omitempty"`
 		Token      string            `json:"token,omitempty"`
 	}{
 		Errors: map[string]string{},
@@ -111,6 +112,7 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")
 	res.Msg = translation.TranslateIt("authenticated")
 	res.StatusCode = http.StatusOK
+	res.User = user
 	c.JSON(res.StatusCode, res)
 }
 
