@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/samuael/agri-net/agri-net-backend/api"
-	"github.com/samuael/agri-net/agri-net-backend/cmd/server/service/message_broadcast_service"
+	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
 )
 
@@ -60,6 +60,7 @@ func Route(
 	router.PUT("/api/user/password", rules.Authenticated(), userhandler.ChangePassword)
 	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
+	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{
