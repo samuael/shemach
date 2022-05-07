@@ -55,9 +55,9 @@ func (mainbh *MainBroadcastHub) Run() {
 				// ---------------------------------------------------------
 				message, status, er := mainbh.MessageService.SaveMessage(ctx)
 				if (status != state.STATUS_OK) || (er != nil) {
-					if er != nil {
-						println(er.Error())
-					}
+					// if er != nil {
+					// 	// println(er.Error())
+					// }
 				}
 				mainbh.BroadcastNewMessage(message)
 			}

@@ -39,13 +39,18 @@ func (repo *AdminRepo) CreateAdmin(ctx context.Context, admin *model.Admin) (int
 	if admin.FieldAddress == nil {
 		admin.FieldAddress = &model.Address{}
 	}
-	er := repo.DB.QueryRow(ctx, `select * from createAdminInstance($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+	er := repo.DB.QueryRow(ctx, `select * from createAdminInstance(cast($1 as varchar),cast($2 as varchar),cast( $3 as varchar),cast($4 as varchar),cast($5 as text) ,cast ($6 as char(3)) ,cast ($7 as int),
+	cast ($8 as varchar),cast ($9 as varchar) ,cast ($10 as varchar) ,cast ($11 as varchar) ,cast( $12 as varchar), cast ($13 as varchar),cast ($14 as varchar),cast($15 as varchar))`,
 		admin.Firstname, admin.Lastname, admin.Phone, admin.Email, admin.Password, admin.Lang, admin.CreatedBy,
 		admin.FieldAddress.Kebele, admin.FieldAddress.Woreda, admin.FieldAddress.City, admin.FieldAddress.Region, admin.FieldAddress.Zone,
 		admin.FieldAddress.UniqueAddressName, fmt.Sprint(admin.FieldAddress.Latitude), fmt.Sprint(admin.FieldAddress.Longitude),
-	).Scan((&adminID), &(addressID))
+	).Scan((&adminID))
 	if er != nil {
 		return adminID, addressID, er
+	}
+	era := repo.DB.QueryRow(ctx, "select address_id from admin where id=$1", admin.ID).Scan(&addressID)
+	if era == nil {
+		addressID = 0
 	}
 	if adminID < -1 {
 		return adminID, 0, errors.New("unauthorized admin instance creation")
