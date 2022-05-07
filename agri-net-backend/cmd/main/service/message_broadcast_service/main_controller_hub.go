@@ -55,9 +55,6 @@ func (mainbh *MainBroadcastHub) Run() {
 				// ---------------------------------------------------------
 				message, status, er := mainbh.MessageService.SaveMessage(ctx)
 				if (status != state.STATUS_OK) || (er != nil) {
-					// if er != nil {
-					// 	// println(er.Error())
-					// }
 				}
 				mainbh.BroadcastNewMessage(message)
 			}
@@ -67,7 +64,6 @@ func (mainbh *MainBroadcastHub) Run() {
 			}
 		case <-ticker.C:
 			{
-				// println("Ticking in the Handler")
 			}
 		}
 	}
@@ -102,7 +98,7 @@ func (mainbh *MainBroadcastHub) BroadcastNewMessage(mes *model.Message) {
 	data, er := json.Marshal(map[string]interface{}{"type": 1, "body": mes})
 	tm.Println(tm.Bold(tm.Color(string(data), tm.RED)))
 	tm.Clear()
-	tm.Println(tm.Bold(tm.Color(string("This Is Samuael adnew"), tm.RED)))
+	// tm.Println(tm.Bold(tm.Color(string("This Is Samuael adnew"), tm.RED)))
 	tm.Flush()
 	if er != nil || data == nil {
 		return

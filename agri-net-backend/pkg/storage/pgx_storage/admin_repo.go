@@ -31,7 +31,14 @@ func (repo *AdminRepo) GetAdminByEmail(ctx context.Context, email string) (*mode
 	if er != nil {
 		return nil, er
 	}
-	return admin.GetAdmin(), nil
+	madmin := admin.GetAdmin()
+	address := &model.Address{}
+	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where id=$1`, admin.FieldAddressRef).
+		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(address.Latitude), &(address.Zone), &(address.Longitude))
+	if ers == nil {
+		madmin.FieldAddress = address
+	}
+	return madmin, er
 }
 func (repo *AdminRepo) CreateAdmin(ctx context.Context, admin *model.Admin) (int, int, error) {
 	addressID := 0
@@ -66,8 +73,40 @@ func (repo *AdminRepo) CreateAdmin(ctx context.Context, admin *model.Admin) (int
 	return int(admin.ID), int(admin.FieldAddress.ID), nil
 }
 func (repo *AdminRepo) GetAdmins(ctx context.Context, offset, limit int) ([]*model.Admin, error) {
-	return nil, nil
+	admins := []*model.Admin{}
+	rows, ge := repo.DB.Query(ctx, `select id,firstname,lastname,phone,email,imageurl,created_at,password,lang,
+	merchants_created,stores_created,address_id,created_by from admin OFFSET $1 LIMIT $2`, offset, limit)
+	if ge != nil {
+		return admins, ge
+	}
+
+	for rows.Next() {
+		admin := &model.AdminNullable{}
+		er := rows.Scan(&(admin.ID), &(admin.Firstname), &(admin.Lastname), &(admin.Phone), &(admin.Email), &(admin.Imgurl), &(admin.CreatedAt), &(admin.Password), &(admin.Lang), &(admin.MerchantsCreated),
+			&(admin.StorsCreated), &(admin.FieldAddressRef), &(admin.CreatedBy),
+		)
+		if er != nil {
+			continue
+		}
+
+		adminM := admin.GetAdmin()
+		address := &model.Address{}
+		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where id=$1`, admin.FieldAddressRef).
+			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(address.Latitude), &(address.Zone), &(address.Longitude))
+		if ers == nil {
+			adminM.FieldAddress = address
+		} else {
+			println(ers.Error())
+		}
+		admins = append(admins, adminM)
+	}
+	return admins, nil
 }
 func (repo *AdminRepo) DeleteAdminByID(ctx context.Context, id uint64) (int, error) {
-	return 0, nil
+	status := 0
+	er := repo.DB.QueryRow(ctx, "select * from deleteadminById($1)", id).Scan(&status)
+	if er != nil {
+		return status, er
+	}
+	return status, nil
 }

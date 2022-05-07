@@ -68,8 +68,6 @@ func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 			fail = true
 		}
 		if !fail {
-
-			// ctx = context.WithValue(ctx, "infoadmin_email", input.Email)
 			if admin, err := ahandler.Service.GetAdminByEmail(ctx, input.Email); admin != nil && err == nil {
 				println(admin.ID, admin.Email, admin.Phone, admin.Password)
 				resp.Msg = "account with this email already exist."
@@ -90,15 +88,18 @@ func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 			admin.Lastname = input.Lastname
 			admin.Email = input.Email //
 			admin.CreatedAt = uint64(time.Now().Unix())
+			admin.CreatedBy = int(session.ID)
 			admin.Password = hashed
-			if admin.FieldAddress != nil {
-				admin.FieldAddress = input.Address
+			admin.FieldAddress = input.Address
+			admin.Lang = session.Lang
+			if admin.FieldAddress == nil {
+				admin.FieldAddress = &model.Address{}
 			}
 			// Send Email for the password if this doesn't work raise internal server error
 			if success := mail.SendPasswordEmailSMTP([]string{admin.Email}, random, true, admin.Firstname+" "+admin.Lastname, c.Request.Host); success {
 				ctx = c.Request.Context()
 				adminID, addressID, er := ahandler.Service.CreateAdmin(ctx, admin)
-				if admin != nil && er == nil {
+				if adminID > 0 && er == nil {
 					resp.Msg = "admin registered succesfully!"
 					resp.StatusCode = http.StatusOK
 					admin.ID = uint64(adminID)
@@ -109,11 +110,10 @@ func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 				} else {
 					if adminID == -1 {
 						resp.StatusCode = http.StatusUnauthorized
-						resp.Msg = translation.TranslateIt(er.Error())
+						resp.Msg = translation.Translate(session.Lang, "unauthorized access")
 					} else if adminID == -2 {
-						println(er.Error(), "   ERROR while Inserting Address  ")
 						resp.StatusCode = http.StatusInternalServerError
-						resp.Msg = translation.Translate(session.Lang, er.Error())
+						resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
 					} else {
 						println(er.Error(), "   ||  ")
 						resp.StatusCode = http.StatusInternalServerError
@@ -138,8 +138,16 @@ func (ahandler *AdminHandler) ListAdmins(c *gin.Context) {
 		Msg        string `json:"msg"`
 		StatusCode int    `json:"status_code"`
 	}{}
+	offset, er := strconv.Atoi(c.Query("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(c.Query("limit"))
+	if er != nil {
+		limit = offset + 20
+	}
 	var infoadmins []*model.Admin
-	infoadmins, er := ahandler.Service.GetAdmins(ctx, 0, 0)
+	infoadmins, er = ahandler.Service.GetAdmins(ctx, offset, limit)
 	if er != nil {
 		error_res.Msg = translation.TranslateIt("record  not found ")
 		error_res.StatusCode = http.StatusNotFound

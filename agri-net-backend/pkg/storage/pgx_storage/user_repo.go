@@ -84,9 +84,9 @@ func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
 	deleted := 0
 	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where created_at<$1", timestamp).Scan(&deleted)
 	if er != nil || deleted == 0 {
-		if er != nil {
-			println("ERROR:  ", er.Error())
-		}
+		// if er != nil {
+		// 	println("ERROR:  ", er.Error())
+		// }
 		return errors.New("no row deleted ")
 	}
 	return nil
