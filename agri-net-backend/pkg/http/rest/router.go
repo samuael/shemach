@@ -24,6 +24,7 @@ func Route(
 	messagehandler IMessageHandler,
 	infoadminhandler IInfoadminHandler,
 	userhandler IUserHandler,
+	adminhandler IAdminHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -61,6 +62,8 @@ func Route(
 	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
 	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
+
+	router.POST("/api/superadmin/admin/new/", rules.Authenticated(), rules.Authorized(), adminhandler.RegisterAdmin)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

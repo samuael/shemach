@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 	"time"
@@ -32,11 +31,12 @@ func NewAdminHandler(ser admin.IAdminService) IAdminHandler {
 	}
 }
 
-func (ahandler AdminHandler) RegisterAdmin(c *gin.Context) {
+func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 	input := &struct {
-		Firstname string `json:"firstname"`
-		Lastname  string `json:"lastname"`
-		Email     string `json:"email"`
+		Firstname string         `json:"firstname"`
+		Lastname  string         `json:"lastname"`
+		Email     string         `json:"email"`
+		Address   *model.Address `json:"address"`
 	}{}
 	resp := &struct {
 		Msg        string            `json:"msg"`
@@ -77,6 +77,7 @@ func (ahandler AdminHandler) RegisterAdmin(c *gin.Context) {
 				return
 			}
 			if er != nil {
+				println(er.Error())
 				resp.Msg = " Internal Server error "
 				c.JSON(http.StatusInternalServerError, resp)
 				return
@@ -90,13 +91,15 @@ func (ahandler AdminHandler) RegisterAdmin(c *gin.Context) {
 			admin.Email = input.Email //
 			admin.CreatedAt = uint64(time.Now().Unix())
 			admin.Password = hashed
+			if admin.FieldAddress != nil {
+				admin.FieldAddress = input.Address
+			}
 			// Send Email for the password if this doesn't work raise internal server error
 			if success := mail.SendPasswordEmailSMTP([]string{admin.Email}, random, true, admin.Firstname+" "+admin.Lastname, c.Request.Host); success {
 				ctx = c.Request.Context()
-				ctx = context.WithValue(ctx, "info_admin", admin)
 				adminID, addressID, er := ahandler.Service.CreateAdmin(ctx, admin)
 				if admin != nil && er == nil {
-					resp.Msg = " Info admin  created succesfully!"
+					resp.Msg = "admin registered succesfully!"
 					resp.StatusCode = http.StatusOK
 					admin.ID = uint64(adminID)
 					admin.FieldAddress.ID = uint(addressID)
@@ -108,9 +111,11 @@ func (ahandler AdminHandler) RegisterAdmin(c *gin.Context) {
 						resp.StatusCode = http.StatusUnauthorized
 						resp.Msg = translation.TranslateIt(er.Error())
 					} else if adminID == -2 {
+						println(er.Error(), "   ERROR while Inserting Address  ")
 						resp.StatusCode = http.StatusInternalServerError
 						resp.Msg = translation.Translate(session.Lang, er.Error())
 					} else {
+						println(er.Error(), "   ||  ")
 						resp.StatusCode = http.StatusInternalServerError
 						resp.Msg = translation.Translate(session.Lang, "Internal server error, please try again later")
 					}

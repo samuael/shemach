@@ -50,6 +50,7 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 		Errors     map[string]string `json:"errors"`
 		StatusCode int               `json:"status_code"`
 		User       *model.User       `json:"user,omitempty"`
+		Role string `json:"role,omitempty"`
 		Token      string            `json:"token,omitempty"`
 	}{
 		Errors: map[string]string{},
@@ -101,6 +102,7 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 		Email: user.Email,
 		Lang:  user.Lang,
 	}
+	var duser interface{}
 	if role == 1 {
 		session.Role = state.SUPERADMIN
 	} else if role == 2 {

@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
@@ -71,6 +72,10 @@ func main() {
 	broadcastHub := message_broadcast_service.NewMainBroadcastHub(messageservice)
 	producthandler := rest.NewProductHandler(productservice, broadcastHub)
 
+	adminrepo := pgx_storage.NewAdminRepo(conn)
+	adminservice := admin.NewAdminService(adminrepo)
+	adminhandler := rest.NewAdminHandler(adminservice)
+
 	userhandler := rest.NewUserHandler(userservice, authenticator)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
@@ -83,5 +88,6 @@ func main() {
 		superadminhandler, producthandler,
 		communicationHandler, messagehandler,
 		infoadminhandler,
-		userhandler).Run(":8080")
+		userhandler,
+		adminhandler).Run(":8080")
 }

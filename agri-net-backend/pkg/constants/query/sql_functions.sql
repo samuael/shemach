@@ -334,7 +334,9 @@ $$ language plpgsql;
 
 
 -- This method returns two values.
-create or replace function  createAdminInstance(ifirstname varchar,ilastname varchar,iphone varchar,iemail varchar,ipassword text,ilang char(3),icreated_by integer, ikebele varchar,iworeda varchar,icity varchar,iregion varchar, izone varchar,iunique_name varchar ,ilatitude varchar,ilongitude varchar) returns RECORD as 
+create or replace function  createAdminInstance(ifirstname varchar,ilastname varchar,iphone varchar,iemail varchar,ipassword text,ilang char(3),icreated_by integer, 
+ikebele varchar,iworeda varchar,icity varchar,iregion varchar, izone varchar,
+iunique_name varchar ,ilatitude varchar,ilongitude varchar) returns integer as 
 $$
     declare
         addressid integer;
@@ -344,26 +346,24 @@ $$
     begin
         select id into thesuperadminid from superadmin where id=icreated_by;
         if not found then
-            select -1,0 into rec;
-            return rec;
+            return -1;
         end if;
-
-        insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
-        values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
-        if not found then
-            select -2,0 into rec;
-            return rec;
-        end if;
+        
+        if ikebele <> '' or iworeda<>'' or icity <>'' or iregion<>'' or izone<>'' or iunique_name<>'' or ilatitude <> '' or ilongitude <>'' then
+                    insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
+            values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
+            if not found then
+                return -2;
+            end if;
+        end if;  
 
         insert into admin( firstname,lastname,phone,email,password,lang,created_by, address_id)
         values(ifirstname ,ilastname ,iphone ,iemail,ipassword ,ilang,icreated_by,addressid) returning id into adminid;
         if not found then
             rollback;
-            select -3,0 into rec;
-            return rec;
+            return -3;
         end if;
-        select adminid, addressid into rec;
-        return rec;
+        return adminid;
     end;
 $$
 language plpgsql;
