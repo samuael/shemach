@@ -69,7 +69,7 @@ class AuthProvider {
           scheme: "http",
           host: StaticDataStore.HOST,
           port: StaticDataStore.PORT,
-          path: "/api/login/",
+          path: "/api/login",
         ),
         body: jsonEncode(
           {
@@ -80,7 +80,7 @@ class AuthProvider {
         headers: {"Content-Type": "application/json"},
       );
 
-      print(response.headers);
+      print("${response.statusCode} DD:");
       if (response.statusCode == 200) {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
         if (body["success"] == true) {

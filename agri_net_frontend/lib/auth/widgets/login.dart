@@ -121,6 +121,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                           color: Theme.of(context).primaryColor,
                           width: 20,
                           height: 20,
+                          errorBuilder: (context, stg, stgh) {
+                            return Icon(Icons.security,
+                                color: Theme.of(context).primaryColor);
+                          },
                         ),
                   onTap: () {
                     setState(() {
