@@ -49,6 +49,8 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 		Msg        string            `json:"msg"`
 		Errors     map[string]string `json:"errors"`
 		StatusCode int               `json:"status_code"`
+		User       *model.User       `json:"user,omitempty"`
+		Role       string            `json:"role,omitempty"`
 		Token      string            `json:"token,omitempty"`
 	}{
 		Errors: map[string]string{},
@@ -100,17 +102,22 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 		Email: user.Email,
 		Lang:  user.Lang,
 	}
+	// var duser interface{}
 	if role == 1 {
 		session.Role = state.SUPERADMIN
+		res.Role = state.SUPERADMIN
 	} else if role == 2 {
 		session.Role = state.INFO_ADMIN
+		res.Role = state.INFO_ADMIN
 	} else {
 		session.Role = state.ADMIN
+		res.Role = state.ADMIN
 	}
 	suhandler.Authenticator.SaveSession(c.Writer, session)
 	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")
 	res.Msg = translation.TranslateIt("authenticated")
 	res.StatusCode = http.StatusOK
+	res.User = user
 	c.JSON(res.StatusCode, res)
 }
 

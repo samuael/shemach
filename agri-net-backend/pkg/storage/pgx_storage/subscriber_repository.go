@@ -98,7 +98,6 @@ func (repo *SubscriberRepo) GetPendingRegistrationSubscriptionByPhone(ctx contex
 	subscriber := &model.TempoSubscriber{}
 	if er := repo.DB.QueryRow(ctx, "select id,fullname,Phone,lang,role,confirmation,unix,trials from selectTempoSubscriberWithPhoneAndUpdatedTrials($1)", phone).
 		Scan(&(subscriber.ID), &(subscriber.Fullname), &(subscriber.Phone), &(subscriber.Lang), &(subscriber.Role), &(subscriber.ConfirmationCode), &(subscriber.Unix), &(subscriber.Trials)); er != nil {
-		println(er.Error())
 		return subscriber, state.STATUS_DBQUERY_ERROR, er
 	}
 	return subscriber, state.STATUS_OK, nil

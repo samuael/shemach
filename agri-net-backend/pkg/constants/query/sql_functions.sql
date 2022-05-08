@@ -281,6 +281,29 @@ $$
     end;
 $$ language plpgsql;
 
+create or replace function deleteadminById(did integer) returns integer as 
+$$
+    declare
+        statusCode integer;
+        theid integer;
+    begin
+        select id into theid from admin where id=did;
+        if not found then
+            return -1;
+        end if;
+
+        with rows as (
+            delete from admin where id=did returning id
+        )
+        select count(*) into theid from rows;
+        if not found then
+            return -2;
+        else 
+            return 0;
+        end if;
+    end;
+$$ language plpgsql;
+
 
 create or replace function insertEmailInConfirmation(iuserid integer, inewemail varchar, inewaccount boolean, ioldemail varchar) returns integer as 
 $$
@@ -331,3 +354,39 @@ $$
         return 0;
     end;
 $$ language plpgsql;
+
+
+-- This method returns two values.
+create or replace function  createAdminInstance(ifirstname varchar,ilastname varchar,iphone varchar,iemail varchar,ipassword text,ilang char(3),icreated_by integer, 
+ikebele varchar,iworeda varchar,icity varchar,iregion varchar, izone varchar,
+iunique_name varchar ,ilatitude varchar,ilongitude varchar) returns integer as 
+$$
+    declare
+        addressid integer;
+        adminid integer;
+        thesuperadminid integer;
+        rec RECORD;
+    begin
+        select id into thesuperadminid from superadmin where id=icreated_by;
+        if not found then
+            return -1;
+        end if;
+        select address_id into addressid from address where kebele=ikebele and woreda=iworeda and  city=icity and  region = iregion and zone=izone and  unique_name=iunique_name and latitude=ilatitude and longitude=ilongitude;
+        if not found and ikebele <> '' or iworeda<>'' or icity <>'' or iregion<>'' or izone<>'' or iunique_name<>'' or ilatitude <> '' or ilongitude <>'' then
+                    insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
+            values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
+            if not found then
+                return -2;
+            end if;
+        end if;  
+
+        insert into admin( firstname,lastname,phone,email,password,lang,created_by, address_id)
+        values(ifirstname ,ilastname ,iphone ,iemail,ipassword ,ilang,icreated_by,addressid) returning id into adminid;
+        if not found then
+            rollback;
+            return -3;
+        end if;
+        return adminid;
+    end;
+$$
+language plpgsql;

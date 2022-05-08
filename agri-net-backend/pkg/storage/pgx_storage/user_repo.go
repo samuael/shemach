@@ -3,6 +3,7 @@ package pgx_storage
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
@@ -20,6 +21,7 @@ func NewUserRepo(db *pgxpool.Pool) user.IUserRepo {
 	}
 }
 
+// GetUserByEmailOrID ...
 func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User, role int, status int, ers error) {
 	id, ok := ctx.Value("user_id").(uint64)
 	if !ok {
@@ -35,6 +37,7 @@ func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User,
 	role = 0
 	er := repo.DB.QueryRow(ctx, "select * from getTheRoleOfUserByIdOrEmail( $1,$2);", id, email).Scan(&role)
 	if er != nil {
+		println(er.Error())
 		return nil, 0, state.STATUS_DBQUERY_ERROR, er
 	}
 	user = &model.User{}
@@ -79,15 +82,43 @@ func (repo *UserRepo) ChangeImageUrl(ctx context.Context) error {
 // DeletePedingEmailConfirmation
 func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
 	deleted := 0
-	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where createdat >$1", timestamp).Scan(&deleted)
+	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where created_at<$1", timestamp).Scan(&deleted)
 	if er != nil || deleted == 0 {
+		// if er != nil {
+		// 	println("ERROR:  ", er.Error())
+		// }
 		return errors.New("no row deleted ")
 	}
 	return nil
 }
 
 // SaveEmailConfirmation
-func (repo *UserRepo) SaveEmailConfirmation(ctx context.Context, ec *model.EmailConfirmation) error {
-	er := repo.DB.QueryRow(ctx, "select * from insertEmailInConfirmation($1, $2,$3,$4)", ec.UserID, ec.Email, ec.IsNewAccount, ec.OldEmail).Scan(&ec.ID)
-	return er
+func (repo *UserRepo) SaveEmailConfirmation(ctx context.Context, ec *model.EmailConfirmation) (int, error) {
+	println(ec.UserID, ec.Email, ec.IsNewAccount, ec.OldEmail)
+	did := 0
+	er := repo.DB.QueryRow(ctx, "select * from insertEmailInConfirmation($1, $2,$3,$4)", ec.UserID, ec.Email, ec.IsNewAccount, ec.OldEmail).Scan(&did)
+	if er != nil {
+		if strings.Contains(er.Error(), "duplicate key value violates unique constrain") {
+			return state.STATUS_RECORD_NOT_FOUND, errors.New("email with same account is in confirmation")
+		} else if strings.Contains(er.Error(), "failed to connect to ") {
+			return state.STATUS_DBQUERY_ERROR, errors.New("internal database problem, please try again later")
+		}
+		return state.STATUS_DBQUERY_ERROR, er
+	} else if did == -1 {
+		return did, errors.New("user with this id doesn't exist")
+	} else if did == -2 {
+		return did, errors.New("invalid")
+	}
+	ec.ID = uint64(did)
+	return did, nil
+}
+
+func (repo *UserRepo) UpdateUser(ctx context.Context, user *model.User) (int, error) {
+	er := repo.DB.QueryRow(ctx, "UPDATE users set firstname=$1,lastname=$2,phone=$3, email=$4, lang=$5 where id=$6 returning id", user.Firstname, user.Lastname, user.Phone, user.Email, user.Lang, user.ID).Scan(&(user.ID))
+	if er != nil {
+		return state.STATUS_DBQUERY_ERROR, er
+	} else if user.ID == 0 {
+		return state.STATUS_NO_RECORD_UPDATED, errors.New("user instance was not updated")
+	}
+	return state.STATUS_OK, nil
 }

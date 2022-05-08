@@ -24,6 +24,7 @@ func Route(
 	messagehandler IMessageHandler,
 	infoadminhandler IInfoadminHandler,
 	userhandler IUserHandler,
+	adminhandler IAdminHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -51,7 +52,7 @@ func Route(
 	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
 
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
-	router.POST("/api/infoadmin/new", rules.Authenticated(), infoadminhandler.Registerinfoadmin)
+	router.POST("/api/superadmin/infoadmin/new", rules.Authenticated(), rules.Authorized(), infoadminhandler.Registerinfoadmin)
 	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 	router.GET("/api/infoadmins", infoadminhandler.ListInfoadmins)
 	router.DELETE("/api/superadmin/infoadmin", infoadminhandler.DeleteInfoadminByID)
@@ -60,6 +61,11 @@ func Route(
 	router.PUT("/api/user/password", rules.Authenticated(), userhandler.ChangePassword)
 	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
+	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
+
+	router.POST("/api/superadmin/admin/new/", rules.Authenticated(), rules.Authorized(), adminhandler.RegisterAdmin)
+	router.GET("/api/admins", rules.Authenticated(), adminhandler.ListAdmins)
+	router.DELETE("/api/superadmin/admin", rules.Authenticated(), rules.Authorized(), adminhandler.DeleteAdminByID)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

@@ -48,7 +48,7 @@ func (m rules) Authenticated() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		ctx, _ = context.WithDeadline(ctx, time.Now().Add(time.Second*2))
+		ctx, _ = context.WithDeadline(ctx, time.Now().Add(time.Second*5))
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}

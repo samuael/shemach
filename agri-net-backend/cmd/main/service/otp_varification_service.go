@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	tm "github.com/buger/goterm"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/subscriber"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
@@ -40,30 +41,33 @@ func (otpSer *OtpService) Run() {
 	if er != nil {
 		pendingConfirmationsDuration = 10
 	}
+	counter := 0
 	for {
 		select {
 		case <-ticker.C:
 			{
+				counter++
+				tm.Print(tm.Bold(tm.Color(string("|"), tm.GREEN)))
+				if counter%10 == 0 {
+					tm.Println()
+				}
+				tm.Clear()
 				timestamp := time.Now().Unix() - int64(pendingConfirmationsDuration*60)
 				deletedConfirmationMessages, er := otpSer.SubscriberService.RemoveExpiredTempoSubscription(uint64(timestamp))
 				otpSer.SubscriberService.DeleteTempoLoginSubscriber(uint64(timestamp))
 				if er != nil {
-					println(er.Error())
 					continue
 				}
 				otpSer.NumberOfOtpActiveConfirmations -= uint(deletedConfirmationMessages)
 
 				// Email Confirmation Service functionalities
 				etimestamp := time.Now().Unix() - int64(pendingEmailConfirmationsDuration*60)
-				otpSer.UserService.DeletePendingEmailConfirmation(uint64(etimestamp))
+				er = otpSer.UserService.DeletePendingEmailConfirmation(uint64(etimestamp))
 			}
 		case mresp := <-otpSer.OTPResponse:
 			{
-				val, er := strconv.Atoi(mresp.RemainingSMS)
+				val, _ := strconv.Atoi(mresp.RemainingSMS)
 				otpSer.NumberOfOtpMessagesLeft = uint(val)
-				if er != nil {
-					println("Error : " + er.Error())
-				}
 			}
 
 		}

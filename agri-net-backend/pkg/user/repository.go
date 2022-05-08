@@ -12,5 +12,6 @@ type IUserRepo interface {
 	GetImageUrl(ctx context.Context) string
 	ChangeImageUrl(ctx context.Context) error
 	DeletePendingEmailConfirmation(timestamp uint64) error
-	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) error
+	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) (int, error)
+	UpdateUser(ctx context.Context, user *model.User) (int, error)
 }
