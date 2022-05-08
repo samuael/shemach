@@ -15,24 +15,24 @@ class prodcutService {
   }
 
   create(data) {
-    return http.post("/tutorials", data);
+    return http.post("/superadmin/product/new", data);
   }
 
   update(id, data) {
-    return http.put(`/tutorials/${id}`, data);
+    return http.put(`/infoadmin/product/${id}`, data);
   }
 
   delete(id) {
-    return http.delete(`/tutorials/${id}`);
+    return http.delete(`/products/${id}`);
 
   }
 
   deleteAll() {
-    return http.delete(`/tutorials`);
+    return http.delete(`/products`);
   }
 
   findByTitle(title) {
-    return http.get(`/tutorials?title=${title}`);
+    return http.get(`/product/search?title=${title}`);
   }
 }
 
