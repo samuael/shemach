@@ -11,4 +11,5 @@ type IInfoadminRepo interface {
 	CreateInfoadmin(ctx context.Context) (*model.Infoadmin, error)
 	GetInfoadmins(ctx context.Context) ([]*model.Infoadmin, error)
 	DeleteInfoadminByID(ctx context.Context) (int, error)
+	GetInfoadminByID(ctx context.Context, id uint64) (*model.Infoadmin, error)
 }

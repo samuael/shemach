@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
@@ -31,12 +32,19 @@ func (repo *AdminRepo) GetAdminByEmail(ctx context.Context, email string) (*mode
 	if er != nil {
 		return nil, er
 	}
+
+	latitude := ""
+	longitude := ""
 	madmin := admin.GetAdmin()
 	address := &model.Address{}
-	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where id=$1`, admin.FieldAddressRef).
-		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(address.Latitude), &(address.Zone), &(address.Longitude))
+	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, admin.FieldAddressRef).
+		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
 	if ers == nil {
+		address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+		address.Longitude, _ = strconv.ParseFloat(longitude, 64)
 		madmin.FieldAddress = address
+	} else {
+		println(ers.Error())
 	}
 	return madmin, er
 }
@@ -89,11 +97,15 @@ func (repo *AdminRepo) GetAdmins(ctx context.Context, offset, limit int) ([]*mod
 			continue
 		}
 
+		latitude := ""
+		longitude := ""
 		adminM := admin.GetAdmin()
 		address := &model.Address{}
-		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where id=$1`, admin.FieldAddressRef).
-			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(address.Latitude), &(address.Zone), &(address.Longitude))
+		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, admin.FieldAddressRef).
+			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
 		if ers == nil {
+			address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+			address.Longitude, _ = strconv.ParseFloat(longitude, 64)
 			adminM.FieldAddress = address
 		} else {
 			println(ers.Error())
@@ -109,4 +121,32 @@ func (repo *AdminRepo) DeleteAdminByID(ctx context.Context, id uint64) (int, err
 		return status, er
 	}
 	return status, nil
+}
+
+func (repo *AdminRepo) GetAdminByID(ctx context.Context, id uint64) (*model.Admin, error) {
+	admin := &model.AdminNullable{}
+
+	er := repo.DB.QueryRow(ctx, `select id,firstname,lastname,phone,email,imageurl,created_at,password,lang,merchants_created,
+	stores_created,address_id,created_by from admin where id=$1`, id).
+		Scan(&(admin.ID), &(admin.Firstname), &(admin.Lastname), &(admin.Phone), &(admin.Email), &(admin.Imgurl), &(admin.CreatedAt), &(admin.Password), &(admin.Lang), &(admin.MerchantsCreated),
+			&(admin.StorsCreated), &(admin.FieldAddressRef), &(admin.CreatedBy),
+		)
+	if er != nil {
+		println(er.Error())
+		return nil, er
+	}
+	madmin := admin.GetAdmin()
+	address := &model.Address{}
+	latitude := ""
+	longitude := ""
+	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, admin.FieldAddressRef).
+		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+	if ers == nil {
+		address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+		address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+		madmin.FieldAddress = address
+	} else {
+		println(ers.Error())
+	}
+	return madmin, er
 }

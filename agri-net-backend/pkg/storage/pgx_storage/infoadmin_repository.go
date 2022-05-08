@@ -65,3 +65,15 @@ func (repo *InfoadminRepo) DeleteInfoadminByID(ctx context.Context) (int, error)
 	}
 	return status, nil
 }
+
+func (repo *InfoadminRepo) GetInfoadminByID(ctx context.Context, id uint64) (*model.Infoadmin, error) {
+	admin := &model.Infoadmin{}
+	er := repo.DB.QueryRow(ctx, `select id,firstname ,lastname ,phone ,email ,imageurl ,created_at ,password, messages_count, created_by from infoadmin where id=$1`, id).Scan(
+		&(admin.ID), &(admin.Firstname), &(admin.Lastname), &(admin.Phone), &(admin.Email), &(admin.Imgurl), &(admin.CreatedAt), &(admin.Password), &(admin.BroadcastedMessagesCount), &(admin.Createdby),
+	)
+	if er != nil {
+		println(er.Error())
+		return admin, er
+	}
+	return admin, nil
+}

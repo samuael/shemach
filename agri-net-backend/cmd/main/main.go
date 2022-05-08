@@ -9,6 +9,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
@@ -76,6 +77,10 @@ func main() {
 	adminservice := admin.NewAdminService(adminrepo)
 	adminhandler := rest.NewAdminHandler(adminservice)
 
+	agentrepo := pgx_storage.NewAgentRepo(conn)
+	agentservice := agent.NewAgentService(agentrepo)
+	agenthandler := rest.NewAgentHandler(agentservice, userservice)
+
 	userhandler := rest.NewUserHandler(userservice, authenticator)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
@@ -89,5 +94,6 @@ func main() {
 		communicationHandler, messagehandler,
 		infoadminhandler,
 		userhandler,
-		adminhandler).Run(":8080")
+		adminhandler,
+		agenthandler).Run(":8080")
 }

@@ -14,4 +14,6 @@ type IUserRepo interface {
 	DeletePendingEmailConfirmation(timestamp uint64) error
 	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) (int, error)
 	UpdateUser(ctx context.Context, user *model.User) (int, error)
+	GetUserByPhone(ctx context.Context, phone string) (user *model.User, role int, status int, er error)
+	RegisterTempoCXP(ctx context.Context, tempo *model.TempoCXP) error
 }

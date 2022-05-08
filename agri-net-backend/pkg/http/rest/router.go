@@ -25,6 +25,7 @@ func Route(
 	infoadminhandler IInfoadminHandler,
 	userhandler IUserHandler,
 	adminhandler IAdminHandler,
+	agenthandler IAgentHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -34,6 +35,7 @@ func Route(
 		AllowCredentials: true,
 	}))
 
+	// subscriber related endpoints
 	router.POST("/api/info/register", subscriberhandler.RegisterSubscriber)
 	router.POST("/api/subscription/registration/confirm", subscriberhandler.ConfirmRegistrationSubscription)
 	router.POST("/api/subscription/login", subscriberhandler.SubscriberLoginWithPhone)
@@ -41,6 +43,7 @@ func Route(
 	// -------------------------------------------------------------------------------
 	router.POST("/api/login", superadminhandler.AdminsLogin)
 
+	// product related end points
 	router.POST("/api/superadmin/product/new", rules.Authenticated(), rules.Authorized(), producthandler.CreateProductInstance)
 	router.GET("/api/product", producthandler.GetProductByID)
 	router.GET("/api/products", producthandler.GetProducts)
@@ -48,14 +51,19 @@ func Route(
 	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
 	router.GET("/api/product/search", producthandler.SearchProduct)
 
+	// web socket end points
 	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
 	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
 
+	// message related end points
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
+
+	// infoadmin related routes
 	router.POST("/api/superadmin/infoadmin/new", rules.Authenticated(), rules.Authorized(), infoadminhandler.Registerinfoadmin)
 	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 	router.GET("/api/infoadmins", infoadminhandler.ListInfoadmins)
 	router.DELETE("/api/superadmin/infoadmin", infoadminhandler.DeleteInfoadminByID)
+	router.GET("/api/infoadmin", rules.Authenticated(), infoadminhandler.GetInfoadminByID)
 
 	// user realted methods
 	router.PUT("/api/user/password", rules.Authenticated(), userhandler.ChangePassword)
@@ -63,9 +71,16 @@ func Route(
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
 	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
 
+	// admin related routes
 	router.POST("/api/superadmin/admin/new/", rules.Authenticated(), rules.Authorized(), adminhandler.RegisterAdmin)
 	router.GET("/api/admins", rules.Authenticated(), adminhandler.ListAdmins)
 	router.DELETE("/api/superadmin/admin", rules.Authenticated(), rules.Authorized(), adminhandler.DeleteAdminByID)
+	router.GET("/api/admin", rules.Authenticated(), rules.Authorized(), adminhandler.GetAdminByID)
+
+	// agents related enpoints
+	router.POST("/api/admin/agent/new", rules.Authenticated(), rules.Authorized(), agenthandler.RegisterAgent)
+
+	// merchants related endpoints
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

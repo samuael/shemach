@@ -227,6 +227,50 @@ $$
         if found then
             return 2;
         end if;
+        select id into theid from admin where id=userid or email=iemail;
+        if found then
+            return 3;
+        end if;
+        select id into theid from merchant where id=userid or email=iemail;
+        if found then
+            return 4;
+        end if;
+        select id into theid from agent where id=userid or email=iemail;
+        if found then
+            return 5;
+        end if;
+
+        return 0;
+    end;
+$$ language plpgsql;
+
+
+-- getTheRoleOfUserByPhone
+create or replace function getTheRoleOfUserByPhone( iphone varchar)  returns integer as 
+$$
+    declare
+        theid varchar;
+    begin
+        select id into theid from superadmin where phone=iphone;
+        if found then
+            return 1;
+        end if;
+        select id into theid from infoadmin where phone=iphone;
+        if found then
+            return 2;
+        end if;
+        select id into theid from admin where phone=iphone;
+        if found then
+            return 3;
+        end if;
+        select id into theid from merchant where phone=iphone;
+        if found then
+            return 4;
+        end if;
+        select id into theid from agent where phone=iphone;
+        if found then
+            return 5;
+        end if;
         return 0;
     end;
 $$ language plpgsql;
@@ -387,6 +431,40 @@ $$
             return -3;
         end if;
         return adminid;
+    end;
+$$
+language plpgsql;
+
+
+-- createAgent
+create or replace function createAgent( ifirstname varchar,ilastname varchar,iphone varchar,iemail varchar,ipassword text,ilang char(3), iregistered_by integer,
+ikebele varchar,iworeda varchar,icity varchar,iregion varchar, izone varchar, iunique_name varchar ,ilatitude varchar,ilongitude varchar ) returns integer as 
+$$
+    declare
+        addressid integer;
+        agentid integer;
+        theadminid integer;
+    begin
+        select id into theadminid from admin where id=icreated_by;
+        if not found then
+            return -1;
+        end if;
+        select address_id into addressid from address where kebele=ikebele and woreda=iworeda and  city=icity and  region = iregion and zone=izone and  unique_name=iunique_name and latitude=ilatitude and longitude=ilongitude;
+        if not found and ikebele <> '' or iworeda<>'' or icity <>'' or iregion<>'' or izone<>'' or iunique_name<>'' or ilatitude <> '' or ilongitude <>'' then
+                    insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
+            values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
+            if not found then
+                return -2;
+            end if;
+        end if;  
+
+        insert into admin( firstname,lastname,phone,email,password,lang,created_by, field_address_ref)
+        values(ifirstname ,ilastname ,iphone ,iemail,ipassword ,ilang,icreated_by,addressid) returning id into agentid;
+        if not found then
+            rollback;
+            return -3;
+        end if;
+        return agentid;
     end;
 $$
 language plpgsql;

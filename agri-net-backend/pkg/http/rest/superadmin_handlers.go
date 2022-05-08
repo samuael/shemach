@@ -109,9 +109,15 @@ func (suhandler *SuperadminHandler) AdminsLogin(c *gin.Context) {
 	} else if role == 2 {
 		session.Role = state.INFO_ADMIN
 		res.Role = state.INFO_ADMIN
-	} else {
+	} else if role == 3 {
 		session.Role = state.ADMIN
 		res.Role = state.ADMIN
+	} else if role == 4 {
+		session.Role = state.MERCHANT
+		res.Role = state.MERCHANT
+	} else if role == 5 {
+		session.Role = state.AGENT
+		res.Role = state.AGENT
 	}
 	suhandler.Authenticator.SaveSession(c.Writer, session)
 	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")

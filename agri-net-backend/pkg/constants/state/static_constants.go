@@ -22,19 +22,23 @@ const (
 	// SUPERADMIN
 	SUBSCRIBER = "subscriber"
 	// ADMIN ...
-	ADMIN      = "admin"
+	ADMIN = "admin"
 	// INFO_ADMIN = "infoadmin"
 	INFO_ADMIN = "infoadmin"
-	// SECRETARY ...
-	SECRETARY = "secretary"
-	// STUDENT
-	STUDENT = "student"
-	// ROUND
-	ROUND = "round"
-	// CATEGORY
-	CATEGORY = "category"
+	// MERCHANT ...
+	MERCHANT = "merchant"
+	// AGENT
+	AGENT = "agent"
+
+	// // ROUND
+	// ROUND = "round"
+	// // CATEGORY
+	// CATEGORY = "category"
 	// HOST
 	HOST = "http://192.168.1.7:8080"
+
+	AGENT_ROLE_INT    = 0
+	MERCHANT_ROLE_INT = 1
 )
 
 const (
