@@ -9,10 +9,13 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/dictionary"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
@@ -76,7 +79,19 @@ func main() {
 	adminservice := admin.NewAdminService(adminrepo)
 	adminhandler := rest.NewAdminHandler(adminservice)
 
-	userhandler := rest.NewUserHandler(userservice, authenticator)
+	agentrepo := pgx_storage.NewAgentRepo(conn)
+	agentservice := agent.NewAgentService(agentrepo)
+	agenthandler := rest.NewAgentHandler(agentservice, userservice)
+
+	merchantrepo := pgx_storage.NewMerchantRepo(conn)
+	merchantservice := merchant.NewMerchantService(merchantrepo)
+	merchanthandler := rest.NewMerchantHandler(merchantservice, userservice)
+
+	dictionaryrepo := pgx_storage.NewDictionaryRepo(conn)
+	dictionaryservice := dictionary.NewDictionaryService(dictionaryrepo)
+	dictionaryhandler := rest.NewDictionaryHandler(dictionaryservice)
+
+	userhandler := rest.NewUserHandler(templates, userservice, authenticator)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
 		subscriberService,
@@ -89,5 +104,9 @@ func main() {
 		communicationHandler, messagehandler,
 		infoadminhandler,
 		userhandler,
-		adminhandler).Run(":8080")
+		adminhandler,
+		agenthandler,
+		dictionaryhandler,
+		merchanthandler,
+	).Run(":8080")
 }

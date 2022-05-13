@@ -16,6 +16,8 @@ type IAdminService interface {
 	GetAdmins(ctx context.Context, offset, limit int) ([]*model.Admin, error)
 	// DeleteAdminByID
 	DeleteAdminByID(ctx context.Context, id uint64) (int, error)
+	// GetAdminByID ...
+	GetAdminByID(ctx context.Context, id uint64) (*model.Admin, error)
 }
 
 // AdminService ... admin service.
@@ -47,4 +49,7 @@ func (service *AdminService) GetAdmins(ctx context.Context, offset, limit int) (
 // DeleteAdminByID
 func (service *AdminService) DeleteAdminByID(ctx context.Context, id uint64) (int, error) {
 	return service.Repo.DeleteAdminByID(ctx, id)
+}
+func (service *AdminService) GetAdminByID(ctx context.Context, id uint64) (*model.Admin, error) {
+	return service.Repo.GetAdminByID(ctx, id)
 }

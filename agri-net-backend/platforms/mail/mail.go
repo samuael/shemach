@@ -22,7 +22,7 @@ var dpassword = `<!DOCTYPE html>
 	Forgot Password {{end}}</title>
 </head>
 <body>
-    <h1 style="background-color:#006699";color:#fff >  Agri-Net  </h1>
+    <h1 style="background-color:#00FF00";color:#fff >  Agri-Net  </h1>
     {{if .NewPassword}}
 		<p> Hi {{.Fullname}}, this is your new password for Agri-Net systems <br>
 		</p>
@@ -47,7 +47,7 @@ var emailupdate = `<!DOCTYPE html>
     <title> Email Account Confirmation </title>
 </head>
 <body>
-    <h1 style="background-color:#006699";color:#fff > Agri-net Systems </h1>
+    <h1 style="background-color:#00FF00";color:#fff > Agri-net Systems </h1>
 		<p> Hi {{.Fullname }}, According to your action in agri-net systems, this email is sent to confirm the email address.<br>
 		<p><b> Please Make Sure You confirm your email with is 3- Minutes.</b></p>
 		To Confirm your Email, click the link below

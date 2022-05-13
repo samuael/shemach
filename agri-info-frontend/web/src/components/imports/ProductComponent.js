@@ -15,8 +15,8 @@ export default class ProductComponent extends Component {
     this.onChangeCurrPrice = this.onChangeCurrPrice.bind(this);
     this.getProduct = this.getProduct.bind(this);
     this.updatePublished = this.updatePublished.bind(this);
-    this.updateTutorial = this.updateTutorial.bind(this);
-    this.deleteTutorial = this.deleteTutorial.bind(this);
+    this.updateProduct = this.updateProduct.bind(this);
+    this.deleteProduct = this.deleteProduct.bind(this);
 
     this.state = {
       currentTutorial: {
@@ -144,7 +144,7 @@ export default class ProductComponent extends Component {
       });
   }
 
-  updateTutorial() {
+  updateProduct() {
     ProductService.update(
       this.state.currentTutorial.id,
       this.state.currentTutorial
@@ -160,7 +160,7 @@ export default class ProductComponent extends Component {
       });
   }
 
-  deleteTutorial() {    
+  deleteProduct() {    
     ProductService.delete(this.state.currentTutorial.id)
       .then(response => {
         console.log(response.data);
@@ -300,7 +300,7 @@ export default class ProductComponent extends Component {
 
             {/* <button
               className="badge badge-danger mr-2"
-              onClick={this.deleteTutorial}
+              onClick={this.deleteProduct}
             >
               Delete
             </button> */}
@@ -310,7 +310,7 @@ export default class ProductComponent extends Component {
               type="submit"
               className="badge badge-success btn btn-primary"
             
-              onClick={this.updateTutorial}
+              onClick={this.updateProduct}
             >
               Update
             </button>

@@ -22,6 +22,11 @@ type IUserService interface {
 	SaveEmailConfirmation(ctx context.Context, emailc *model.EmailConfirmation) (int, error)
 	// UpdateUser used *model.User
 	UpdateUser(ctx context.Context, user *model.User) (int, error)
+
+	// GetUserByPhone
+	GetUserByPhone(ctx context.Context, phone string) (user *model.User, role int, status int, er error)
+	// RegisterTempoCXP ...
+	RegisterTempoCXP(ctx context.Context, tempo *model.TempoCXP) error
 }
 
 type UserService struct {
@@ -58,4 +63,11 @@ func (service *UserService) SaveEmailConfirmation(ctx context.Context, emailc *m
 }
 func (service *UserService) UpdateUser(ctx context.Context, user *model.User) (int, error) {
 	return service.Repo.UpdateUser(ctx, user)
+}
+
+func (service *UserService) GetUserByPhone(ctx context.Context, phone string) (user *model.User, role int, status int, er error) {
+	return service.Repo.GetUserByPhone(ctx, phone)
+}
+func (service *UserService) RegisterTempoCXP(ctx context.Context, tempo *model.TempoCXP) error {
+	return service.Repo.RegisterTempoCXP(ctx, tempo)
 }

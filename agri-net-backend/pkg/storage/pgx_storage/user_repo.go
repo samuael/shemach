@@ -84,9 +84,9 @@ func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
 	deleted := 0
 	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where created_at<$1", timestamp).Scan(&deleted)
 	if er != nil || deleted == 0 {
-		if er != nil {
-			println("ERROR:  ", er.Error())
-		}
+		// if er != nil {
+		// 	println("ERROR:  ", er.Error())
+		// }
 		return errors.New("no row deleted ")
 	}
 	return nil
@@ -121,4 +121,29 @@ func (repo *UserRepo) UpdateUser(ctx context.Context, user *model.User) (int, er
 		return state.STATUS_NO_RECORD_UPDATED, errors.New("user instance was not updated")
 	}
 	return state.STATUS_OK, nil
+}
+
+// GetUserByPhone(ctx context.Context, phone string) (*model.User, error)
+func (repo *UserRepo) GetUserByPhone(ctx context.Context, phone string) (user *model.User, role int, status int, er error) {
+	role = 0
+	er = repo.DB.QueryRow(ctx, "select * from getTheRoleOfUserByPhone( $1 );", phone).Scan(&role)
+	if er != nil {
+		return nil, 0, state.STATUS_DBQUERY_ERROR, er
+	}
+	user = &model.User{}
+	er = repo.DB.QueryRow(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,password,lang from users where id=$1 or phone=$2", phone).
+		Scan(&(user.ID), &(user.Firstname), &(user.Lastname), &(user.Phone), &(user.Email), &(user.Imgurl), &(user.CreatedAt), &(user.Password), &(user.Lang))
+	if er != nil {
+		return nil, role, state.STATUS_DBQUERY_ERROR, er
+	}
+	return user, role, state.STATUS_OK, nil
+}
+
+func (repo *UserRepo) RegisterTempoCXP(ctx context.Context, tempo *model.TempoCXP) error {
+	er := repo.DB.QueryRow(ctx, `insert into tempo_cxp(phone ,confirmation ,role ,created_at)  values($1,$2,$3,$4) returning id`, tempo.Phone, tempo.Confirmation, tempo.Role, tempo.CreatedAt).Scan(&(tempo.ID))
+	if er != nil {
+		println(er.Error())
+		return er
+	}
+	return nil
 }

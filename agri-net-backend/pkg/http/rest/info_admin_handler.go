@@ -19,6 +19,7 @@ type IInfoadminHandler interface {
 	Registerinfoadmin(c *gin.Context)
 	ListInfoadmins(c *gin.Context)
 	DeleteInfoadminByID(c *gin.Context)
+	GetInfoadminByID(c *gin.Context)
 }
 
 // InfoAdminHandler
@@ -164,5 +165,36 @@ func (ihandler *InfoadminHandler) DeleteInfoadminByID(c *gin.Context) {
 	}
 	res.StatusCode = http.StatusOK
 	res.Msg = translation.TranslateIt("info admin deleted succesfuly")
+	c.JSON(res.StatusCode, res)
+}
+
+// GetInfoadminByID(c *gin.Context)
+func (ihandler *InfoadminHandler) GetInfoadminByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	id, er := strconv.Atoi(c.Query("id"))
+
+	res := &struct {
+		StatusCode int              `json:"status_code"`
+		Msg        string           `json:"msg"`
+		Admin      *model.Infoadmin `json:"infoadmin"`
+	}{}
+
+	if er != nil || id <= 0 {
+		res.StatusCode = http.StatusOK
+		res.Msg = translation.TranslateIt("missing admin id \"id\" , positive integer")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	admin, er := ihandler.Service.GetInfoadminByID(ctx, uint64(id))
+	if admin == nil || er != nil {
+		res.StatusCode = http.StatusNotFound
+		res.Admin = admin
+		res.Msg = translation.TranslateIt("admin no found ")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.StatusCode = http.StatusOK
+	res.Admin = admin
+	res.Msg = translation.TranslateIt("found")
 	c.JSON(res.StatusCode, res)
 }

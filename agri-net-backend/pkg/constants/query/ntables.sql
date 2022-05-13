@@ -104,3 +104,23 @@ create table emailInConfirmation(
     old_email varchar(100),
     created_at integer not null default ROUND(extract(epoch from now()))
 );
+
+
+create table agent (
+    posts_count integer not null default 0,
+    field_address_ref integer not null,
+    registered_by  integer default 0
+) inherits( users );
+
+
+create table merchant(
+    stores integer default 0
+) inherits ( users);
+
+create table tempo_cxp (
+    id serial primary key,
+    phone varchar(13) not null unique,
+    confirmation char(5) not null,
+    role integer default 0,
+    created_at integer not null default ROUND( extract(epoch from now()))
+);

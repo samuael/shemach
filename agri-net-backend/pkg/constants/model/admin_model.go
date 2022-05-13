@@ -22,16 +22,16 @@ func (a *AdminNullable) GetAdmin() *Admin {
 		User: a.User,
 	}
 	if a.MerchantsCreated != nil {
-		admin.MerchantsCreated = a.MerchantsCreated.(uint64)
+		admin.MerchantsCreated = uint64(a.MerchantsCreated.(int32))
 	}
 	if a.StorsCreated != nil {
-		admin.StoresCreated = a.StorsCreated.(uint64)
+		admin.StoresCreated = uint64(a.StorsCreated.(int32))
 	}
 	if a.FieldAddressRef != nil {
-		admin.FieldAddressRef = a.FieldAddressRef.(int64)
+		admin.FieldAddressRef = int64(a.FieldAddressRef.(int32))
 	}
 	if a.CreatedBy != nil {
-		admin.CreatedBy = a.CreatedBy.(int)
+		admin.CreatedBy = int(a.CreatedBy.(int32))
 	}
 	return admin
 }

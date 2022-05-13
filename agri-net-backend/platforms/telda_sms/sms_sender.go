@@ -18,6 +18,7 @@ func SendOtp(otp *model.TeldaOTP) (*model.TeldaOTPResponse, error) {
 
 	payload := strings.NewReader(string(func() []byte {
 		if bytes, er := json.Marshal(otp); er != nil {
+			println(er.Error())
 			return []byte{}
 		} else {
 			return bytes
@@ -38,18 +39,21 @@ func SendOtp(otp *model.TeldaOTP) (*model.TeldaOTPResponse, error) {
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		return nil, err
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		return nil, err
 	}
 	response := &model.TeldaOTPResponse{}
 	decoder := json.NewDecoder(bytes.NewReader(body))
 	err = decoder.Decode(response)
+	if err != nil {
+		println(err.Error())
+	}
 	return response, err
 }

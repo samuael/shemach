@@ -11,7 +11,7 @@ type User struct {
 	Imgurl    string `json:"imgurl,omitempty"`
 	CreatedAt uint64 `json:"created_at,omitempty"`
 	Lang      string `json:"lang"`
-	Password  string `json:"password,omitempty"`
+	Password  string `json:"-"`
 }
 
 // InfoAdmin instance representing the product information supervisors.
