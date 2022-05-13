@@ -31,7 +31,7 @@ class _ProductPageState extends State<ProductPage> {
             children: [
               productInfo(widget.title, widget.amounte, widget.price),
               SizedBox(
-                width: 10,
+                width: 5,
               ),
               productImage(widget.imgUrl1),
               // productImage(widget.imgUrl2),

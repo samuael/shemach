@@ -117,8 +117,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                   color: Colors.white,
                                 ),
-                                child: Image.asset(
-                                  "/images/logo.jpg",
+                                child: new Image.asset(
+                                  'assets/images/logo.jpg',
                                   width: 80,
                                   height: 80,
                                 ),

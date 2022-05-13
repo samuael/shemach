@@ -112,12 +112,12 @@ class _LoginWidgetState extends State<LoginWidget> {
               border: OutlineInputBorder(),
               suffix: GestureDetector(
                   child: hidePassword
-                      ? Image.asset("icons/icons8-eyelashes-3d-30.png",
+                      ? Image.asset('assets/icons/icons8-eyelashes-3d-30.png',
                           color: Theme.of(context).primaryColor,
                           width: 20,
                           height: 20)
                       : Image.asset(
-                          "icons/icons8-eyebrow-30.png",
+                          'assets/icons/icons8-eyebrow-30.png',
                           color: Theme.of(context).primaryColor,
                           width: 20,
                           height: 20,

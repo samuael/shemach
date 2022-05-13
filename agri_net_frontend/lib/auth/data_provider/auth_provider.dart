@@ -12,6 +12,7 @@ class AuthProvider {
   Future<List<Map<String, dynamic>>?> loadMaids(int offset) async {
     final headers = {"Authorization": "Bearer ${StaticDataStore.TOKEN}"};
     print("Loading clients ");
+
     try {
       var response = await client.get(
         Uri(
@@ -22,7 +23,6 @@ class AuthProvider {
         ),
         headers: headers,
       );
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = jsonDecode(response.body) as List<dynamic>;
         final map = body.map<Map<String, dynamic>>((elem) {
@@ -63,7 +63,7 @@ class AuthProvider {
 
   Future<UsersLoginResponse> loginAdmin(String email, String password) async {
     try {
-      print("$email   $password");
+      print("Sending login request with :" + "$email   $password");
       var response = await client.post(
         Uri(
           scheme: "http",
@@ -80,20 +80,18 @@ class AuthProvider {
         headers: {"Content-Type": "application/json"},
       );
 
-      print("${response.statusCode} DD:");
+      print(
+          "You have the following response body ${response.body} and response status ${response.statusCode} DD:");
       if (response.statusCode == 200) {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
-        if (body["success"] == true) {
-          StaticDataStore.HEADERS = response.headers;
-          return UsersLoginResponse(
-              statusCode: response.statusCode,
-              msg: "${body["message"]}",
-              user: Admin.fromJson(body["user"] as Map<String, dynamic>));
-        }
+
+        StaticDataStore.HEADERS = response.headers;
+        Role = body["role"];
+        Token = body["token"];
         return UsersLoginResponse(
-          statusCode: response.statusCode,
-          msg: "${body["message"]}",
-        );
+            statusCode: response.statusCode,
+            msg: "${body["msg"]}",
+            user: UserPP.fromJson(body["user"] as Map<String, dynamic>));
       } else if (response.statusCode == 401 ||
           response.statusCode == 500 ||
           response.statusCode == 404) {

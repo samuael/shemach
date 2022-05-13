@@ -18,7 +18,7 @@ class AdminLoginInProgressEvent extends AuthEvent {}
 class AuthStateInitEvent extends AuthEvent {}
 
 class AuthAdminLoggedInEvent extends AuthEvent {
-  Admin state;
+  UserPP state;
   AuthAdminLoggedInEvent(this.state);
 }
 

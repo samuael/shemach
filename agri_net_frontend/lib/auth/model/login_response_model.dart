@@ -3,7 +3,7 @@ import "../../libs.dart";
 class UsersLoginResponse {
   int statusCode;
   String msg;
-  Admin? user;
+  UserPP? user;
 
   UsersLoginResponse({
     required this.statusCode,

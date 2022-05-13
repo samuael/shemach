@@ -1,3 +1,5 @@
+import 'package:agri_net_frontend/contracts/screens/screens.dart';
+
 import 'libs.dart';
 
 void main() {
@@ -10,7 +12,12 @@ void main() {
           ),
         );
       },
-    )
+    ),
+    BlocProvider(create: (context) {
+      return ProductBloc(
+        repo: ProductRepo(provider: ProductProvider()),
+      );
+    }),
   ], child: MyHomePage()));
 }
 
@@ -34,13 +41,24 @@ class MyHomePageState extends State<MyHomePage> {
         onGenerateRoute: (setting) {
           final route = setting.name;
           if (route == AuthScreen.RouteName) {
-            // final param = setting.arguments as Map<String, Product>;
             return MaterialPageRoute(builder: (context) {
               return AuthScreen();
+            });
+          } else if (route == ProductScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return ProductScreen();
             });
           } else if (route == HomeScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return HomeScreen();
+            });
+          } else if (route == ProfileScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return ProfileScreen();
+            });
+          } else if (route == ContractScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return ContractScreen();
             });
           }
         });

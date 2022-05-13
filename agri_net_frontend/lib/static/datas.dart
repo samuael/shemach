@@ -2,7 +2,7 @@ import '../../libs.dart';
 
 class StaticDataStore {
   // static const String HOST = "10.5.202.116";
-  static const String HOST = "127.0.0.1";
+  static const String HOST = "10.5.194.220/19";
   static const int PORT = 8080;
   static const String SCHEME = "http://";
   static String get URI {

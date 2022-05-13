@@ -1,16 +1,6 @@
 import '../../libs.dart';
-{
-        "id": 2,
-        "firstname": "Samuael",
-        "lastname": "Adnew",
-        "phone": "+251912131415",
-        "email": "samuaeladadnew@outlook.com",
-        "created_at": 1649737198,
-        "lang": "amh",
-        "password": "$2a$10$CCy3zvane0.Ngu8rgBPxNuymHBK5px9eRkDhcJBJBEbhLn8ZJ7CIW"
-    }
 
-class Admin {
+class UserProfile {
   int id;
   String firstname;
   String lastname;
@@ -18,46 +8,44 @@ class Admin {
   String email;
   String lang;
   DateTime? createdAt;
-
-  bool superadmin;
   String imgurl;
- 
- 
 
-  Admin({
+  UserProfile({
     required this.id,
     required this.firstname,
     required this.lastname,
     required this.phone,
     required this.email,
-    required this.superadmin,
     required this.lang,
     this.createdAt,
     required this.imgurl,
   });
 
-  factory Admin.fromJson(Map<String, dynamic> json) {
-    return Admin(
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
       id: int.parse("${json['id']}"),
       firstname: json["firstname"],
       lastname: json["lastname"],
-      phone: json["phone"],
+      phone: json["phone"] ?? '',
       email: json["email"],
-      superadmin: json["superadmin"],
-      lang:json["lang"],
+      lang: json["lang"],
       imgurl: (json["imgurl"] ?? ''),
-      createdAt: DateTime.parse(json["created_at"]),
+      createdAt:
+          DateTime.fromMillisecondsSinceEpoch((json["created_at"] ?? 0) * 1000),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       "id": this.id,
-      "fullname": this.fullname,
+      "firstname": this.firstname,
+      "lastname": this.lastname,
       "email": this.email,
-      "superadmin": this.superadmin,
+      "phone": this.phone,
       "imgurl": this.imgurl,
       "created_at": this.createdAt!,
+      "lang": this.lang,
+      "created_at": (this.createdAt!.millisecondsSinceEpoch) / 1000,
     };
   }
 }

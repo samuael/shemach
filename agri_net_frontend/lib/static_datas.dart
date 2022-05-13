@@ -1,1 +1,2 @@
 String Role = "";
+String Token = "";

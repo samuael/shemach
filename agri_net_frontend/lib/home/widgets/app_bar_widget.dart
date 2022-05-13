@@ -13,6 +13,7 @@ class UserScreenAppBarDrawer extends StatefulWidget
 }
 
 class _UserScreenAppBarDrawerState extends State<UserScreenAppBarDrawer> {
+  int selectedLang = 0;
   @override
   Widget build(BuildContext context) {
     var we = MediaQuery.of(context).size.width;
@@ -52,15 +53,25 @@ class _UserScreenAppBarDrawerState extends State<UserScreenAppBarDrawer> {
   }
 
   Widget LanguageDropDown() {
-    List lang = ["Amh", "Eng"];
     return DropdownButton(
-        hint: Text("lang"),
-        items: lang
-            .map((item) => DropdownMenuItem(value: item, child: new Text(item)))
-            .toList(),
-        onChanged: (value) {
+        value: selectedLang,
+        items: [
+          DropdownMenuItem(
+            child: Text(
+              "Amh",
+            ),
+            value: 0,
+          ),
+          DropdownMenuItem(
+            child: Text(
+              "Amh",
+            ),
+            value: 1,
+          )
+        ],
+        onChanged: (int? value) {
           setState(() {
-            value = value;
+            value = value!;
           });
         });
   }

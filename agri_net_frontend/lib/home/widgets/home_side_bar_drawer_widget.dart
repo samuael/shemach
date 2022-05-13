@@ -9,23 +9,6 @@ class CollapsingSideBarDrawer extends StatefulWidget {
       _CollapsingSideBarDrawerState();
 }
 
-class NavigationModel {
-  String title;
-  IconData icon;
-
-  NavigationModel(this.title, this.icon) {}
-}
-
-List<NavigationModel> sideBarItems = [
-  NavigationModel("Products", Icons.home),
-  NavigationModel("My Stores", Icons.store),
-  NavigationModel("Contracts", Icons.person),
-  NavigationModel("Search", Icons.search),
-  NavigationModel("Notifications", Icons.notifications),
-  NavigationModel("Sttings", Icons.settings),
-  NavigationModel("Log Out", Icons.logout),
-];
-
 class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
     with SingleTickerProviderStateMixin {
   double maxWidth = 140;
@@ -59,6 +42,9 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
   Widget getWidget(context, widget) {
     var we = MediaQuery.of(context).size.width;
     var he = MediaQuery.of(context).size.height;
+    final elements =
+        Role == "admin" ? adminSideBarItems : superAdminSideBarItems;
+
     Widget divider;
     return Container(
       width: widthAnimation.value,
@@ -94,9 +80,9 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
           Expanded(
               child: ListView.builder(
             itemBuilder: (context, counter) {
-              if (counter == sideBarItems.length - 3) {
+              if (counter == elements.length - 3) {
                 divider = Divider(
-                  height: 150,
+                  height: 200,
                 );
               } else {
                 divider = Container();
@@ -104,19 +90,21 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
               return Column(
                 children: [
                   CollapsingNavTile(
-                      sideBarItems[counter].title,
-                      sideBarItems[counter].icon,
+                      elements[counter].title,
+                      elements[counter].icon,
                       animationController,
                       currentSelectedIndex == counter, () {
                     setState(() {
                       currentSelectedIndex = counter;
+                      Navigator.pushNamed(
+                          context, elements[counter].path.toString());
                     });
                   }),
                   divider
                 ],
               );
             },
-            itemCount: sideBarItems.length,
+            itemCount: elements.length,
           )),
         ],
       ),
