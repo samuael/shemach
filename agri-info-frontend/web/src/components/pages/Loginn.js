@@ -28,19 +28,19 @@ export default function Login() {
             password
         }
         // const userdata = { email: "fantahunfekadu1@gmail.com", password : "admin123"}
-        const login = dispatch(loginAction(userCredential))
-        login
-            .then(data => history.push('/products'))
-            .catch(error => setError(error.err))
+        dispatch(loginAction(userCredential)).then(data => history.push('/products'))
+            .catch(err => console.log(err))
 
-        console.log(store.getState())
-        console.log(userCredential);
+            // setError(error.err)
+
+        // console.log(store.getState())
+        // console.log(userCredential);
     }
 
      
     return (
         <>
-         <Navbar />
+            <Navbar />
            <div id="login">
             {/* <Header/> */}
            

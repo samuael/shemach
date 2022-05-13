@@ -29,7 +29,7 @@ function App() {
         {/* <Route path='/products' exact component={Products} /> */}
         <Route path='/broadcast/received' exact component={Broadreceive} />
         <Route path='/broadcast/create' exact component={BroadCreate} />
-        <Route path="/info/products/:id" component={ProductComponent} />
+        <Route path="/info/product/:id" component={ProductComponent} />
         <Route path="/super/products/:id" component={SuperProductEdit} />
         <Route path='/super-admin/add-product' component={SuperAdminAddPr} />
         <Route path='/super-admin/reg-admin' component={SuperAdminRegAdmin} />
