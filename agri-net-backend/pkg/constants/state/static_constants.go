@@ -36,7 +36,10 @@ const (
 	// CATEGORY = "category"
 	// HOST
 	HOST = "http://192.168.1.7:8080"
+)
 
+// INTEGER REPRESENTATION of CXP(commodity exchange participant) ROLES.
+const (
 	AGENT_ROLE_INT    = 0
 	MERCHANT_ROLE_INT = 1
 )

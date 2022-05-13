@@ -55,7 +55,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		Errors: map[string]string{},
 	}
 	if er := c.BindJSON(input); er == nil {
-		// ----
 		if input.Lang == "" {
 			input.Lang = "amh"
 		}
@@ -106,30 +105,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			c.JSON(resp.StatusCode, resp)
 			return
 		}
-		/*
-			// ---------------------------------------------------------
-				if er != nil {
-					println(er.Error())
-					resp.Msg = " Internal Server error "
-					c.JSON(http.StatusInternalServerError, resp)
-					return
-				}
-				random := "admin"
-				hashed, _ := helper.HashPassword(random)
-
-				agent := &model.Agent{}
-				agent.Firstname = input.Firstname
-				agent.Lastname = input.Lastname
-				agent.Phone = input.Phone //
-				agent.CreatedAt = uint64(time.Now().Unix())
-				agent.RegisteredBy = int(session.ID)
-				agent.Password = hashed
-				agent.FieldAddress = input.Address
-				agent.Lang = session.Lang
-				if agent.FieldAddress == nil {
-					agent.FieldAddress = &model.Address{}
-				}
-		*/
 		tempo := &model.TempoCXP{
 			CreatedAt: uint64(time.Now().Unix()),
 			Phone:     input.Phone,
@@ -141,28 +116,27 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			Phone:      tempo.Phone,
 			OTP:        randomNumber,
 			SenderName: translation.Translate(session.Lang, os.Getenv("SYSTEM_NAME")),
-			Remark: translation.Translate(session.Lang, `This is your confirmation code from Agri-Info systems!\n
-			Use this number to confirm your account and as a Password!`),
+			Remark:     translation.Translate(session.Lang, `This is your confirmation and temporary password code`),
 		}
-		otpResponse, err := telda_sms.SendOtp(otpCode)
-		if err != nil || !strings.EqualFold(otpResponse.MsgShortMessage, "Success") {
-			if err != nil {
-				println(err.Error())
-			}
-			println("-----------------------------------------------")
-			resp.Msg = translation.Translate(session.Lang, "internal problem, please try again")
-			resp.StatusCode = http.StatusInternalServerError
-			resp.OTP = nil
-			c.JSON(resp.StatusCode, resp)
-			return
-		}
-		// println(otpResponse)
 		// ahandler.OtpService <- otpResponse
 		er := ahandler.UserService.RegisterTempoCXP(ctx, tempo)
 		if er != nil {
-			println(er.Error())
-			resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
+			if strings.Contains(er.Error(), "duplicate key value violates unique constraint") {
+				resp.Msg = translation.Translate(session.Lang, "Agent with this information already registered")
+				resp.StatusCode = http.StatusConflict
+			} else {
+				resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
+				resp.StatusCode = http.StatusInternalServerError
+			}
+			c.JSON(resp.StatusCode, resp)
+			return
+		}
+
+		otpResponse, err := telda_sms.SendOtp(otpCode)
+		if err != nil || !strings.EqualFold(otpResponse.MsgShortMessage, "Success") {
+			resp.Msg = translation.Translate(session.Lang, "internal problem, please try again")
 			resp.StatusCode = http.StatusInternalServerError
+			resp.OTP = nil
 			c.JSON(resp.StatusCode, resp)
 			return
 		}
@@ -173,7 +147,7 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		agent := &model.Agent{}
 		agent.Firstname = input.Firstname
 		agent.Lastname = input.Lastname
-		agent.Phone = input.Phone //
+		agent.Phone = input.Phone
 		agent.CreatedAt = uint64(time.Now().Unix())
 		agent.RegisteredBy = uint(session.ID)
 		agent.Password = hashed
@@ -182,8 +156,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		if agent.FieldAddress == nil {
 			agent.FieldAddress = &model.Address{}
 		}
-		//
-
 		status, _ := ahandler.Service.RegisterAgent(ctx, agent)
 		if status == -1 {
 			// unauthorized
@@ -198,7 +170,12 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 
 			resp.StatusCode = http.StatusInternalServerError
 			resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
-		} else {
+		} else if status == -4 {
+			resp.StatusCode = http.StatusConflict
+			resp.Msg = translation.Translate(session.Lang, "agent with this information had already registered")
+
+		} else if status > 0 {
+			println(status)
 			resp.Msg = translation.Translate(session.Lang, `You will recieve an SMS a message containing the confirmation code\nplease confirm your phone number with in 30 minutes.\n The Confirmation numbe also serve as your password`)
 			resp.OTP = otpCode
 			resp.Agent = agent
