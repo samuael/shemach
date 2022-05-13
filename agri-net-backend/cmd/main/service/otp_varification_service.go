@@ -36,6 +36,9 @@ func NewOtpService(subscriberService subscriber.ISubscriberService,
 
 func (otpSer *OtpService) Run() {
 	ticker := time.NewTicker(time.Second * 2)
+
+	agentConfirmationTicker := time.NewTicker(time.Hour * 1)
+
 	pendingConfirmationsDuration, er := strconv.Atoi(os.Getenv("PENDING_CONFIRMATION_DURATION"))
 	pendingEmailConfirmationsDuration, er := strconv.Atoi(os.Getenv("PENDING_EMAIL_CONFIRMATION_DURATION"))
 	if er != nil {
@@ -63,6 +66,20 @@ func (otpSer *OtpService) Run() {
 				// Email Confirmation Service functionalities
 				etimestamp := time.Now().Unix() - int64(pendingEmailConfirmationsDuration*60)
 				er = otpSer.UserService.DeletePendingEmailConfirmation(uint64(etimestamp))
+				if er != nil {
+					println(er.Error())
+				} else {
+					println("success")
+				}
+			}
+		case <-agentConfirmationTicker.C:
+			{
+				// Phone Confirmation Deleting expired confimation messages
+				etimestamp := time.Now().Unix() - int64(pendingEmailConfirmationsDuration*60*60)
+				counts, _ := otpSer.UserService.RemoveExpiredCXPConfirmations(uint64(etimestamp))
+				if counts > 0 {
+					tm.Printf(tm.Bold("CXP Expire Deletion %d Records"), counts)
+				}
 			}
 		case mresp := <-otpSer.OTPResponse:
 			{

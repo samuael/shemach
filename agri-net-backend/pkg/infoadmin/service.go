@@ -14,6 +14,7 @@ type IInfoadminService interface {
 	// GetInfoadmins
 	GetInfoadmins(ctx context.Context) ([]*model.Infoadmin, error)
 	DeleteInfoadminByID(ctx context.Context) (int, error)
+	GetInfoadminByID(ctx context.Context, id uint64) (*model.Infoadmin, error)
 }
 
 type InfoadminService struct {
@@ -38,4 +39,8 @@ func (service InfoadminService) GetInfoadmins(ctx context.Context) ([]*model.Inf
 }
 func (service InfoadminService) DeleteInfoadminByID(ctx context.Context) (int, error) {
 	return service.Repo.DeleteInfoadminByID(ctx)
+}
+
+func (service InfoadminService) GetInfoadminByID(ctx context.Context, id uint64) (*model.Infoadmin, error) {
+	return service.Repo.GetInfoadminByID(ctx, id)
 }

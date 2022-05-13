@@ -11,4 +11,5 @@ type IAdminRepo interface {
 	CreateAdmin(ctx context.Context, admin *model.Admin) (int, int, error)
 	GetAdmins(ctx context.Context, offset, limit int) ([]*model.Admin, error)
 	DeleteAdminByID(ctx context.Context, id uint64) (int, error)
+	GetAdminByID(ctx context.Context, id uint64) (*model.Admin, error)
 }

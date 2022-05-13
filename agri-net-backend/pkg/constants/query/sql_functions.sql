@@ -227,6 +227,50 @@ $$
         if found then
             return 2;
         end if;
+        select id into theid from admin where id=userid or email=iemail;
+        if found then
+            return 3;
+        end if;
+        select id into theid from merchant where id=userid or email=iemail;
+        if found then
+            return 4;
+        end if;
+        select id into theid from agent where id=userid or email=iemail;
+        if found then
+            return 5;
+        end if;
+
+        return 0;
+    end;
+$$ language plpgsql;
+
+
+-- getTheRoleOfUserByPhone
+create or replace function getTheRoleOfUserByPhone( iphone varchar)  returns integer as 
+$$
+    declare
+        theid varchar;
+    begin
+        select id into theid from superadmin where phone=iphone;
+        if found then
+            return 1;
+        end if;
+        select id into theid from infoadmin where phone=iphone;
+        if found then
+            return 2;
+        end if;
+        select id into theid from admin where phone=iphone;
+        if found then
+            return 3;
+        end if;
+        select id into theid from merchant where phone=iphone;
+        if found then
+            return 4;
+        end if;
+        select id into theid from agent where phone=iphone;
+        if found then
+            return 5;
+        end if;
         return 0;
     end;
 $$ language plpgsql;
@@ -390,3 +434,214 @@ $$
     end;
 $$
 language plpgsql;
+
+
+-- createAgent
+create or replace function createAgent( ifirstname varchar,ilastname varchar,iphone varchar,iemail varchar,ipassword text,ilang char(3), iregistered_by integer,
+ikebele varchar,iworeda varchar,icity varchar,iregion varchar, izone varchar, iunique_name varchar ,ilatitude varchar,ilongitude varchar ) returns integer as 
+$$
+    declare
+        addressid integer;
+        agentid integer;
+        theadminid integer;
+    begin
+        select id into theadminid from admin where id=iregistered_by;
+        if not found then
+            return -1;
+        end if;
+        select address_id into addressid from address where kebele=ikebele and woreda=iworeda and  city=icity and  region = iregion and zone=izone and  unique_name=iunique_name and latitude=ilatitude and longitude=ilongitude;
+        if not found and ikebele <> '' or iworeda<>'' or icity <>'' or iregion<>'' or izone<>'' or iunique_name<>'' or ilatitude <> '' or ilongitude <>'' then
+                    insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
+            values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
+            if not found then
+                return -2;
+            end if;
+        end if;  
+
+        insert into agent( firstname,lastname,phone,email,password,lang,registered_by, field_address_ref)
+        values(ifirstname ,ilastname ,iphone ,iemail,ipassword ,ilang,iregistered_by,addressid) returning id into agentid;
+        if not found then
+            rollback;
+            return -3;
+        end if;
+        return agentid;
+    end;
+$$
+language plpgsql;
+
+
+
+
+-- createMerchant
+create or replace function createMerchant( ifirstname varchar,ilastname varchar,iphone varchar,iemail varchar,ipassword text,ilang char(3), iregistered_by integer,
+ikebele varchar,iworeda varchar,icity varchar,iregion varchar, izone varchar, iunique_name varchar ,ilatitude varchar,ilongitude varchar ) returns integer as 
+$$
+    declare
+        merchantid integer;
+        addressid integer;
+        theadminid integer;
+    begin
+        select id into theadminid from admin where id=iregistered_by;
+        if not found then
+            return -1;
+        end if;
+        select address_id into addressid from address where kebele=ikebele and woreda=iworeda and  city=icity and  region = iregion and zone=izone and  unique_name=iunique_name and latitude=ilatitude and longitude=ilongitude;
+        if not found and ikebele <> '' or iworeda<>'' or icity <>'' or iregion<>'' or izone<>'' or iunique_name<>'' or ilatitude <> '' or ilongitude <>'' then
+                    insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
+            values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
+            if not found then
+                return -2;
+            end if;
+        end if;  
+
+        insert into merchant( firstname,lastname,phone,email,password,lang,registerd_by, address_ref)
+        values(ifirstname ,ilastname ,iphone ,iemail,ipassword ,ilang,iregistered_by,addressid) returning id into merchantid;
+        if not found then
+            rollback;
+            return -3;
+        end if;
+        return merchantid;
+    end;
+$$
+language plpgsql;
+
+
+-- get all temporary commodity exchange participants and increment the trial by one every second.
+create or replace function getTempoCXPByPhone( iphone varchar ) returns tempo_cxp as 
+$$
+    declare
+        tempo tempo_cxp;
+    begin
+        select * into tempo from tempo_cxp where phone=iphone;
+        if not found then
+            return null;
+        end if;
+        if tempo.trials >=51 then
+            delete from tempo_cxp where phone=iphone;
+            return null;
+        end if;
+        update tempo_cxp as t set trials=t.trials + 1 where phone=iphone;
+        return tempo;
+    end; 
+$$ language plpgsql;
+
+
+
+create or replace function deleteExpredCXPAccount(  iphones varchar[] ) returns integer as 
+$$
+    declare
+        theid integer;
+        vari varchar;
+        cunt integer;
+    begin
+        cunt :=0;
+        foreach vari in  array iphones loop
+            with rows as (
+                delete from merchant where phone=vari returning id
+            )
+            select count(*) into theid from rows;
+            if found and theid>0 then
+                delete from tempo_cxp where phone= vari;
+                cunt = cunt+theid;
+                continue;
+            end if;
+
+            with rows as (
+                delete from agent where phone=vari returning id
+            ) 
+            select count(*) into theid from rows;
+            if found and theid >0 then
+                delete from tempo_cxp where phone= vari;
+                cunt = cunt+theid;
+            end if;
+        end loop;
+        return cunt;
+    end;
+$$ language plpgsql;
+
+
+
+create or replace function deleteUnconfirmedAdmins(  ids integer[] ) returns integer as 
+$$
+    declare
+        idd integer;
+        theid integer;
+        cunt integer;
+    begin
+        cunt := 0;
+        foreach idd in array ids loop
+            delete from admin where id=idd returning id into theid;
+            if found then
+                cunt = cunt+theid;
+                continue;
+            end if; 
+            delete from infoadmin where id=idd returning id into theid;
+            if found then
+                cunt = cunt+theid;
+            end if;
+            RETURN cunt;
+        end loop;
+    end;
+$$ language plpgsql;
+
+
+
+
+-- dictionary
+
+
+
+create or replace function createDictionary( ilang char(3), itext text , itranslation text )  returns integer as 
+$$
+    declare 
+        theid integer;
+    begin
+        select id into theid from dictionary where sentence=itext and lang=ilang and translation=itranslation;
+        if found and theid >0 then
+            return theid;
+        end if;
+
+        insert into dictionary(lang, sentence,translation) values(ilang, itext, itranslation) returning id into theid;
+        if found then 
+            return theid;
+        end if;
+        return -1;
+    end;
+$$ language plpgsql;
+
+
+
+create or replace function createStore(  name varchar(100) , iowner_id integer , icreated_by integer,ikebele varchar(100),iworeda varchar(100),icity varchar(100),iregion varchar(100), izone varchar(100), iunique_name varchar(100) ,ilatitude varchar(40),ilongitude varchar(40)) returns integer as 
+$$
+    declare 
+        addressid integer;
+        theadminid integer;
+        merchantid integer;
+        thestoreid integer;
+    begin
+        select id into theadminid from admin where id=icreated_by;
+        if not found then
+            return -1;
+        end if;
+        select address_id into addressid from address where kebele=ikebele and woreda=iworeda and  city=icity and  region = iregion and zone=izone and  unique_name=iunique_name and latitude=ilatitude and longitude=ilongitude;
+        if not found and ikebele <> '' or iworeda<>'' or icity <>'' or iregion<>'' or izone<>'' or iunique_name<>'' or ilatitude <> '' or ilongitude <>'' then
+                    insert into address(kebele,woreda,city,region,zone,unique_name,latitude,longitude) 
+            values(ikebele,iworeda ,icity ,iregion,izone,iunique_name ,ilatitude,ilongitude) returning address_id into addressid;
+            if not found then
+                return -2;
+            end if;
+        end if;
+        select id into merchantid from merchant where id=iowner_id;
+        if not found then
+            return -3;
+        end if; 
+
+        insert into store (
+            owner_id,address_id,store_name,created_by
+        ) values(iowner_id,addressid,name,icreated_by) returning store_id into thestoreid;
+        if not found then 
+            return -4;
+        end if;
+        return thestoreid;
+    end;
+$$ language plpgsql;

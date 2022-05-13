@@ -3,6 +3,7 @@ package pgx_storage
 import (
 	"context"
 	"errors"
+	"log"
 	"strings"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -80,14 +81,36 @@ func (repo *UserRepo) ChangeImageUrl(ctx context.Context) error {
 }
 
 // DeletePedingEmailConfirmation
+// in this method if the account is new then not only the email in confirmation will be deleted
+// but also the user account in the email will also be deleted so this functionality will be implemented withe the trigger i am going to write.
 func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
 	deleted := 0
-	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where created_at<$1", timestamp).Scan(&deleted)
+	er := repo.DB.QueryRow(context.Background(), "delete from emailInConfirmation where created_at<$1  and is_new_account=$2", timestamp, false).Scan(&deleted)
 	if er != nil || deleted == 0 {
-		// if er != nil {
-		// 	println("ERROR:  ", er.Error())
-		// }
 		return errors.New("no row deleted ")
+	}
+	var ids []uint64
+
+	rows, err := repo.DB.Query(context.Background(), "select userid from emailInConfirmation where created_at<$1  and is_new_account=$2", timestamp, true)
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		var id uint64
+		r := rows.Scan(&id)
+		if r != nil {
+			continue
+		}
+		ids = append(ids, id)
+	}
+
+	var count uint64
+	er = repo.DB.QueryRow(context.Background(), "select * from deleteUnconfirmedAdmins($1)", ids).Scan(&count)
+	if er != nil || count == 0 {
+		if er != nil {
+			println(er.Error())
+		}
+		return er
 	}
 	return nil
 }
@@ -113,6 +136,7 @@ func (repo *UserRepo) SaveEmailConfirmation(ctx context.Context, ec *model.Email
 	return did, nil
 }
 
+// UpdateUser ...
 func (repo *UserRepo) UpdateUser(ctx context.Context, user *model.User) (int, error) {
 	er := repo.DB.QueryRow(ctx, "UPDATE users set firstname=$1,lastname=$2,phone=$3, email=$4, lang=$5 where id=$6 returning id", user.Firstname, user.Lastname, user.Phone, user.Email, user.Lang, user.ID).Scan(&(user.ID))
 	if er != nil {
@@ -121,4 +145,108 @@ func (repo *UserRepo) UpdateUser(ctx context.Context, user *model.User) (int, er
 		return state.STATUS_NO_RECORD_UPDATED, errors.New("user instance was not updated")
 	}
 	return state.STATUS_OK, nil
+}
+
+// GetUserByPhone(ctx context.Context, phone string) (*model.User, error)
+func (repo *UserRepo) GetUserByPhone(ctx context.Context, phone string) (user *model.User, role int, status int, er error) {
+	role = 0
+	er = repo.DB.QueryRow(ctx, "select * from getTheRoleOfUserByPhone( $1 );", phone).Scan(&role)
+	if er != nil {
+		return nil, 0, state.STATUS_DBQUERY_ERROR, er
+	}
+	user = &model.User{}
+	er = repo.DB.QueryRow(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,password,lang from users where phone=$1", phone).
+		Scan(&(user.ID), &(user.Firstname), &(user.Lastname), &(user.Phone), &(user.Email), &(user.Imgurl), &(user.CreatedAt), &(user.Password), &(user.Lang))
+	if er != nil {
+		println(er.Error())
+		return nil, role, state.STATUS_DBQUERY_ERROR, er
+	}
+	return user, role, state.STATUS_OK, nil
+}
+
+// RegisterTempoCXP ...
+func (repo *UserRepo) RegisterTempoCXP(ctx context.Context, tempo *model.TempoCXP) error {
+	er := repo.DB.QueryRow(ctx, `insert into tempo_cxp(phone ,confirmation ,role ,created_at)  values($1,$2,$3,$4) returning id`, tempo.Phone, tempo.Confirmation, tempo.Role, tempo.CreatedAt).Scan(&(tempo.ID))
+	if er != nil {
+		return er
+	}
+	return nil
+}
+
+// GetTempoCXP ...
+func (repo *UserRepo) GetTempoCXP(ctx context.Context, phone string, response model.TempoCXP) error {
+	ere := repo.DB.QueryRow(ctx, "select id, phone ,confirmation ,role ,created_at from tempo_cxp where phone=$1", phone).Scan(
+		&(response.ID), &(response.Phone), &(response.Confirmation), &(response.Role), &(response.CreatedAt),
+	)
+	if ere != nil {
+		log.Println(ere.Error())
+	}
+	return ere
+}
+
+// RemoveTempoCXP ...
+func (repo *UserRepo) RemoveTempoCXP(ctx context.Context, phone string) error {
+	count := 0
+	ere := repo.DB.QueryRow(ctx, "delete from tempo_cxp where phone=$1 returning id", phone).Scan(&count)
+	if count <= 0 {
+		return errors.New("now row is deleted")
+	}
+	return ere
+}
+
+func (repo *UserRepo) RemoveExpiredCXPConfirmations(timestamp uint64) (count int, er error) {
+	phones := []string{}
+	recs, er := repo.DB.Query(context.Background(), "select phone from tempo_cxp where created_at<$1", timestamp)
+	if er != nil {
+		println(er.Error())
+		return -1, er
+	}
+	for recs.Next() {
+		var phone string
+		er := recs.Scan(&phone)
+		if er == nil {
+			phones = append(phones, phone)
+		}
+	}
+	var deletedCount int
+	erf := repo.DB.QueryRow(context.Background(), "select * from deleteExpredCXPAccount($1)", phones).Scan(&deletedCount)
+	if erf != nil {
+		return 0, erf
+	}
+	return count, nil
+}
+
+func (repo *UserRepo) ConfirmUserEmailUpdate(ctx context.Context, id uint64, newemail, oldemail string) error {
+	confirm, er := repo.GetEmailInConfirmationByID(ctx, id)
+	if er != nil {
+		return er
+	}
+	if !(confirm.IsNewAccount) && confirm.Email == newemail && confirm.OldEmail == oldemail {
+		uc, er := repo.DB.Exec(ctx, "update users set email=$1 where email=$2 returning id", newemail, oldemail)
+		if uc.RowsAffected() == 0 || er != nil {
+			if er != nil {
+				return er
+			}
+			return errors.New("no rows affected")
+		}
+	} else if (confirm.Email == newemail) && (confirm.IsNewAccount) {
+		raff, erf := repo.DB.Exec(ctx, "delete from emailInConfirmation where id=$1", id)
+		if erf != nil || raff.RowsAffected() == 0 {
+			if erf != nil {
+				return erf
+			}
+			return errors.New("no row was deleted")
+		}
+	}
+	return errors.New("unauthorized")
+}
+
+func (repo *UserRepo) GetEmailInConfirmationByID(ctx context.Context, id uint64) (*model.EmailConfirmation, error) {
+	confirm := &model.EmailConfirmation{}
+	er := repo.DB.QueryRow(ctx, "select  id ,userid ,new_email, is_new_account, old_email,created_at from emailInConfirmation where id=$1", id).
+		Scan(&(confirm.ID), &(confirm.UserID), &(confirm.Email), &(confirm.IsNewAccount), &(confirm.OldEmail), &(confirm.CreatedAt))
+	if er != nil {
+		return nil, er
+	}
+	return confirm, nil
 }

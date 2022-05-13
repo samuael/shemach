@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"net/http"
 	"net/smtp"
 	"os"
 
@@ -51,7 +52,7 @@ var emailupdate = `<!DOCTYPE html>
 		<p> Hi {{.Fullname }}, According to your action in agri-net systems, this email is sent to confirm the email address.<br>
 		<p><b> Please Make Sure You confirm your email with is 3- Minutes.</b></p>
 		To Confirm your Email, click the link below
-		<a href="{{.HOST}}/api/account/confirm/?token={{.TOKEN}}" > Not Mine </a>
+		<a href="http://{{.HOST}}/api/user/account/email/confirm?token={{.TOKEN}}" > HERE </a>
 		</p>
 	<hr>
 	<i> Agri-Net Systems </i>
@@ -97,67 +98,7 @@ func SendPasswordEmailSMTP(to []string, password string, newpassword bool, fulln
 	return true
 }
 
-// func SendEmail(from, to, password string) bool {
-// 	templ, er := template.New("forgot").Parse(dpassword)
-// 	println(password)
-// 	if er != nil || templ == nil {
-// 		return false
-// 	}
-// 	file, er := os.Create("forgot-password.html")
-// 	if er != nil || file == nil {
-// 		return false
-// 	}
-// 	if era := templ.Execute(file, password); era != nil {
-// 		return false
-// 	}
-// 	bytes := []byte{}
-// 	if _, er = file.Read(bytes); er != nil {
-// 		return false
-// 	}
-// 	m := gomail.NewMessage()
-// 	m.SetHeader("From", from)
-// 	m.SetHeader("To", to)
-// 	m.SetHeader("Subject", "New Password Update!")
-// 	m.SetBody("text/html", string(bytes))
-// 	d := gomail.NewDialer("smtp.gmail.com", 587, from, "0774samuael")
-// 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-// 	if err := d.DialAndSend(m); err != nil {
-// 		println(err.Error())
-// 		return false
-// 	}
-// 	return true
-// }
-
-// func SendEmailChangeSMTP(to []string, password, fullname, host string) bool {
-// 	smtpHost := "smtp.gmail.com"
-// 	smtpPort := "587"
-// 	from := os.Getenv("EMAIL_ADDRESS")
-// 	auth := smtp.PlainAuth("", from, os.Getenv("EMAIL_PASSWORD"), smtpHost)
-// 	t, _ := template.New("email-update").Parse(emailupdate)
-// 	var body bytes.Buffer
-// 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-// 	subject := " Email account update "
-// 	body.Write([]byte(fmt.Sprintf("Subject: %s \n%s\n\n", subject, mimeHeaders)))
-// 	t.Execute(&body, struct {
-// 		Email    string
-// 		HOST     string
-// 		Fullname string
-// 		Password string
-// 	}{
-// 		Fullname: fullname,
-// 		Email:    to[0],
-// 		HOST:     state.HOST,
-// 		Password: password,
-// 	})
-// 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, body.Bytes())
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return false
-// 	}
-// 	return true
-// }
-
-func ConfirmUpdateEmailAccount(to []string, token, fullname, host string) bool {
+func ConfirmUpdateEmailAccount(response http.ResponseWriter, to []string, token, fullname, host string) bool {
 	smtpHost := "smtp.gmail.com"
 	smtpPort := "587"
 	from := os.Getenv("EMAIL_ADDRESS")
@@ -167,17 +108,22 @@ func ConfirmUpdateEmailAccount(to []string, token, fullname, host string) bool {
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	subject := " Email account Confirmation "
 	body.Write([]byte(fmt.Sprintf("Subject: %s \n%s\n\n", subject, mimeHeaders)))
+	if host == "" {
+		host = state.HOST
+	}
 	t.Execute(&body, struct {
 		Email    string
 		HOST     string
 		Fullname string
-		Password string
+		TOKEN    string
+		PORT     string
 	}{
 		Fullname: fullname,
 		Email:    to[0],
-		HOST:     state.HOST,
-		Password: token,
+		HOST:     host + ":8080",
+		TOKEN:    token,
 	})
+	response.Header().Set("Authorization", "Bearer "+token)
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, body.Bytes())
 	if err != nil {
 		fmt.Println(err)

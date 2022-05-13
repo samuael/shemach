@@ -116,6 +116,7 @@ func (m *rules) Authorized() gin.HandlerFunc {
 		}
 		permitted := m.HasPermission(c.Request.URL.Path, session.Role, c.Request.Method)
 		if !permitted {
+			println("IT IS NOT AUTHORIZD'")
 			http.Error(c.Writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			c.Abort()
 			return
@@ -140,7 +141,11 @@ func (m *rules) HasPermission(path, role, method string) bool {
 		return true
 	} else if strings.HasPrefix(path, "/api/infoadmin/") && (role == state.INFO_ADMIN) {
 		return true
-	} else if strings.HasPrefix(path, "/api/admin") && !(strings.HasPrefix(path, "/api/admin/")) && (role == state.ADMIN || role == state.SUPERADMIN) {
+	} else if strings.HasPrefix(path, "/api/admin/") && (role == state.ADMIN) {
+		return true
+	} else if strings.HasPrefix(path, "/api/agent/") && (role == state.AGENT) {
+		return true
+	} else if strings.HasPrefix(path, "/api/merchant/") && (role == state.MERCHANT) {
 		return true
 	}
 	return false

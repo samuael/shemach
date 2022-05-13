@@ -5,8 +5,8 @@ create table address (
     city varchar(100),
     region varchar(100),
     unique_name  varchar(100),
-    latitude varchar(20),
     zone varchar(20),
+    latitude varchar(20),
     longitude varchar(20)
 );
 
@@ -103,4 +103,78 @@ create table emailInConfirmation(
     is_new_account boolean default false,
     old_email varchar(100),
     created_at integer not null default ROUND(extract(epoch from now()))
+);
+
+
+create table agent (
+    posts_count integer not null default 0,
+    field_address_ref integer not null,
+    registered_by  integer default 0 
+) inherits( users );
+
+
+create table merchant(
+    stores integer default 0,
+    posts_count  integer not null default 0,
+    registerd_by integer not null,
+    address_ref integer not null
+) inherits ( users);
+
+create table tempo_cxp (
+    id serial primary key,
+    phone varchar(13) not null unique,
+    confirmation char(5) not null,
+    role integer default 0,
+    created_at integer not null default ROUND( extract(epoch from now())),
+    trials integer default 0
+);
+
+-- alter table tempo_cxp add column trials integer default 0;
+
+
+create table dictionary (
+    id serial primary key,
+    sentence text not null,
+    lang char(3) not null, 
+    translation text not null
+)
+
+
+create table store (
+    store_id serial primary key,
+    owner_id integer not null,
+    address_id  int not null references address(address_id),
+    active_products int default 0,
+    store_name varchar(100),
+    active_contracts int default 0,
+    created_at  integer not null default ROUND(extract(  epoch from now())),
+    created_by integer not null
+);
+
+alter table if exists store add constraint id_name_unique UNIQUE(store_id , store_name);
+
+
+create table img (
+    img_id serial primary key,
+    resource varchar(200)   not null,
+    owner_id integer not null,
+    owner_role smallint not null,
+    authorized boolean default false,
+    authorizations smallint ,
+    created_at integer not null default ROUND(extract(  epoch from now())),
+    blurred_res   varchar(200)  not null
+)
+
+
+create table crop (
+    crop_id serial primary key,
+    type_id integer not null,
+    remaining_quantity integer default 0,
+    selling_price decimal not null default 0,
+    address_id integer references address(address_id) not null,
+    images  smallint [] default array[]::smallint[],
+    created_at integer  not null default ROUND(extract(  epoch from now())),
+    store_id integer references store(store_id),
+    agent_id integer,
+    store_owned boolean
 );

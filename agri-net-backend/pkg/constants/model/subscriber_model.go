@@ -40,7 +40,7 @@ type TempoLoginSubscriber struct {
 type TeldaOTP struct {
 	Phone      string `json:"phone"`
 	OTP        string `json:"otp"`
-	SenderName string `json:"sender_name"`
+	SenderName string `json:"senderName"`
 	Remark     string `json:"remark"`
 }
 

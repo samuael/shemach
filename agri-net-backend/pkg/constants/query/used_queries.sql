@@ -19,3 +19,4 @@ select createPayinTransaction( cast('bf'as char(2)),8,21,16,2014,7,20,7,24,6,200
 select createProduct( cast ( 'Tef' as varchar) , cast ( 'Gojam' as varchar),2,cast ( 0.0 as decimal),1,cast (ROUND(extract(epoch from now())) as integer), cast ( ROUND(extract(epoch from now())) as integer));
 
 -- update subscriber set subscriptions=array_remove(subscriptions, 2::smallint);
+select  * from createStore( cast ('Assosa Market' as varchar) , cast(10 as integer) , cast (5 as integer),cast('04' as varchar),cast( '05' as varchar),cast('assosa'as varchar),cast ('benishangul' as varchar), cast ('assosa' as varchar), cast('' as varchar),'4534534.53453','45435345.54354');

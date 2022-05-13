@@ -31,6 +31,7 @@ type IProductService interface {
 	UpdateProductPrice(ctx context.Context) (int, int, error)
 	// SearchProductsByText uses "text" string to return list of products, status code int , and error
 	SearchProductsByText(ctx context.Context) ([]*model.Product, int, error)
+	GetProductUnits() map[string]map[int]map[string]string
 }
 
 type ProductService struct {
@@ -41,6 +42,10 @@ func NewProductService(repo IProductRepo) IProductService {
 	return &ProductService{
 		Repo: repo,
 	}
+}
+
+func (service *ProductService) GetProductUnits() map[string]map[int]map[string]string {
+	return ProductTypes
 }
 
 var ProductTypes = map[string]map[int]map[string]string{
