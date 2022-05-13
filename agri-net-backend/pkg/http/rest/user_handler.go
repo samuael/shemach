@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"html/template"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -18,30 +20,131 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/mail"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
 type IUserHandler interface {
+	Login(c *gin.Context)
 	ChangePassword(c *gin.Context)
 	UpdateProfilePicture(c *gin.Context)
 	UpdateProfile(c *gin.Context)
 	DeleteProfilePicture(c *gin.Context)
+	ConfirmTempoCXP(c *gin.Context)
+	ConfirmEmail(c *gin.Context)
 }
 
 type UserHandler struct {
 	Service       user.IUserService
 	Authenticator auth.Authenticator
+	Templates     *template.Template
 }
 
-func NewUserHandler(service user.IUserService,
+func NewUserHandler(
+	templates *template.Template,
+	service user.IUserService,
 	authenticator auth.Authenticator,
 ) IUserHandler {
 	return &UserHandler{
 		Service:       service,
 		Authenticator: authenticator,
+		Templates:     templates,
 	}
+}
+
+func (suhandler *UserHandler) Login(c *gin.Context) {
+	ctx := c.Request.Context()
+	input := &struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}{}
+	jsonDecoder := json.NewDecoder(c.Request.Body)
+	res := &struct {
+		Msg        string            `json:"msg"`
+		Errors     map[string]string `json:"errors"`
+		StatusCode int               `json:"status_code"`
+		User       *model.User       `json:"user,omitempty"`
+		Role       string            `json:"role,omitempty"`
+		Token      string            `json:"token,omitempty"`
+	}{
+		Errors: map[string]string{},
+	}
+	ers := jsonDecoder.Decode(input)
+	if ers == nil {
+		input.Email = strings.Trim(input.Email, " ")
+	}
+	if ers != nil || !(form.MatchesPattern(input.Email, form.EmailRX)) || len(input.Password) < 4 {
+		res.Msg = translation.TranslateIt("bad request body")
+		if !(form.MatchesPattern(input.Email, form.EmailRX)) {
+			res.Errors["email"] = translation.TranslateIt("invalid phone value")
+		}
+		if len(input.Password) < 4 {
+			res.Errors["password"] = translation.TranslateIt("unacceptable password characters length")
+		}
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+
+	// check the existance of the user using his  email only.
+	ctx = context.WithValue(ctx, "user_email", input.Email)
+	user, role, status, er := suhandler.Service.GetUserByEmailOrID(ctx)
+	var failed = false
+	if status == state.STATUS_DBQUERY_ERROR || er != nil {
+		failed = true
+		res.StatusCode = http.StatusInternalServerError
+		res.Msg = translation.TranslateIt("internal problem, please try again later!")
+	} else if status == state.STATUS_RECORD_NOT_FOUND {
+		failed = true
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("invalid email or password!")
+	}
+	if role == 0 {
+		failed = true
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("user with this account doesn't exist")
+	}
+
+	if failed {
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	if !(helper.CompareHash(user.Password, input.Password)) {
+		res.Msg = translation.TranslateIt("invalid email or password")
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	session := &model.Session{
+		ID:    user.ID,
+		Email: user.Email,
+		Lang:  user.Lang,
+	}
+	// var duser interface{}
+	if role == 1 {
+		session.Role = state.SUPERADMIN
+		res.Role = state.SUPERADMIN
+	} else if role == 2 {
+		session.Role = state.INFO_ADMIN
+		res.Role = state.INFO_ADMIN
+	} else if role == 3 {
+		session.Role = state.ADMIN
+		res.Role = state.ADMIN
+	} else if role == 4 {
+		session.Role = state.MERCHANT
+		res.Role = state.MERCHANT
+	} else if role == 5 {
+		session.Role = state.AGENT
+		res.Role = state.AGENT
+	}
+	suhandler.Authenticator.SaveSession(c.Writer, session)
+	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")
+	res.Msg = translation.TranslateIt("authenticated")
+	res.StatusCode = http.StatusOK
+	res.User = user
+	c.JSON(res.StatusCode, res)
 }
 
 // ChangePassword ...
@@ -266,9 +369,9 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 		c.JSON(res.StatusCode, res)
 		return
 	}
-	println(input.Email, user.Email)
 	if len(strings.Trim(input.Email, " ")) > 0 && helper.MatchesPattern(input.Email, helper.EmailRX) && (input.Email != user.Email) {
-		println("Email Changed")
+		// check the existance of an email
+		// user , _ , _ ,  er := uhandler.Service.
 		emailInConfirmation := &model.EmailConfirmation{
 			UserID:       user.ID,
 			Email:        input.Email,
@@ -287,7 +390,7 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 				}
 				message = translation.Translate(session.Lang, err.Error())
 			} else {
-				res.StatusCode = http.StatusNotModified
+				res.StatusCode = http.StatusOK
 			}
 			res.Msg = message
 			res.Errors["email"] = translation.Translate(session.Lang, err.Error())
@@ -309,9 +412,8 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 		}
 		println(" The Token :", tokent)
 		// Now I am gonna send the Confirmation Link and the token to e clicked by the email owner through his email.
-		success = mail.ConfirmUpdateEmailAccount([]string{input.Email}, tokent, user.Firstname, "127.0.0.1")
+		success = mail.ConfirmUpdateEmailAccount(c.Writer, []string{input.Email}, tokent, user.Firstname, "127.0.0.1")
 		if !success {
-			println("Sending an Email ")
 			res.Msg = translation.TranslateIt("internal problem, please trya again later")
 			res.StatusCode = http.StatusInternalServerError
 			c.JSON(res.StatusCode, res)
@@ -321,7 +423,6 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 	}
 	status, er = uhandler.Service.UpdateUser(ctx, user)
 	if (er != nil) || (status != state.STATUS_OK) {
-		print("Updating User ", er.Error())
 		if er != nil {
 			println(er.Error())
 		}
@@ -335,8 +436,139 @@ func (uhandler *UserHandler) UpdateProfile(c *gin.Context) {
 	c.JSON(res.StatusCode, res)
 }
 
+// ConfirmEmail  ...
 func (uhandler *UserHandler) ConfirmEmail(c *gin.Context) {
-	//
-	// ctx := c.Request.Context()
-	//
+	ctx := c.Request.Context()
+	// token := strings.Trim(strings.TrimPrefix(c.Request.Header["Authorization"][0], "Bearer "), " ")
+	// if token == "" {
+	token := c.Query("token")
+	// }
+	session, er := uhandler.Authenticator.GetEmailSession(token)
+	if er != nil || session == nil {
+		uhandler.Templates.ExecuteTemplate(c.Writer,
+			"message.html",
+			&struct {
+				Message string
+			}{
+				Message: "Unauthorized Access!",
+			})
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	log.Println(session.Email, session.OldEmail, session.ID, session.IsNewAccount)
+	er = uhandler.Service.ConfirmUserEmailUpdate(ctx, session.ID, session.Email, session.OldEmail)
+	if er != nil {
+
+		if strings.Contains(er.Error(), "duplicate key value violates unique constraint \"users_email_ke\"") {
+			uhandler.Templates.ExecuteTemplate(c.Writer,
+				"message.html",
+				&struct {
+					Message string
+				}{
+					Message: "You can't have several role in our System!",
+				})
+			c.Writer.WriteHeader(http.StatusNotFound)
+			return
+		}
+		uhandler.Templates.ExecuteTemplate(c.Writer,
+			"message.html",
+			&struct {
+				Message string
+			}{
+				Message: "Confirmation was not succesful!",
+			})
+		c.Writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+	uhandler.Templates.ExecuteTemplate(c.Writer,
+		"message.html",
+		&struct {
+			Message string
+		}{
+			Message: "Succesfuly confirmed",
+		})
+	c.Writer.WriteHeader(http.StatusOK)
+}
+
+// ConfirmTempoCXP
+func (uhandler *UserHandler) ConfirmTempoCXP(c *gin.Context) {
+	ctx := c.Request.Context()
+	input := &struct {
+		Phone string `json:"phone"`
+		Code  string `json:"otp_code"`
+	}{}
+	res := &struct {
+		StatusCode int         `json:"status_code"`
+		Msg        string      `json:"msg"`
+		Role       string      `json:"role"`
+		User       *model.User `json:"user,omitempty"`
+		Token      string      `json:"token,omitempty"`
+	}{}
+
+	jsonDec := json.NewDecoder(c.Request.Body)
+	er := jsonDec.Decode(input)
+	if input.Phone == "" || er != nil || len(input.Code) > 5 {
+		res.Msg = translation.TranslateIt("missing important parameter")
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	input.Phone = strings.Trim(input.Phone, " ")
+	if !form.MatchesPattern(input.Phone, form.PhoneRX) {
+		res.Msg = "invalid \"phone\" address"
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	var tcxp model.TempoCXP
+	err := uhandler.Service.GetTempoCXP(ctx, input.Phone, tcxp)
+	if err != nil || &(tcxp) == nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("target user not found ")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+
+	user, role, status, er := uhandler.Service.GetUserByPhone(ctx, input.Phone)
+	if status != state.STATUS_OK || er != nil || user == nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("can't find any user with the specified phone. it may be because your confirmation expired")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+
+	err = uhandler.Service.RemoveTempoCXP(ctx, input.Phone)
+	if err != nil {
+		res.StatusCode = http.StatusInternalServerError
+		res.Msg = translation.TranslateIt("internal problem, please try again later")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	session := &model.Session{
+		ID:    user.ID,
+		Email: user.Email,
+		Lang:  user.Lang,
+	}
+	if role == 1 {
+		session.Role = state.SUPERADMIN
+		res.Role = state.SUPERADMIN
+	} else if role == 2 {
+		session.Role = state.INFO_ADMIN
+		res.Role = state.INFO_ADMIN
+	} else if role == 3 {
+		session.Role = state.ADMIN
+		res.Role = state.ADMIN
+	} else if role == 4 {
+		session.Role = state.MERCHANT
+		res.Role = state.MERCHANT
+	} else if role == 5 {
+		session.Role = state.AGENT
+		res.Role = state.AGENT
+	}
+	uhandler.Authenticator.SaveSession(c.Writer, session)
+	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")
+	res.Msg = translation.TranslateIt("authenticated")
+	res.StatusCode = http.StatusOK
+	res.User = user
+	c.JSON(res.StatusCode, res)
 }

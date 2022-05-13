@@ -20,6 +20,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
 	pgxstorage "github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/subscriber"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/superadmin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
@@ -91,6 +92,10 @@ func main() {
 	dictionaryservice := dictionary.NewDictionaryService(dictionaryrepo)
 	dictionaryhandler := rest.NewDictionaryHandler(dictionaryservice)
 
+	storerepo := pgx_storage.NewStoreRepo(conn)
+	storeservice := store.NewStoreService(storerepo)
+	storehandler := rest.NewStoreHandler(storeservice)
+
 	userhandler := rest.NewUserHandler(templates, userservice, authenticator)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
@@ -108,5 +113,6 @@ func main() {
 		agenthandler,
 		dictionaryhandler,
 		merchanthandler,
+		storehandler,
 	).Run(":8080")
 }

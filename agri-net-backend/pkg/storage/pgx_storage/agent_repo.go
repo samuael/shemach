@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
@@ -33,6 +35,10 @@ func (repo *AgentRepo) RegisterAgent(ctx context.Context, agent *model.Agent) (i
 		agent.FieldAddress.UniqueAddressName, fmt.Sprint(agent.FieldAddress.Latitude), fmt.Sprint(agent.FieldAddress.Longitude),
 	).Scan((&agentID))
 	if er != nil {
+		if strings.Contains(er.Error(), "duplicate key value violates unique constraint") {
+			return -4, er
+		}
+		log.Println(er.Error())
 		return agentID /*addressID, */, er
 	}
 	agent.FieldAddress.ID = uint(addressID)

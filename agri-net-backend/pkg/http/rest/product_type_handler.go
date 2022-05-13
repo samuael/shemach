@@ -23,6 +23,7 @@ type IProductHandler interface {
 	UnsubscriberForProduct(c *gin.Context)
 	UpdateProduct(c *gin.Context)
 	SearchProduct(c *gin.Context)
+	GetProductUnits(c *gin.Context)
 }
 
 type ProductHandler struct {
@@ -320,4 +321,23 @@ func (phandler *ProductHandler) SearchProduct(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, products)
+}
+
+func (phandler *ProductHandler) GetProductUnits(c *gin.Context) {
+	// ctx := c.Request.Context()
+	id, er := strconv.Atoi(c.Query("id"))
+	if er != nil {
+		c.JSON(http.StatusOK, phandler.Service.GetProductUnits())
+		return
+	}
+	res := &struct {
+		ID         int    `json:"id"`
+		ShortTitle string `json:"short_title"`
+		Title      string `json:"title"`
+	}{}
+	ACK, fulltext := phandler.Service.GetProductInfoByID(id)
+	res.ShortTitle = ACK
+	res.Title = fulltext
+	res.ID = id
+	c.JSON(http.StatusOK, res)
 }

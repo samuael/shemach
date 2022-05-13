@@ -18,6 +18,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/subscriber"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/telda_sms"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
@@ -137,18 +138,18 @@ func (shan *SubscriberHandler) RegisterSubscriber(c *gin.Context) {
 		SenderName: translation.Translate(tempo.Lang, os.Getenv("SYSTEM_NAME")),
 		Remark:     translation.Translate(tempo.Lang, "This is your confirmation code from Agri-Info systems"),
 	}
-	// otpResponse, err := telda_sms.SendOtp(otpCode)
-	// if err != nil || otpResponse.MsgShortMessage != "Success" {
-	// 	if err != nil {
-	// 		println(err.Error())
-	// 	}
-	// 	res.Msg = translation.Translate(tempo.Lang, "internal problem, please try again")
-	// 	res.StatusCode = http.StatusInternalServerError
-	// 	res.OTP = nil
-	// 	c.JSON(res.StatusCode, res)
-	// 	return
-	// }
-	// println(otpResponse)
+	otpResponse, err := telda_sms.SendOtp(otpCode)
+	if err != nil || otpResponse.MsgShortMessage != "Success" {
+		if err != nil {
+			println(err.Error())
+		}
+		res.Msg = translation.Translate(tempo.Lang, "internal problem, please try again")
+		res.StatusCode = http.StatusInternalServerError
+		res.OTP = nil
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	println(otpResponse)
 	// shan.OtpService <- otpResponse
 	ctx = context.WithValue(ctx, "tempo_subscriber", tempo)
 	status, er := shan.Service.RegisterTempoSubscriber(ctx)

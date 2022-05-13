@@ -26,6 +26,9 @@ func Route(
 	userhandler IUserHandler,
 	adminhandler IAdminHandler,
 	agenthandler IAgentHandler,
+	dictionaryhandler IDictionaryHandler,
+	merchanthandler IMerchantHandler,
+	storehandler IStoreHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -41,7 +44,7 @@ func Route(
 	router.POST("/api/subscription/login", subscriberhandler.SubscriberLoginWithPhone)
 	router.POST("/api/subscription/confirm", subscriberhandler.ConfirmLoginSubscription)
 	// -------------------------------------------------------------------------------
-	router.POST("/api/login", superadminhandler.AdminsLogin)
+	router.POST("/api/login", userhandler.Login)
 
 	// product related end points
 	router.POST("/api/superadmin/product/new", rules.Authenticated(), rules.Authorized(), producthandler.CreateProductInstance)
@@ -50,6 +53,8 @@ func Route(
 	router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
 	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
 	router.GET("/api/product/search", producthandler.SearchProduct)
+	router.GET("/api/product/units", producthandler.GetProductUnits)
+	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 
 	// web socket end points
 	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
@@ -60,7 +65,6 @@ func Route(
 
 	// infoadmin related routes
 	router.POST("/api/superadmin/infoadmin/new", rules.Authenticated(), rules.Authorized(), infoadminhandler.Registerinfoadmin)
-	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 	router.GET("/api/infoadmins", infoadminhandler.ListInfoadmins)
 	router.DELETE("/api/superadmin/infoadmin", infoadminhandler.DeleteInfoadminByID)
 	router.GET("/api/infoadmin", rules.Authenticated(), infoadminhandler.GetInfoadminByID)
@@ -81,6 +85,22 @@ func Route(
 	router.POST("/api/admin/agent/new", rules.Authenticated(), rules.Authorized(), agenthandler.RegisterAgent)
 
 	// merchants related endpoints
+	router.POST("/api/admin/merchant/new", rules.Authenticated(), rules.Authorized(), merchanthandler.RegisterMerchant)
+
+	// CXP(  Commodity exchage participant ) related routes
+	router.POST("/api/cxp/account/confirm", userhandler.ConfirmTempoCXP)
+	router.GET("/api/user/account/email/confirm", userhandler.ConfirmEmail)
+
+	// Dictionary related routes
+	router.POST("/api/superadmin/dictionary/new", rules.Authenticated(), rules.Authorized(), dictionaryhandler.CreateDictionary)
+	router.PUT("/api/superadmin/dictionary", rules.Authenticated(), rules.Authorized(), dictionaryhandler.UpdateDictionary)
+	router.DELETE("/api/superadmin/dictionary", rules.Authenticated(), dictionaryhandler.DeleteDictionary)
+	router.GET("/api/dictionary/translate", dictionaryhandler.Translate)
+
+	// Store related routes
+	router.POST("/api/admin/store/new", rules.Authenticated(), rules.Authorized(), storehandler.CreateStore)
+	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)
+	router.GET("/api/store", rules.Authenticated(), storehandler.GetMerchantByID)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{
