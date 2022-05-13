@@ -143,9 +143,9 @@ func (m *rules) HasPermission(path, role, method string) bool {
 		return true
 	} else if strings.HasPrefix(path, "/api/admin/") && (role == state.ADMIN) {
 		return true
-	} else if strings.HasPrefix(path, "/api/agent/") && (role == state.AGENT) {
+	} else if (strings.HasPrefix(path, "/api/agent/") || strings.HasPrefix(path, "/api/cxp/")) && (role == state.AGENT) {
 		return true
-	} else if strings.HasPrefix(path, "/api/merchant/") && (role == state.MERCHANT) {
+	} else if (strings.HasPrefix(path, "/api/merchant/") || strings.HasPrefix(path, "/api/cxp/")) && (role == state.MERCHANT) {
 		return true
 	}
 	return false

@@ -5,6 +5,8 @@ type Crop struct {
 	ID                uint64   `json:"id"`
 	TypeID            uint     `json:"type_id"`
 	RemainingQuantity uint64   `json:"remaining_quantity"`
+	Description       string   `json:"description"`
+	Negotiable        bool     `json:"negotiable"`
 	SellingPrice      float64  `json:"selling_price"`
 	Address           *Address `json:"address"`
 	AddressRef        uint64   `json:"-"`
