@@ -19,6 +19,7 @@ import (
 
 type IAgentHandler interface {
 	RegisterAgent(c *gin.Context)
+	// GetAgentByID(c *gin.Context)
 }
 
 type AgentHandler struct {

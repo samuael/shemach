@@ -37,7 +37,6 @@ func (repo MessageRepo) SaveMessage(ctx context.Context) (*model.Message, int, e
 func (repo *MessageRepo) GetRecentMessages(ctx context.Context) ([]*model.Message, int, error) {
 	offset := ctx.Value("offset").(uint)
 	limit := ctx.Value("limit").(uint)
-	println("Offset: ", offset, " Limit: ", limit)
 	unixTime := ctx.Value("unix_time").(uint64)
 	subscriptions := ctx.Value("subscriptions").([]int)
 	lang := ctx.Value("lang").(string)

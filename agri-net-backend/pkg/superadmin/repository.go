@@ -9,4 +9,5 @@ import (
 type ISuperadminRepo interface {
 	CheckTheExistanceOfSuperadmin(ctx context.Context) int
 	GetSuperadminByEmail(ctx context.Context) (*model.Superadmin, int, error)
+	GetSuperadminByID(ctx context.Context, id int) (*model.Superadmin, error)
 }

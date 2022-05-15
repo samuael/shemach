@@ -106,6 +106,7 @@ func Route(
 	// Crop related routes
 	// This routes are applicable for only Merchants and Agents
 	router.POST("/api/cxp/crop/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
+	router.POST("/api/cxp/crop/images", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

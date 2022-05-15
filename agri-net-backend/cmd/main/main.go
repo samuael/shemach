@@ -101,7 +101,7 @@ func main() {
 	cropservice := crop.NewCropService(croprepo)
 	crophandler := rest.NewCropHandler(cropservice, productservice, storeservice, merchantservice, agentservice)
 
-	userhandler := rest.NewUserHandler(templates, userservice, authenticator)
+	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
 		subscriberService,

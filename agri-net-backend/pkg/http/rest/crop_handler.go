@@ -2,7 +2,10 @@ package rest
 
 import (
 	"encoding/json"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
@@ -12,11 +15,13 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
 type ICropHandler interface {
 	CreateProduct(c *gin.Context)
+	UploadProductImages(c *gin.Context)
 }
 type CropHandler struct {
 	Service         crop.ICropService
@@ -168,6 +173,54 @@ func (chandler *CropHandler) CreateProduct(c *gin.Context) {
 	c.JSON(res.StatusCode, res)
 }
 
+type MultipartData struct {
+	File   multipart.File
+	Header *multipart.FileHeader
+	Error  error
+}
+
+// UploadProductImages ...
 func (chandler CropHandler) UploadProductImages(c *gin.Context) {
-	//
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	err := c.Request.ParseMultipartForm(999999999999999999)
+	res := &struct {
+		Msg               string   `json:"msg"`
+		StatusCode        int      `json:"status_code"`
+		BluredImageRoutes []string `json:"blured_image_routes"`
+		ImageRoutes       []string `json:"image_routes"`
+		Error             string   `json:"error,omitempty"`
+	}{}
+	if err != nil {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.Translate(session.Lang, "bad multipart for file file Size Exceeds the limit")
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+	var subArticleImageFiles = map[int]*os.File{}
+	subArticleImages := map[int]*MultipartData{}
+	for a := 0; a < 5; a++ {
+		sf := &MultipartData{}
+		sf.File, sf.Header, sf.Error = c.Request.FormFile("image" + strconv.Itoa(a))
+		if sf.File == nil || sf.Header == nil || sf.Error != nil {
+			continue
+		}
+		defer sf.File.Close()
+		filename :=
+			state.POST_IMAGES_RELATIVE_PATH +
+				helper.GenerateRandomString(6, helper.CHARACTERS) +
+				"." + helper.GetExtension(sf.Header.Filename)
+		file, ee := os.Create(os.Getenv("ASSETS_DIRECTORY") + filename)
+		if ee != nil {
+			println(ee.Error())
+			res.StatusCode = http.StatusInternalServerError
+			res.Error = " internal server error "
+			c.JSON(http.StatusInternalServerError, res)
+			return
+		}
+		subArticleImageFiles[a] = file
+		defer subArticleImageFiles[a].Close()
+		subArticleImages[a] = sf
+	}
+	println("length : ", len(subArticleImages))
 }
