@@ -45,6 +45,11 @@ const (
 )
 
 const (
+	POST_IMAGES_RELATIVE_PATH         = "post/image/"
+	BLURRED_POST_IMAGES_RELATIVE_PATH = "post/image/blurred/"
+)
+
+const (
 	PAYMENT_STATUS_CREATED = iota
 	PAYMENT_STATUS_SEEN
 	PAYMENT_STATUS_REJECTED

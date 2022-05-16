@@ -19,6 +19,7 @@ import (
 
 type IAgentHandler interface {
 	RegisterAgent(c *gin.Context)
+	// GetAgentByID(c *gin.Context)
 }
 
 type AgentHandler struct {
@@ -140,10 +141,7 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			c.JSON(resp.StatusCode, resp)
 			return
 		}
-
-		//   --- Registering the agent instance
 		hashed, _ := helper.HashPassword(randomNumber)
-
 		agent := &model.Agent{}
 		agent.Firstname = input.Firstname
 		agent.Lastname = input.Lastname
@@ -166,8 +164,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			resp.StatusCode = http.StatusBadRequest
 			resp.Msg = translation.Translate(session.Lang, "missing important address information, please complete necessary datas.")
 		} else if status == -3 {
-			// internal problem    // "email" : "samuaeladnew@gmail.com",
-
 			resp.StatusCode = http.StatusInternalServerError
 			resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
 		} else if status == -4 {
@@ -175,7 +171,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			resp.Msg = translation.Translate(session.Lang, "agent with this information had already registered")
 
 		} else if status > 0 {
-			println(status)
 			resp.Msg = translation.Translate(session.Lang, `You will recieve an SMS a message containing the confirmation code\nplease confirm your phone number with in 30 minutes.\n The Confirmation numbe also serve as your password`)
 			resp.OTP = otpCode
 			resp.Agent = agent
@@ -183,7 +178,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		}
 		c.JSON(resp.StatusCode, resp)
 	} else {
-		println(er.Error())
 		resp.Msg = translation.TranslateIt("bad request body for agent creation")
 		resp.StatusCode = http.StatusBadRequest
 		c.JSON(resp.StatusCode, resp)

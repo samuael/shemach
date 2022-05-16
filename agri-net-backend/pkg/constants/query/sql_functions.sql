@@ -645,3 +645,42 @@ $$
         return thestoreid;
     end;
 $$ language plpgsql;
+
+
+
+-- crop_id integer,
+create or replace function createProductPost( itype_id integer,idescription varchar(500),
+        inegotiable boolean,iremaining_quantity integer,iselling_price decimal,
+        iaddress_id integer,istore_id integer,iagent_id integer,istore_owned boolean) returns integer as
+$$
+    declare
+        addressid integer;
+        cropid integer;
+        userid integer;
+    begin
+        select address_id into addressid from address where address_id = iaddress_id;
+        if not found then
+            return -1;
+        end if;
+        if istore_owned then
+            select store_id into userid from store where store_id=istore_id;
+            if not found then 
+                return -2;
+            end if;
+        else 
+            select id into userid from agent where id=iagent_id;
+            if not found then
+                return -3;
+            end if;
+        end if;
+        insert into crop(
+            type_id,description,negotiable,remaining_quantity,selling_price,address_id,store_id,agent_id,store_owned
+        ) values (
+            itype_id,idescription,inegotiable,iremaining_quantity,iselling_price,iaddress_id,istore_id,iagent_id,istore_owned
+        ) returning crop_id into cropid;
+        if not found then
+            return -4;
+        end if;
+        return cropid;
+    end;
+$$ language plpgsql;

@@ -40,3 +40,14 @@ func (repo *SuperadminRepo) GetSuperadminByEmail(ctx context.Context) (*model.Su
 	}
 	return superadmin, state.STATUS_OK, nil
 }
+
+func (repo *SuperadminRepo) GetSuperadminByID(ctx context.Context, id int) (*model.Superadmin, error) {
+	superadmin := &model.Superadmin{}
+	er := repo.DB.QueryRow(ctx, "select id ,firstname ,lastname ,phone ,email ,created_at ,password,registered_admins,registered_products from superadmin where id=$1", id).
+		Scan(&(superadmin.ID), &(superadmin.Firstname), &(superadmin.Lastname), &(superadmin.Phone), &(superadmin.Email), &(superadmin.CreatedAtUnix),
+			&(superadmin.Password), &(superadmin.RegisteredAdmins), &(superadmin.RegisteredProducts))
+	if er != nil {
+		return superadmin, er
+	}
+	return superadmin, nil
+}

@@ -10,6 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-passwd/validator v0.0.0-20180902184246-0b4c967e436b
 	github.com/gorilla/websocket v1.5.0
+	github.com/jackc/pgconn v1.12.0
 	github.com/jackc/pgx/v4 v4.16.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/subosito/gotenv v1.2.0
@@ -20,7 +21,6 @@ require (
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
-	github.com/jackc/pgconn v1.12.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lib/pq v1.10.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
