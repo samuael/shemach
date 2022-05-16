@@ -17,31 +17,33 @@ const register = (newUser) => {
 }
 
 // login request
+const login = (userCredential) => {
+    return axios.post(`${baseURL}/login`, userCredential)
+        .then(response => {
+            if (response.data.token){
+                localStorage.setItem("token", response.data.token)
+            }
+            console.log(response.data);
+            return Promise.resolve(response.data)
+        })
+        .catch(error => {
+            console.log(error.response.data)
+            return Promise.reject(error.response.data)
+        })
+}
+
+// login request
 // const login = (userCredential) => {
 //     return axios.post(`${baseURL}/login`, userCredential)
 //         .then(response => {
-//             if (response.data.token){
-//                 localStorage.setItem("x-access-token", response.data.token)
-//             }
-//             return Promise.resolve(response.data)
+//             if (response.data){
+//                 return Promise.resolve(response.data)
+//             } 
 //         })
 //         .catch(error => {
 //             return Promise.reject(error.response.data)
 //         })
 // }
-
-// login request
-const login = (userCredential) => {
-    return axios.post(`${baseURL}/login`, userCredential)
-        .then(response => {
-            if (response.data){
-                return Promise.resolve(response.data)
-            } 
-        })
-        .catch(error => {
-            return Promise.reject(error.response.data)
-        })
-}
 
 // logout service
 const logout = () => {

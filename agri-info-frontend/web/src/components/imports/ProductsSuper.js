@@ -111,9 +111,12 @@ export default class ProductsSuper extends Component {
 
     ProductService.findByTitle(this.state.searchProduct)
       .then(response => {
-        this.setState({
-          products: response.data
-        });
+        this.setState(prevState => ({
+          res_data: {
+            ...prevState.res_data,
+            products: response.data
+          } 
+        }));
         console.log(response.data);
       })
       .catch(e => {

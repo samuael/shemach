@@ -27,7 +27,6 @@ export const registerAction = (payload) => (dispatch) => {
 }
 
 // login action
-
 export const loginAction = (userCredential) => (dispatch) =>{
     return AuthService.login(userCredential)
         .then(data => {
@@ -36,12 +35,19 @@ export const loginAction = (userCredential) => (dispatch) =>{
                 type : actionType.LOGIN_SUCCESS,
                 payload : data
             })
+
+            // if (data.status_code != 200 ){
+            //     throw "failed";
+            // }
+            // var token= data.token;
+            // console.log(token);
+            // settoken(token);
             return Promise.resolve(data)
         })
         .catch(error => {
 
             dispatch({
-                type : actionType.REGISTER_FAIL,
+                type : actionType.LOGIN_FAIL,
                 payload : { err : error.message || "Login Failed" }
             })
             return Promise.reject(error)
