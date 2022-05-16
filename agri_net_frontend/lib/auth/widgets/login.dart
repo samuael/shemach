@@ -182,20 +182,17 @@ class _LoginWidgetState extends State<LoginWidget> {
                     context.read<AuthBloc>().add(
                         AuthAdminLoggedInEvent(userSate.user, userSate.role));
                     if (userSate.role == ROLE_SUPERADMIN) {
-                      context
-                          .read<UserBloc>()
-                          .add(SuperAdminLoggedInSucceeeEvent());
+                      context.read<UserBloc>().add(SuperAdminLoggedInEvent());
                     }
                     if (userSate.role == ROLE_AGENT) {
-                      context.read<UserBloc>().add(AgentLoggedInSuccessEvent());
+                      context.read<UserBloc>().add(AgentLoggedInEvent());
                     }
                     if (userSate.role == ROLE_MERCHANT) {
-                      context
-                          .read<UserBloc>()
-                          .add(MerchantLoggedInSuccessEvent());
+                      context.read<UserBloc>().add(MerchantLoggedInEvent());
                     }
-                    // Navigator.of(context).pushNamedAndRemoveUntil(
-                    //     HomeScreen.RouteName, (route) => false);
+                    if (userSate.role == ROLE_ADMIN) {
+                      context.read<UserBloc>().add(AdminLoggedInEvent());
+                    }
                   } else if (userSate is AuthAdminLoginNotSuccesful) {
                     context
                         .read<AuthBloc>()

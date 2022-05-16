@@ -1,11 +1,11 @@
 class UserState {}
 
-class UserLoggedInSuccessState extends UserState {}
+class UserLoggedInState extends UserState {}
 
-class AgentLoggedInSuccessState extends UserState {}
+class AgentLoggedInState extends UserState {}
 
-class MerchantLoggedInSuccessState extends UserState {}
+class MerchantLoggedInState extends UserState {}
 
-class SuperAdminLoggedInSuccessState extends UserState {}
+class SuperAdminLoggedInState extends UserState {}
 
 class UserWithNoRoleState extends UserState {}
