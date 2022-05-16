@@ -44,7 +44,6 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
     var he = MediaQuery.of(context).size.height;
     final elements =
         Role == "admin" ? adminSideBarItems : superAdminSideBarItems;
-
     Widget divider;
     return Container(
       width: widthAnimation.value,
@@ -96,8 +95,7 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
                       currentSelectedIndex == counter, () {
                     setState(() {
                       currentSelectedIndex = counter;
-                      Navigator.pushNamed(
-                          context, elements[counter].path.toString());
+                      Navigator.pushNamed(context, elements[counter].path!);
                     });
                   }),
                   divider

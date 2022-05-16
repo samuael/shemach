@@ -1,6 +1,16 @@
 import '../../libs.dart';
 
-class UserProfile {
+// ID        uint64 `json:"id,omitempty"`
+// Firstname string `json:"firstname"`
+// Lastname  string `json:"lastname"`
+// Phone     string `json:"phone,omitempty"`
+// Email     string `json:"email"`
+// Imgurl    string `json:"imgurl,omitempty"`
+// CreatedAt uint64 `json:"created_at,omitempty"`
+// Lang      string `json:"lang"`
+// Password  string `json:"-"`
+
+class User {
   int id;
   String firstname;
   String lastname;
@@ -10,7 +20,7 @@ class UserProfile {
   DateTime? createdAt;
   String imgurl;
 
-  UserProfile({
+  User({
     required this.id,
     required this.firstname,
     required this.lastname,
@@ -21,8 +31,8 @@ class UserProfile {
     required this.imgurl,
   });
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) {
-    return UserProfile(
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
       id: int.parse("${json['id']}"),
       firstname: json["firstname"],
       lastname: json["lastname"],
@@ -43,7 +53,6 @@ class UserProfile {
       "email": this.email,
       "phone": this.phone,
       "imgurl": this.imgurl,
-      "created_at": this.createdAt!,
       "lang": this.lang,
       "created_at": (this.createdAt!.millisecondsSinceEpoch) / 1000,
     };

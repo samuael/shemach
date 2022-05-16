@@ -1,5 +1,3 @@
-import 'package:agri_net_frontend/contracts/model/contractmodel.dart';
-
 import '../../libs.dart';
 
 final buyerContracts = [

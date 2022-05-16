@@ -1,4 +1,5 @@
 export 'bloc/bloc.dart';
+export 'bloc_event/event.dart';
 export 'screens/screens.dart';
 export 'widgets/widget.dart';
 export "data_provider/data_provider.dart";

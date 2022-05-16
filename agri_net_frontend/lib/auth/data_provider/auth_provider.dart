@@ -86,12 +86,13 @@ class AuthProvider {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
 
         StaticDataStore.HEADERS = response.headers;
-        Role = body["role"];
-        Token = body["token"];
+        // Role = body["role"];
+        // Token = body["token"];
         return UsersLoginResponse(
             statusCode: response.statusCode,
             msg: "${body["msg"]}",
-            user: UserPP.fromJson(body["user"] as Map<String, dynamic>));
+            user: User.fromJson(body["user"] as Map<String, dynamic>),
+            role: "${body["role"]}");
       } else if (response.statusCode == 401 ||
           response.statusCode == 500 ||
           response.statusCode == 404) {

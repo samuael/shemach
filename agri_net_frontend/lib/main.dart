@@ -37,7 +37,7 @@ class MyHomePageState extends State<MyHomePage> {
           primaryColor: Colors.green, //  MaterialColor(primary, swatch),
           canvasColor: Colors.white,
         ),
-        initialRoute: AuthScreen.RouteName,
+        initialRoute: HomeScreen.RouteName,
         onGenerateRoute: (setting) {
           final route = setting.name;
           if (route == AuthScreen.RouteName) {
@@ -59,6 +59,10 @@ class MyHomePageState extends State<MyHomePage> {
           } else if (route == ContractScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return ContractScreen();
+            });
+          } else if (route == NotificationScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return NotificationScreen();
             });
           }
         });

@@ -175,20 +175,32 @@ class _LoginWidgetState extends State<LoginWidget> {
                     passwordController.text != "") {
                   // Either the email controller or the password controller are empty string.
                   context.read<AuthBloc>().add(AdminLoginInProgressEvent());
-                  final result = await context.read<AuthBloc>().login(
+                  final userSate = await context.read<AuthBloc>().login(
                       AuthLoginEvent(
                           emailController.text, passwordController.text));
-                  if (result is AuthAdminLoggedIn) {
+                  if (userSate is AuthAdminLoggedIn) {
+                    context.read<AuthBloc>().add(
+                        AuthAdminLoggedInEvent(userSate.user, userSate.role));
+                    if (userSate.role == ROLE_SUPERADMIN) {
+                      context
+                          .read<UserBloc>()
+                          .add(SuperAdminLoggedInSucceeeEvent());
+                    }
+                    if (userSate.role == ROLE_AGENT) {
+                      context.read<UserBloc>().add(AgentLoggedInSuccessEvent());
+                    }
+                    if (userSate.role == ROLE_MERCHANT) {
+                      context
+                          .read<UserBloc>()
+                          .add(MerchantLoggedInSuccessEvent());
+                    }
+                    // Navigator.of(context).pushNamedAndRemoveUntil(
+                    //     HomeScreen.RouteName, (route) => false);
+                  } else if (userSate is AuthAdminLoginNotSuccesful) {
                     context
                         .read<AuthBloc>()
-                        .add(AuthAdminLoggedInEvent(result.admin));
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        HomeScreen.RouteName, (route) => false);
-                  } else if (result is AuthAdminLoginNotSuccesful) {
-                    context
-                        .read<AuthBloc>()
-                        .add(AuthAdminLoginNotSuccesfulEvent(result.Msg));
-                  } else if (result is AuthAdminLoginOnProgress) {
+                        .add(AuthAdminLoginNotSuccesfulEvent(userSate.Msg));
+                  } else if (userSate is AuthAdminLoginOnProgress) {
                     context.read<AuthBloc>().add(AdminLoginInProgressEvent());
                   }
                 }

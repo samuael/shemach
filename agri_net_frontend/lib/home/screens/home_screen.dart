@@ -21,23 +21,13 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: UserScreenAppBarDrawer(),
         body: Center(
           child: Container(
-            // height: double.infinity,
             child: Row(
               children: [
                 CollapsingSideBarDrawer(),
-                // HomePage()
-                ProductScreen(),
               ],
             ),
           ),
         ),
-        // bottomNavigationBar: BottomAppBar(
-        //     child: Row(
-        //   children: [
-        //     Footer(),
-        //   ],
-        // )),
-        // persistentFooterButtons: [Footer()],
       ),
     );
   }

@@ -17,7 +17,7 @@ class _ContractScreenState extends State<ContractScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
+        body: Container(
             child: Column(
       children: [
         Row(

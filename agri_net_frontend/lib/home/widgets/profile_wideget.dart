@@ -2,7 +2,8 @@ import '../../libs.dart';
 import '../../theme.dart';
 
 class UserAccountePage extends StatefulWidget {
-  const UserAccountePage({Key? key}) : super(key: key);
+  final User user;
+  const UserAccountePage({required this.user});
 
   @override
   State<UserAccountePage> createState() => _UserAccountePageState();
@@ -20,7 +21,7 @@ class _UserAccountePageState extends State<UserAccountePage> {
             CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
-                  'images/pp.jpg',
+                  widget.user.imgurl,
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,
@@ -31,7 +32,7 @@ class _UserAccountePageState extends State<UserAccountePage> {
               width: 10,
             ),
             Text(
-              "User Name",
+              widget.user.firstname,
               style: UserNameFontStyle,
             )
           ],
