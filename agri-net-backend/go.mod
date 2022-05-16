@@ -20,6 +20,7 @@ require (
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/jackc/pgconn v1.12.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lib/pq v1.10.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
