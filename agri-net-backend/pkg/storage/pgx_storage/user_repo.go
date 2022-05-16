@@ -3,7 +3,6 @@ package pgx_storage
 import (
 	"context"
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -38,7 +37,6 @@ func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User,
 	role = 0
 	er := repo.DB.QueryRow(ctx, "select * from getTheRoleOfUserByIdOrEmail( $1,$2);", id, email).Scan(&role)
 	if er != nil {
-		println(er.Error())
 		return nil, 0, state.STATUS_DBQUERY_ERROR, er
 	}
 	user = &model.User{}
@@ -107,9 +105,6 @@ func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
 	var count uint64
 	er = repo.DB.QueryRow(context.Background(), "select * from deleteUnconfirmedAdmins($1)", ids).Scan(&count)
 	if er != nil || count == 0 {
-		if er != nil {
-			println(er.Error())
-		}
 		return er
 	}
 	return nil
@@ -117,7 +112,6 @@ func (repo *UserRepo) DeletePendingEmailConfirmation(timestamp uint64) error {
 
 // SaveEmailConfirmation
 func (repo *UserRepo) SaveEmailConfirmation(ctx context.Context, ec *model.EmailConfirmation) (int, error) {
-	println(ec.UserID, ec.Email, ec.IsNewAccount, ec.OldEmail)
 	did := 0
 	er := repo.DB.QueryRow(ctx, "select * from insertEmailInConfirmation($1, $2,$3,$4)", ec.UserID, ec.Email, ec.IsNewAccount, ec.OldEmail).Scan(&did)
 	if er != nil {
@@ -158,7 +152,6 @@ func (repo *UserRepo) GetUserByPhone(ctx context.Context, phone string) (user *m
 	er = repo.DB.QueryRow(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,password,lang from users where phone=$1", phone).
 		Scan(&(user.ID), &(user.Firstname), &(user.Lastname), &(user.Phone), &(user.Email), &(user.Imgurl), &(user.CreatedAt), &(user.Password), &(user.Lang))
 	if er != nil {
-		println(er.Error())
 		return nil, role, state.STATUS_DBQUERY_ERROR, er
 	}
 	return user, role, state.STATUS_OK, nil
@@ -178,9 +171,6 @@ func (repo *UserRepo) GetTempoCXP(ctx context.Context, phone string, response mo
 	ere := repo.DB.QueryRow(ctx, "select id, phone ,confirmation ,role ,created_at from tempo_cxp where phone=$1", phone).Scan(
 		&(response.ID), &(response.Phone), &(response.Confirmation), &(response.Role), &(response.CreatedAt),
 	)
-	if ere != nil {
-		log.Println(ere.Error())
-	}
 	return ere
 }
 
@@ -198,7 +188,6 @@ func (repo *UserRepo) RemoveExpiredCXPConfirmations(timestamp uint64) (count int
 	phones := []string{}
 	recs, er := repo.DB.Query(context.Background(), "select phone from tempo_cxp where created_at<$1", timestamp)
 	if er != nil {
-		println(er.Error())
 		return -1, er
 	}
 	for recs.Next() {

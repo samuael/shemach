@@ -11,7 +11,7 @@ class prodcutService {
   }
 
   get(id) {
-    return http.get(`/products/${id}`);
+    return http.get(`/product?id=${id}`);
   }
 
   create(data) {
@@ -31,8 +31,8 @@ class prodcutService {
     return http.delete(`/products`);
   }
 
-  findByTitle(title) {
-    return http.get(`/product/search?title=${title}`);
+  findByTitle(name) {
+    return http.get(`/product/search?text=${name}`);
   }
 }
 

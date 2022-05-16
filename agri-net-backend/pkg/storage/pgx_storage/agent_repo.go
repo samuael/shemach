@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -58,4 +59,45 @@ func (repo *AgentRepo) RegisterAgent(ctx context.Context, agent *model.Agent) (i
 		agent.FieldAddress.ID = uint(addressID)
 	}
 	return int(agent.ID) /*int(agent.FieldAddress.ID),*/, nil
+}
+
+func (repo *AgentRepo) GetAgentByID(ctx context.Context, id int) (*model.Agent, error) {
+	agent := &model.Agent{}
+	er := repo.DB.QueryRow(ctx, `select  id,firstname,lastname,phone,email,imageurl,created_at,password,lang,posts_count,field_address_ref,registered_by from agent where id=$1`, id).
+		Scan(&(agent.ID), &(agent.Firstname), &(agent.Lastname), &(agent.Phone), &(agent.Email), &(agent.Imgurl), &(agent.CreatedAt), &(agent.Password), &(agent.Lang), &(agent.PostsCount), &(agent.FieldAddressRef), &(agent.RegisteredBy))
+	if er != nil {
+		return nil, er
+	}
+	var address model.Address
+	latitude := ""
+	longitude := ""
+	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, agent.FieldAddressRef).
+		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+	if ers == nil {
+		address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+		address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+		agent.FieldAddress = &address
+	}
+	return agent, nil
+}
+
+func (repo *AgentRepo) GetAgentsAddress(ctx context.Context, agent_id int) (*model.Address, error) {
+	addressid := 0
+	er := repo.DB.QueryRow(ctx, `select field_address_ref from agent where id=$1`, agent_id).
+		Scan(&(addressid))
+	if er != nil {
+		return nil, er
+	}
+	var address model.Address
+	latitude := ""
+	longitude := ""
+	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, addressid).
+		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+	if ers == nil {
+		address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+		address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+		return &address, nil
+
+	}
+	return nil, ers
 }

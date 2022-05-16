@@ -29,6 +29,7 @@ func Route(
 	dictionaryhandler IDictionaryHandler,
 	merchanthandler IMerchantHandler,
 	storehandler IStoreHandler,
+	crophandler ICropHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -101,6 +102,11 @@ func Route(
 	router.POST("/api/admin/store/new", rules.Authenticated(), rules.Authorized(), storehandler.CreateStore)
 	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)
 	router.GET("/api/store", rules.Authenticated(), storehandler.GetMerchantByID)
+
+	// Crop related routes
+	// This routes are applicable for only Merchants and Agents
+	router.POST("/api/cxp/crop/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
+	router.POST("/api/cxp/crop/images", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

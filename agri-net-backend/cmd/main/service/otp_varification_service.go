@@ -66,11 +66,6 @@ func (otpSer *OtpService) Run() {
 				// Email Confirmation Service functionalities
 				etimestamp := time.Now().Unix() - int64(pendingEmailConfirmationsDuration*60)
 				er = otpSer.UserService.DeletePendingEmailConfirmation(uint64(etimestamp))
-				if er != nil {
-					println(er.Error())
-				} else {
-					println("success")
-				}
 			}
 		case <-agentConfirmationTicker.C:
 			{

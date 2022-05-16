@@ -132,7 +132,6 @@ func (repo *AdminRepo) GetAdminByID(ctx context.Context, id uint64) (*model.Admi
 			&(admin.StorsCreated), &(admin.FieldAddressRef), &(admin.CreatedBy),
 		)
 	if er != nil {
-		println(er.Error())
 		return nil, er
 	}
 	madmin := admin.GetAdmin()
@@ -145,8 +144,6 @@ func (repo *AdminRepo) GetAdminByID(ctx context.Context, id uint64) (*model.Admi
 		address.Latitude, _ = strconv.ParseFloat(latitude, 64)
 		address.Longitude, _ = strconv.ParseFloat(longitude, 64)
 		madmin.FieldAddress = address
-	} else {
-		println(ers.Error())
 	}
 	return madmin, er
 }

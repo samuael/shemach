@@ -16,9 +16,14 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-passwd/validator"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/superadmin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
@@ -37,20 +42,35 @@ type IUserHandler interface {
 }
 
 type UserHandler struct {
-	Service       user.IUserService
-	Authenticator auth.Authenticator
-	Templates     *template.Template
+	Service           user.IUserService
+	AgentService      agent.IAgentService
+	MerchantService   merchant.IMerchantService
+	SuperadminService superadmin.ISuperadminService
+	AdminService      admin.IAdminService
+	InfoadminService  infoadmin.IInfoadminService
+	Authenticator     auth.Authenticator
+	Templates         *template.Template
 }
 
 func NewUserHandler(
 	templates *template.Template,
 	service user.IUserService,
 	authenticator auth.Authenticator,
+	adminservice admin.IAdminService,
+	superadminService superadmin.ISuperadminService,
+	agentService agent.IAgentService,
+	merchantService merchant.IMerchantService,
+	infoadminService infoadmin.IInfoadminService,
 ) IUserHandler {
 	return &UserHandler{
-		Service:       service,
-		Authenticator: authenticator,
-		Templates:     templates,
+		Service:           service,
+		Authenticator:     authenticator,
+		Templates:         templates,
+		MerchantService:   merchantService,
+		AgentService:      agentService,
+		AdminService:      adminservice,
+		SuperadminService: superadminService,
+		InfoadminService:  infoadminService,
 	}
 }
 
@@ -58,6 +78,7 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 	ctx := c.Request.Context()
 	input := &struct {
 		Email    string `json:"email"`
+		Phone    string `json:"phone"`
 		Password string `json:"password"`
 	}{}
 	jsonDecoder := json.NewDecoder(c.Request.Body)
@@ -65,7 +86,7 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 		Msg        string            `json:"msg"`
 		Errors     map[string]string `json:"errors"`
 		StatusCode int               `json:"status_code"`
-		User       *model.User       `json:"user,omitempty"`
+		User       interface{}       `json:"user,omitempty"`
 		Role       string            `json:"role,omitempty"`
 		Token      string            `json:"token,omitempty"`
 	}{
@@ -75,7 +96,7 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 	if ers == nil {
 		input.Email = strings.Trim(input.Email, " ")
 	}
-	if ers != nil || !(form.MatchesPattern(input.Email, form.EmailRX)) || len(input.Password) < 4 {
+	if ers != nil || !(form.MatchesPattern(input.Email, form.EmailRX) || form.MatchesPattern(input.Phone, form.PhoneRX)) || len(input.Password) < 4 {
 		res.Msg = translation.TranslateIt("bad request body")
 		if !(form.MatchesPattern(input.Email, form.EmailRX)) {
 			res.Errors["email"] = translation.TranslateIt("invalid phone value")
@@ -88,9 +109,25 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
+	if input.Phone != "" && strings.HasPrefix(input.Phone, "09") {
+		input.Phone = strings.Replace(input.Phone, "09", "+251", 0)
+	}
 	// check the existance of the user using his  email only.
+	var user *model.User
+	var role int
+	var status int
+	var er error
 	ctx = context.WithValue(ctx, "user_email", input.Email)
-	user, role, status, er := suhandler.Service.GetUserByEmailOrID(ctx)
+	if form.MatchesPattern(input.Phone, form.PhoneRX) {
+		log.Println("------- Phone----------------------------")
+		user, role, status, er = suhandler.Service.GetUserByPhone(ctx, input.Phone)
+		if er != nil {
+			log.Println(er.Error())
+		}
+	}
+	if form.MatchesPattern(input.Email, form.EmailRX) && user == nil {
+		user, role, status, er = suhandler.Service.GetUserByEmailOrID(ctx)
+	}
 	var failed = false
 	if status == state.STATUS_DBQUERY_ERROR || er != nil {
 		failed = true
@@ -112,7 +149,7 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 		return
 	}
 	if !(helper.CompareHash(user.Password, input.Password)) {
-		res.Msg = translation.TranslateIt("invalid email or password")
+		res.Msg = translation.TranslateIt("invalid login{Phone or Email} or password")
 		res.StatusCode = http.StatusBadRequest
 		c.JSON(res.StatusCode, res)
 		return
@@ -126,24 +163,54 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 	if role == 1 {
 		session.Role = state.SUPERADMIN
 		res.Role = state.SUPERADMIN
+		superadmin, _ := suhandler.SuperadminService.GetSuperadminByID(ctx, int(user.ID))
+		if superadmin == nil {
+			res.User = user
+		} else {
+			res.User = superadmin
+		}
 	} else if role == 2 {
 		session.Role = state.INFO_ADMIN
 		res.Role = state.INFO_ADMIN
+		infoadmin, _ := suhandler.InfoadminService.GetInfoadminByID(ctx, user.ID)
+		if infoadmin == nil {
+			res.User = user
+		} else {
+			res.User = infoadmin
+		}
 	} else if role == 3 {
 		session.Role = state.ADMIN
 		res.Role = state.ADMIN
+		admin, _ := suhandler.AdminService.GetAdminByID(ctx, user.ID)
+		if admin == nil {
+			res.User = user
+		} else {
+			res.User = admin
+		}
 	} else if role == 4 {
 		session.Role = state.MERCHANT
 		res.Role = state.MERCHANT
+		merchant, _ := suhandler.MerchantService.GetMerchantByID(ctx, int(user.ID))
+		if merchant == nil {
+			res.User = user
+		} else {
+			res.User = merchant
+		}
 	} else if role == 5 {
 		session.Role = state.AGENT
 		res.Role = state.AGENT
+		agent, _ := suhandler.AgentService.GetAgentByID(ctx, int(user.ID))
+		if agent == nil {
+			res.User = user
+		} else {
+			res.User = agent
+		}
 	}
 	suhandler.Authenticator.SaveSession(c.Writer, session)
 	res.Token = strings.Trim(strings.TrimPrefix(c.Writer.Header().Get("Authorization"), "Bearer "), " ")
 	res.Msg = translation.TranslateIt("authenticated")
 	res.StatusCode = http.StatusOK
-	res.User = user
+	// res.User = user
 	c.JSON(res.StatusCode, res)
 }
 

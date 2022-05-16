@@ -14,22 +14,25 @@ export default class SuperProductEdit extends Component {
     this.onChangePrevPrice = this.onChangePrevPrice.bind(this);
     this.onChangeCurrPrice = this.onChangeCurrPrice.bind(this);
     this.getProduct = this.getProduct.bind(this);
-    this.updatePublished = this.updatePublished.bind(this);
+ //   this.updatePublished = this.updatePublished.bind(this);
     this.updateProduct = this.updateProduct.bind(this);
     this.deleteProduct = this.deleteProduct.bind(this);
 
     this.state = {
-      currentProduct: {
-        id: null,
-        title: "",
-        description: "",
-        productionarea: "",
-        measurement: "",
-        prevprice: 0,
-        currentprice:0,
-        published: false
-      },
-      message: ""
+      res_data: {
+        status_code: 0,
+        product: {
+          id: null,
+          name: "",
+          production_area: "",
+          unit_id: 0,
+          current_price: 0,
+          created_by:0,
+          created_at: 0,
+          last_update_time: 0
+        },
+        message: ""
+      }
     };
   }
 
@@ -42,8 +45,8 @@ export default class SuperProductEdit extends Component {
 
     this.setState(function(prevState) {
       return {
-        currentProduct: {
-          ...prevState.currentProduct,
+        product: {
+          ...prevState.product,
           title: title
         }
       };
@@ -54,8 +57,8 @@ export default class SuperProductEdit extends Component {
     const description = e.target.value;
     
     this.setState(prevState => ({
-      currentProduct: {
-        ...prevState.currentProduct,
+      product: {
+        ...prevState.product,
         description: description
       }
     }));
@@ -64,8 +67,8 @@ export default class SuperProductEdit extends Component {
     const productionarea = e.target.value;
     
     this.setState(prevState => ({
-      currentProduct: {
-        ...prevState.currentProduct,
+      product: {
+        ...prevState.product,
         productionarea: productionarea
       }
     }));
@@ -75,8 +78,8 @@ export default class SuperProductEdit extends Component {
     const measurement = e.target.value;
     
     this.setState(prevState => ({
-      currentProduct: {
-        ...prevState.currentProduct,
+      product: {
+        ...prevState.product,
         measurement: measurement
       }
     }));
@@ -86,8 +89,8 @@ export default class SuperProductEdit extends Component {
     const prevprice = e.target.value;
     
     this.setState(prevState => ({
-      currentProduct: {
-        ...prevState.currentProduct,
+      product: {
+        ...prevState.product,
         prevprice: prevprice
       }
     }));
@@ -97,8 +100,8 @@ export default class SuperProductEdit extends Component {
     const currentprice = e.target.value;
     
     this.setState(prevState => ({
-      currentProduct: {
-        ...prevState.currentProduct,
+      product: {
+        ...prevState.product,
         currentprice: currentprice
       }
     }));
@@ -109,7 +112,7 @@ export default class SuperProductEdit extends Component {
     ProductService.get(id)
       .then(response => {
         this.setState({
-          currentProduct: response.data
+          res_data: response.data
         });
         console.log(response.data);
       })
@@ -118,36 +121,36 @@ export default class SuperProductEdit extends Component {
       });
   }
 
-  updatePublished(status) {
-    var data = {
-      id: this.state.currentProduct.id,
-      title: this.state.currentProduct.title,
-      description: this.state.currentProduct.description,
-      productionarea: this.state.currentProduct.productionarea,
-      prevprice: this.state.currentProduct.prevprice,
-      currentprice: this.state.currentProduct.currentprice,
-      published: status
-    };
+  // updatePublished(status) {
+  //   var data = {
+  //     id: this.state.product.id,
+  //     title: this.state.product.title,
+  //     description: this.state.product.description,
+  //     productionarea: this.state.product.productionarea,
+  //     prevprice: this.state.product.prevprice,
+  //     currentprice: this.state.product.currentprice,
+  //     published: status
+  //   };
 
-    ProductService.update(this.state.currentProduct.id, data)
-      .then(response => {
-        this.setState(prevState => ({
-          currentProduct: {
-            ...prevState.currentProduct,
-            published: status
-          }
-        }));
-        console.log(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }
+  //   ProductService.update(this.state.product.id, data)
+  //     .then(response => {
+  //       this.setState(prevState => ({
+  //         product: {
+  //           ...prevState.product,
+  //           published: status
+  //         }
+  //       }));
+  //       console.log(response.data);
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // }
 
   updateProduct() {
     ProductService.update(
-      this.state.currentProduct.id,
-      this.state.currentProduct
+      this.state.product.id,
+      this.state.product
     )
       .then(response => {
         console.log(response.data);
@@ -161,7 +164,7 @@ export default class SuperProductEdit extends Component {
   }
 
   deleteProduct() {    
-    ProductService.delete(this.state.currentProduct.id)
+    ProductService.delete(this.state.product.id)
       .then(response => {
         console.log(response.data);
         this.props.history.push('/super-admin/products')
@@ -172,7 +175,9 @@ export default class SuperProductEdit extends Component {
   }
 
   render() {
-    const { currentProduct } = this.state;
+    const { res_data } = this.state;
+    console.log(res_data);
+   console.log(res_data.product);
 
     return (
       <>
@@ -203,7 +208,7 @@ export default class SuperProductEdit extends Component {
 	</header>
 
       <div id="superproedit">
-        {currentProduct ? (
+        {res_data.product ? (
           <div className="edit-form mt-4">
             <h4>Product</h4>
             <form className="row supeditform">
@@ -214,18 +219,18 @@ export default class SuperProductEdit extends Component {
                   type="text"
                   className="form-control"
                   id="title"
-                  value={currentProduct.title}
-                  onChange={this.onChangeTitle}
+                  value={res_data.product.name}
+                //  onChange={this.onChangeTitle}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="description">Description</label>
+                <label htmlFor="description">Unit ID</label>
                 <input
                   type="text"
                   className="form-control"
                   id="description"
-                  value={currentProduct.description}
-                  onChange={this.onChangeDescription}
+                  value={res_data.product.unit_id}
+                //  onChange={this.onChangeDescription}
                 />
               </div>
            </div>
@@ -237,58 +242,61 @@ export default class SuperProductEdit extends Component {
                   type="text"
                   className="form-control"
                   id="productionarea"
-                  value={currentProduct.productionarea}
-                  onChange={this.onChangeProductionArea}
+                  value={res_data.product.production_area}
+                 // onChange={this.onChangeProductionArea}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="measurement">Measurement</label>
+                <label htmlFor="measurement">Created By</label>
                 <input
                   type="text"
                   className="form-control"
                   id="measurement"
-                  value={currentProduct.measurement}
-                  onChange={this.onChangeMeasurement}
+                  value={res_data.product.created_by}
+               //   onChange={this.onChangeMeasurement}
                 />
               </div>
             </div>
-
-            <div className="col-md-5">
-            
-              <div className="form-group">
-                <label htmlFor="prevprice">Prev Price</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="prevprice"
-                  value={currentProduct.prevprice}
-                  onChange={this.onChangePrevPrice}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="currentprice">Curr Price</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="currentprice"
-                  value={currentProduct.currentprice}
-                  onChange={this.onChangeCurrPrice}
-                />
+             
+            <div className="row">
+            <div className="col-md-6">
+                <div className="form-group">
+                  <label htmlFor="prevprice">Created At</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="prevprice"
+                    value={res_data.product.created_at}
+                //   onChange={this.onChangePrevPrice}
+                  />
+                </div>
               </div>
 
-              </div>
+              <div className="col-md-6">
+                <div className="form-group">
+                  <label htmlFor="currentprice">Curr Price</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="currentprice"
+                    value={res_data.product.current_price}
+                  //  onChange={this.onChangeCurrPrice}
+                  />
+                </div>
+            </div>
+          </div>
 
-              <div className="col-md-5">
+              {/* <div className="col-md-5">
               <div className="form-group">
                 <label>
                   <strong>Status:</strong>
                 </label>
-                {currentProduct.published ? "Published" : "Pending"}
+                {product.published ? "Published" : "Pending"}
               </div>
-              </div>
+              </div> */}
             </form>
 
-            {currentProduct.published ? (
+            {/* {product.published ? (
               <button
                 className="badge badge-primary mr-2 btn btn-primary"
                 onClick={() => this.updatePublished(false)}
@@ -302,7 +310,7 @@ export default class SuperProductEdit extends Component {
               >
                 Publish
               </button>
-            )}
+            )} */}
 
             <button
               className="badge badge-danger mr-2 btn btn-primary"

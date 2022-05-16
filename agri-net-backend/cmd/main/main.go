@@ -10,6 +10,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/crop"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/dictionary"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
@@ -96,7 +97,11 @@ func main() {
 	storeservice := store.NewStoreService(storerepo)
 	storehandler := rest.NewStoreHandler(storeservice)
 
-	userhandler := rest.NewUserHandler(templates, userservice, authenticator)
+	croprepo := pgx_storage.NewCropRepo(conn)
+	cropservice := crop.NewCropService(croprepo)
+	crophandler := rest.NewCropHandler(cropservice, productservice, storeservice, merchantservice, agentservice)
+
+	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
 		subscriberService,
@@ -114,5 +119,6 @@ func main() {
 		dictionaryhandler,
 		merchanthandler,
 		storehandler,
+		crophandler,
 	).Run(":8080")
 }

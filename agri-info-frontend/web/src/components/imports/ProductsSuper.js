@@ -14,7 +14,12 @@ export default class ProductsSuper extends Component {
     this.searchProduct = this.searchProduct.bind(this);
 
     this.state = {
-      products: [
+      res_data: {
+        status_code: 0,
+        products: [],
+        msg: ""
+      },
+      productts: [
     //     {
     //     id: 1,
     //     title: 'Product 1',
@@ -63,7 +68,7 @@ export default class ProductsSuper extends Component {
     ProductService.getAll()
       .then(response => {
         this.setState({
-          products: response.data
+          res_data: response.data
         });
         console.log(response.data);
       })
@@ -117,8 +122,8 @@ export default class ProductsSuper extends Component {
   }
 
   render() {
-    const { searchProduct, products, currentProduct, currentIndex } = this.state;
-
+    const { searchProduct, res_data, currentProduct, currentIndex } = this.state;
+    console.log(res_data);
     return (
     <div id="productsuper">
       <div className="list row">
@@ -152,8 +157,8 @@ export default class ProductsSuper extends Component {
           <h4>Product List</h4>
 
           <ul className="list-group">
-            {products &&
-              products.map((product, index) => (
+            {
+              res_data.products.map((product, index) => (
                 <div className={
                   "list-group-item " +
                   (index === currentIndex ? "active" : "")
@@ -163,10 +168,10 @@ export default class ProductsSuper extends Component {
                 >                
                     <div className="Name">
                       
-                    Product type :{product.title}
+                    Product type :{product.name}
                     </div>
-                  <p className="Place">Prod area :{product.productionarea}</p>
-                  <p className="Price">Curr price :{product.currentprice}</p>
+                  <p className="Place">Price :{product.current_price}</p>
+                  <p className="Price"> Before :{product.created_at}</p>
                 </div>
 
               ))}
@@ -187,44 +192,60 @@ export default class ProductsSuper extends Component {
                 <label>
                   <strong>Name:</strong>
                 </label>{" "}
-                {currentProduct.title}
+                {currentProduct.name}
               </div>
-              <div>
+              {/* <div>
                 <label>
                   <strong>Description:</strong>
                 </label>{" "}
                 {currentProduct.description}
-              </div>
+              </div> */}
               <div>
                 <label>
                   <strong>Prod Area:</strong>
                 </label>{" "}
-                {currentProduct.productionarea}
+                {currentProduct.production_area}
               </div>
               <div>
                 <label>
-                  <strong>Measurement:</strong>
+                  <strong>Unit ID:</strong>
                 </label>{" "}
-                {currentProduct.measurement}
+                {currentProduct.unit_id}
               </div>
               <div>
                 <label>
-                  <strong>Prev Price:</strong>
+                  <strong>Curr Price:</strong>
                 </label>{" "}
-                {currentProduct.prevprice}
+                {currentProduct.current_price}
               </div>
               <div>
                 <label>
-                  <strong>Curr Price</strong>
+                  <strong>Created By :</strong>
                 </label>{" "}
-                {currentProduct.currentprice}
+                {currentProduct.created_by}
               </div>
+
               <div>
+                <label>
+                  <strong>Created At :</strong>
+                </label>{" "}
+                {currentProduct.created_at}
+              </div>
+
+              <div>
+                <label>
+                  <strong>Last Update Time : </strong>
+                </label>{" "}
+                {currentProduct.last_update_time}
+              </div>
+
+             
+              {/* <div>
                 <label>
                   <strong>Status:</strong>
                 </label>{" "}
                 {currentProduct.published ? "Published" : "Pending"}
-              </div>
+              </div> */}
 
               <Link
                 to={"/super/products/" + currentProduct.id}

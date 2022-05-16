@@ -14,7 +14,12 @@ export default class Products extends Component {
     this.searchProduct = this.searchProduct.bind(this);
 
     this.state = {
-      products: [
+      res_data: {
+        status_code: 0,
+        products: [],
+        msg: ""
+      },
+      prodduct: [
     //     {
     //     id: 1,
     //     title: 'Product 1',
@@ -48,6 +53,7 @@ export default class Products extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
     this.retrieveProducts();
   }
 
@@ -63,8 +69,11 @@ export default class Products extends Component {
     ProductService.getAll()
       .then(response => {
         this.setState({
-          products: response.data
-        });
+          // res_data: JSON.parse(response.data)
+          res_data: response.data
+        }
+        //console.log(response.data);
+        );
         console.log(response.data);
       })
       .catch(e => {
@@ -80,9 +89,9 @@ export default class Products extends Component {
     });
   }
 
-  setActiveProduct(tutorial, index) {
+  setActiveProduct(product, index) {
     this.setState({
-      currentProduct: tutorial,
+      currentProduct: product,
       currentIndex: index
     });
   }
@@ -117,8 +126,9 @@ export default class Products extends Component {
   }
 
   render() {
-    const { searchProduct, products, currentProduct, currentIndex } = this.state;
-
+    const { searchProduct, products, prodduct, res_data, currentProduct, currentIndex } = this.state;
+    console.log(prodduct);
+    console.log(res_data);
     return (
       <div id="productsmain">
       <div className="list row">
@@ -164,8 +174,8 @@ export default class Products extends Component {
               ))}
           </ul> */}
                <ul className="list-group">
-            {products &&
-              products.map((product, index) => (
+            { 
+              res_data.products.map((product, index) => (
                 <div className={
                   "list-group-item " +
                   (index === currentIndex ? "active" : "")
@@ -175,21 +185,39 @@ export default class Products extends Component {
                 >                
                     <div className="Name">
                       
-                    Name :{product.title}
+                    Name :{product.name}
                     </div>
-                  <p className="Time">Price :{product.currentprice}</p>
-                  <p className="Time">Before {product.currentprice} minutes</p>
+                  <p className="Time">Price :{product.current_price}</p>
+                  <p className="Time">Before {product.created_at} minutes</p>
                 </div>
 
-              ))}
-          </ul>
+              ))
 
-          <button
+            //  data = Array.from(products.data);
+             
+            //  res_data.products.map((product, index) => (
+            //     <li
+            //       className={
+            //         "list-group-item " +
+            //         (index === currentIndex ? "active" : "")
+            //       }
+            //       onClick={() => this.setActiveProduct(product, index)}
+            //       key={index}
+            //     >
+            //       {product.name}
+            //     </li>
+            //   ))
+
+
+              }
+            </ul>
+
+          {/* <button
             className="m-3 btn btn-sm btn-danger"
             onClick={this.removeAllProducts}
           >
             Remove All
-          </button>
+          </button> */}
         </div>
         <div className="col-md-6 description">
           {currentProduct ? (
@@ -199,47 +227,57 @@ export default class Products extends Component {
                 <label>
                   <strong>Name:</strong>
                 </label>{" "}
-                {currentProduct.title}
-              </div>
-              <div>
-                <label>
-                  <strong>Description:</strong>
-                </label>{" "}
-                {currentProduct.description}
+                {currentProduct.name}
               </div>
               <div>
                 <label>
                   <strong>Prod Area:</strong>
                 </label>{" "}
-                {currentProduct.productionarea}
+                {currentProduct.production_area}
               </div>
               <div>
                 <label>
-                  <strong>Measurement:</strong>
+                  <strong>Unit ID :</strong>
                 </label>{" "}
-                {currentProduct.measurement}
+                {currentProduct.unit_id}
+              </div>
+             
+              <div>
+                <label>
+                  <strong>Curr Price:</strong>
+                </label>{" "}
+                {currentProduct.current_price}
               </div>
               <div>
                 <label>
-                  <strong>Prev Price:</strong>
+                  <strong>Created By : </strong>
                 </label>{" "}
-                {currentProduct.prevprice}
+                {currentProduct.created_by}
               </div>
+
               <div>
                 <label>
-                  <strong>Curr Price</strong>
+                  <strong>Created At : </strong>
                 </label>{" "}
-                {currentProduct.currentprice}
+                {currentProduct.created_at}
               </div>
+
               <div>
+                <label>
+                  <strong>Last Update Time : </strong>
+                </label>{" "}
+                {currentProduct.last_update_time}
+              </div>
+
+              {/* <div>
                 <label>
                   <strong>Status:</strong>
                 </label>{" "}
                 {currentProduct.published ? "Published" : "Pending"}
-              </div>
+              </div> */}
 
               <Link
-                to={"/info/products/" + currentProduct.id}
+                to={"/info/product/" + currentProduct.id}
                 className="badge badge-warning"
               >
                 Edit

@@ -19,33 +19,31 @@ export default class SuperAdminAddPr extends Component {
 
     this.state = {
       id: null,
-      title: "",
-      description: "", 
-      productionarea: "",
-      measurement: "",
-      prevprice: 0,
-      currentprice:0,
-      published: false,
-
-      submitted: false
+      name: "",
+      production_area: "", 
+      unit_id: 0,
+      current_price: 0,
+      created_by: 0,
+      created_at: 0,
+      last_update_time:0
     };
   }
 
   onChangeTitle(e) {
     this.setState({
-      title: e.target.value
+      name: e.target.value
     });
   }
 
   onChangeDescription(e) {
     this.setState({
-      description: e.target.value
+      unit_id: e.target.value
     });
   }
 
   onChangeProdArea(e) {
     this.setState({
-      productionarea: e.target.value
+      production_area: e.target.value
     });
   }
   onChangeMeasurement(e) {
@@ -55,33 +53,33 @@ export default class SuperAdminAddPr extends Component {
   }
   onChangeCurrPrice(e) {
     this.setState({
-      currentprice: e.target.value
+      current_price: e.target.value
     });
   }
 
   saveProduct() {
     var data = {
-      title: this.state.title,
-      description: this.state.description,
-      productionarea: this.state.productionarea,
-      measurement:this.state.measurement,
-      prevprice: this.state.prevprice,
-      currentprice: this.state.currentprice
+      name: this.state.name,
+      unit_id: this.state.unit_id,
+      production_area: this.state.production_area,
+      current_price:this.state.current_price
+      // prevprice: this.state.prevprice,
+      // currentprice: this.state.currentprice
     };
 
     ProductDataService.create(data)
       .then(response => {
         this.setState({
           id: response.data.id,
-          title: response.data.title,
-          description: response.data.description,
-          productionarea: response.data.productionarea,
-          measurement: response.data.measurement,
-          prevprice: response.data.prevprice,
-          currentprice: response.data.currentprice,
-          published: response.data.published,
+          name: response.data.name,
+          unit_id: response.data.unit_id,
+          production_area: response.data.production_area,
+          current_price: response.data.current_price,
+          created_by: response.data.created_by,
+          created_at: response.data.created_at,
+          last_update_time: response.data.last_update_time
 
-          submitted: true
+         // submitted: true
         });
         console.log(response.data);
       })
@@ -93,15 +91,13 @@ export default class SuperAdminAddPr extends Component {
   newProduct() {
     this.setState({
       id: null,
-      title: "",
-      description: "",
-      productionarea: "",
-      measurement: "",
-      prevprice: 0,
-      currentprice: 0,
-      published: false,
-
-      submitted: false
+      name: "",
+      production_area: "", 
+      unit_id: 0,
+      current_price: 0,
+      created_by: 0,
+      created_at: 0,
+      last_update_time:0
     });
   }
 
@@ -138,20 +134,20 @@ export default class SuperAdminAddPr extends Component {
                 className="form-control"
                 id="title"
                 required
-                value={this.state.title}
+                value={this.state.name}
                 onChange={this.onChangeTitle}
                 name="title"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Description</label>
+              <label htmlFor="description">Unit ID</label>
               <input
                 type="text"
                 className="form-control"
                 id="description"
                 required
-                value={this.state.description}
+                value={this.state.unit_id}
                 onChange={this.onChangeDescription}
                 name="description"
               />
@@ -164,13 +160,13 @@ export default class SuperAdminAddPr extends Component {
                 className="form-control"
                 id="prodarea"
                 required
-                value={this.state.productionarea}
+                value={this.state.production_area}
                 onChange={this.onChangeProdArea}
                 name="prodarea"
               />
             </div>
 
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="description">Measurement</label>
               <input
                 type="text"
@@ -181,7 +177,7 @@ export default class SuperAdminAddPr extends Component {
                 onChange={this.onChangeMeasurement}
                 name="measurement"
               />
-            </div>
+            </div> */}
             <div className="form-group">
               <label htmlFor="currprice">Price</label>
               <input
@@ -189,7 +185,7 @@ export default class SuperAdminAddPr extends Component {
                 className="form-control"
                 id="currprice"
                 required
-                value={this.state.currentprice}
+                value={this.state.current_price}
                 onChange={this.onChangeCurrPrice}
                 name="currprice"
               />

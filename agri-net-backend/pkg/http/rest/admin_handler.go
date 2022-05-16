@@ -70,13 +70,11 @@ func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 		}
 		if !fail {
 			if admin, err := ahandler.Service.GetAdminByEmail(ctx, input.Email); admin != nil && err == nil {
-				println(admin.ID, admin.Email, admin.Phone, admin.Password)
 				resp.Msg = "account with this email already exist."
 				c.JSON(http.StatusUnauthorized, resp)
 				return
 			}
 			if er != nil {
-				println(er.Error())
 				resp.Msg = " Internal Server error "
 				c.JSON(http.StatusInternalServerError, resp)
 				return
@@ -116,7 +114,6 @@ func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 						resp.StatusCode = http.StatusInternalServerError
 						resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later")
 					} else {
-						println(er.Error(), "   ||  ")
 						resp.StatusCode = http.StatusInternalServerError
 						resp.Msg = translation.Translate(session.Lang, "Internal server error, please try again later")
 					}

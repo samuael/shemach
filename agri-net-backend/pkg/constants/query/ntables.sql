@@ -169,6 +169,8 @@ create table img (
 create table crop (
     crop_id serial primary key,
     type_id integer not null,
+    description  varchar(500)  default '',
+    negotiable boolean default false,
     remaining_quantity integer default 0,
     selling_price decimal not null default 0,
     address_id integer references address(address_id) not null,
