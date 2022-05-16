@@ -18,8 +18,27 @@ class prodcutService {
     return http.post("/superadmin/product/new", data);
   }
 
-  update(id, data) {
-    return http.put(`/infoadmin/product/${id}`, data);
+  // create(data, token) {
+  //   return http.post("/superadmin/product/new", data , {
+  //     headers: {
+  //     "Authorization"  : "Bearer "+ token ,
+  //   }
+  // });
+  // }
+
+  // update(data, token) {
+  //   return http.put("/infoadmin/product", data , {
+  //     headers: {
+  //       "Authorization"  : "Bearer "+ token ,
+  //     }
+      
+  //   });
+   
+  // }
+
+  update(data){
+     return http.put("/infoadmin/product", data);
+
   }
 
   delete(id) {
@@ -34,6 +53,28 @@ class prodcutService {
   findByTitle(name) {
     return http.get(`/product/search?text=${name}`);
   }
+
+  //For Admins
+
+  getAllAdmins() {
+    return http.get("/infoadmins");
+  }
+
+  findAdminByName(name) {
+    return http.get(`/infoadmin/search?name=${name}`);
+  }
+
+  registerAdmin(data) {
+    return http.post("/superadmin/admin/new", data);
+  }
+
+  deleteAdmin(id) {
+    return http.delete(`/superadmin/admin?id=${id}`);
+
+  }
+
+
+  
 }
 
 export default new prodcutService();

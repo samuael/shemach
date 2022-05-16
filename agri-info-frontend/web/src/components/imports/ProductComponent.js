@@ -57,9 +57,12 @@ export default class ProductComponent extends Component {
 
     this.setState(function(prevState) {
       return {
-        product: {
-          ...prevState.product,
-          name: name
+        res_data: {
+          ...prevState.res_data,
+          product: {
+            ...prevState.product,
+            name: name
+          }
         }
       };
     });
@@ -69,19 +72,25 @@ export default class ProductComponent extends Component {
     const production_area = e.target.value;
     
     this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        description: production_area
+      res_data: {
+        ...prevState.res_data,
+        product: {
+          ...prevState.product,
+          production_area: production_area
+        }
       }
     }));
   }
   onChangeProductionArea(e) {
-    const productionarea = e.target.value;
+    const production_area = e.target.value;
     
     this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        productionarea: productionarea
+      res_data: {
+        ...prevState.res_data,
+        product: {
+          ...prevState.product,
+          production_area: production_area
+        }
       }
     }));
   }
@@ -90,9 +99,12 @@ export default class ProductComponent extends Component {
     const measurement = e.target.value;
     
     this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        measurement: measurement
+      res_data: {
+        ...prevState.res_data,
+        product: {
+          ...prevState.product,
+          measurement: measurement
+        }
       }
     }));
   }
@@ -101,9 +113,12 @@ export default class ProductComponent extends Component {
     const prevprice = e.target.value;
     
     this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        prevprice: prevprice
+      res_data: {
+        ...prevState.res_data,
+        product: {
+          ...prevState.product,
+          prevprice: prevprice
+        }
       }
     }));
   }
@@ -112,10 +127,14 @@ export default class ProductComponent extends Component {
     const current_price = e.target.value;
     
     this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        current_price: current_price
+      res_data: {
+        ...prevState.res_data,
+        product: {
+          ...prevState.product,
+          current_price: current_price
+        }
       }
+     
     }));
   }
 
@@ -163,14 +182,21 @@ export default class ProductComponent extends Component {
 
   updateProduct() {
     ProductService.update(
-      this.state.product.id,
-      this.state.product
+      this.state.res_data.product.id,
+      this.state.res_data.product.current_price
     )
       .then(response => {
         console.log(response.data);
-        this.setState({
-          message: "The product was updated successfully!"
-        });
+        this.setState(prevState => ({
+          res_data: {
+            ...prevState.res_data,
+            msg: "The product was updated successfully!"
+          }
+        }));
+        // this.setState({
+
+        //   msg: "The product was updated successfully!"
+        // });
       })
       .catch(e => {
         console.log(e);
@@ -190,8 +216,10 @@ export default class ProductComponent extends Component {
 
   render() {
     const { res_data } = this.state;
-   // console.log(res_data);
-   // console.log(res_data.product);
+   console.log(res_data);
+   console.log(res_data.product);
+   console.log(res_data.msg);
+  // console.log(res_data.product.name);
 
     return (
       <>
@@ -338,7 +366,7 @@ export default class ProductComponent extends Component {
             >
               Update
             </button>
-            <p>{this.state.message}</p>
+            <p>{this.state.msg}</p>
           </div>
         ) : (
           <div>

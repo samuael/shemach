@@ -28,8 +28,40 @@ export default function Login() {
             password
         }
         // const userdata = { email: "fantahunfekadu1@gmail.com", password : "admin123"}
-        dispatch(loginAction(userCredential)).then(data => history.push('/products'))
-            .catch(err => console.log(err))
+        const login = dispatch(loginAction(userCredential))
+        login
+            .then(data => {
+                if (data.role == "infoadmin"){
+                    history.push('/products')
+                }
+                else if (data.role == "superadmin"){
+                    history.push('/super-admin/products')
+                }
+                else if (data.role == "admin"){
+                    history.push('/super-admin/products')
+                }
+                else if (data.role == "agent"){
+                    history.push('/super-admin/products')
+                }
+                else if (data.role == "merchant"){
+                    history.push('/super-admin/products')
+                }
+                else {
+                    history.push('/super-admin/products')
+                }
+                console.log(data.role);
+                
+            }
+                // history.push('/products') 
+            
+            )
+            .catch(error => { 
+                console.log(error.err)
+                setError(error.err)
+            })
+
+        // dispatch(loginAction(userCredential)).then(data => history.push('/products'))
+        //     .catch(err => console.log(err))
 
             // setError(error.err)
 
