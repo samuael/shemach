@@ -146,24 +146,26 @@ export default class BrodReceived extends Component {
           <h4>Inboxes</h4>
 
           <ul className="list-group">
-            {products &&
-              products.map((product, index) => (
-                <div className={
-                  "list-group-item " +
-                  (index === currentIndex ? "active" : "")
-                }
-                onClick={() => this.setActiveProduct(product, index)}
-                key={index}
-                >                
-                    <div className="Name">
+            {
+            // products &&
+            //   products.map((product, index) => (
+            //     <div className={
+            //       "list-group-item " +
+            //       (index === currentIndex ? "active" : "")
+            //     }
+            //     onClick={() => this.setActiveProduct(product, index)}
+            //     key={index}
+            //     >                
+            //         <div className="Name">
                       
-                    {product.title}
-                    </div>
-                  <p className="Time">{product.updatedAt}</p>
-                  <p className="message">Eu sit labore minim adipisicing eu Lorem et fugiat non magna cupidatat. Ad consequat nisi qui aute consectetur nulla nulla nisi duis mollit elit laboris nostrud. Tempor sit commodo tempor pariatur excepteur sint culpa dolore. Nisi occaecat est amet deserunt. Anim dolore proident aute ullamco commodo non. </p>
-                </div>
+            //         {product.title}
+            //         </div>
+            //       <p className="Time">{product.updatedAt}</p>
+            //       <p className="message">Eu sit labore minim adipisicing eu Lorem et fugiat non magna cupidatat. Ad consequat nisi qui aute consectetur nulla nulla nisi duis mollit elit laboris nostrud. Tempor sit commodo tempor pariatur excepteur sint culpa dolore. Nisi occaecat est amet deserunt. Anim dolore proident aute ullamco commodo non. </p>
+            //     </div>
 
-              ))}
+            //   ))
+              }
           </ul>
 
           <button

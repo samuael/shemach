@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ProductService from '../../services/prodcutService'
+import adminService from '../../services/prodcutService'
 import { Link } from "react-router-dom";
 import './superControlAdmin.css'
 import photo from '../../assets/18.jpg'; 
@@ -8,64 +8,67 @@ import photo from '../../assets/18.jpg';
 export default class SuperControlAdmin extends Component {
   constructor(props) {
     super(props);
-    this.onChangesearchProduct = this.onChangesearchProduct.bind(this);
-    this.retrieveProducts = this.retrieveProducts.bind(this);
+    this.onChangeSearchAdmin = this.onChangeSearchAdmin.bind(this);
+    this.retrieveAdmins = this.retreveAdmins.bind(this);
     this.refreshList = this.refreshList.bind(this);
-    this.setActiveProduct = this.setActiveProduct.bind(this);
-    this.removeAllProducts = this.removeAllProducts.bind(this);
-    this.searchProduct = this.searchProduct.bind(this);
+    this.setActiveAdmin = this.setActiveAdmin.bind(this);
+    this.removeAllAdmins = this.removeAllAdmins.bind(this);
+    this.searchAdmin = this.searchAdmin.bind(this);
 
     this.state = {
-      products: [
+     
+        admins: [],
+      prodducts: [
     //     {
     //     id: 1,
-    //     title: 'Product 1',
+    //     title: 'admin 1',
     //     description: 'Create tasks',
     //     published : false,
     // },
     // {
     //     id: 2,
-    //     title: 'Product 2',
+    //     title: 'admin 2',
     //     description: 'Create tasks',
     //     published : false,
     // },
     // {
     //     id: 3,
-    //     title: 'Product 3',
+    //     title: 'admin 3',
     //     description: 'Create tasks',
     //     published : false,
     // },
     // {
     //     id: 4,
-    //     title: 'Product 4',
+    //     title: 'admin 4',
     //     description: 'Create tasks',
     //     published : false,
     // },
 
       ],
-      currentProduct: null,
+      currentAdmin: null,
       currentIndex: -1,
-      searchProduct: ""
+      searchAdmin: ""
     };
   }
 
   componentDidMount() {
-    this.retrieveProducts();
+    console.log(this.props)
+    this.retreveAdmins();
   }
 
-  onChangesearchProduct(e) {
-    const searchProduct = e.target.value;
+  onChangeSearchAdmin(e) {
+    const searchAdmin = e.target.value;
 
     this.setState({
-      searchProduct: searchProduct
+      searchAdmin: searchAdmin
     });
   }
 
-  retrieveProducts() {
-    ProductService.getAll()
+  retreveAdmins() {
+    adminService.getAllAdmins()
       .then(response => {
         this.setState({
-          products: response.data
+          admins: response.data
         });
         console.log(response.data);
       })
@@ -75,22 +78,22 @@ export default class SuperControlAdmin extends Component {
   }
 
   refreshList() {
-    this.retrieveProducts();
+    this.retreveAdmins();
     this.setState({
-      currentProduct: null,
+      currentAdmin: null,
       currentIndex: -1
     });
   }
 
-  setActiveProduct(tutorial, index) {
+  setActiveAdmin(admin, index) {
     this.setState({
-      currentProduct: tutorial,
+      currentAdmin: admin,
       currentIndex: index
     });
   }
 
-  removeAllProducts() {
-    ProductService.deleteAll()
+  removeAllAdmins() {
+    adminService.deleteAll()
       .then(response => {
         console.log(response.data);
         this.refreshList();
@@ -100,16 +103,16 @@ export default class SuperControlAdmin extends Component {
       });
   }
 
-  searchProduct() {
+  searchAdmin() {
     this.setState({
-      currentProduct: null,
+      currentAdmin: null,
       currentIndex: -1
     });
 
-    ProductService.findByTitle(this.state.searchProduct)
+    adminService.findAdminByName(this.state.searchAdmin)
       .then(response => {
         this.setState({
-          products: response.data
+          admins: response.data
         });
         console.log(response.data);
       })
@@ -118,34 +121,47 @@ export default class SuperControlAdmin extends Component {
       });
   }
 
+  deleteAdmin() {    
+    adminService.deleteAdmin(this.state.currentAdmin.id)
+      .then(response => {
+        console.log(response.data);
+        this.props.history.push('/super-admin/control-admins')
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
   render() {
-    const { searchProduct, products, currentProduct, currentIndex } = this.state;
+    const { searchAdmin, admins, currentAdmin, currentIndex } = this.state;
+    console.log(admins);
+ //  console.log(res_data);
 
     return (
     <div id="supercontroladmins">
       <div className="list row">
-        <div className="col-md-8">
-          <div className="input-group mb-3">
+        <div className="col-md-10">
+          {/* <div className="input-group mb-3">
             <input
               type="text"
               className="form-control"
               placeholder="Search admins here"
-              value={searchProduct}
-              onChange={this.onChangesearchProduct}
+              value={searchAdmin}
+              onChange={this.onChangeSearchAdmin}
             />
             <div className="input-group-append">
               <button
                 className="btn btn-outline-secondary searchbuttom"
                 type="button"
-                onClick={this.searchProduct}
+                onClick={this.searchAdmin}
               >
                 Search
               </button>
             </div>
-          </div>
+          </div> */}
        
-        </div>
-        <div className="col-md-4">
+        </div> 
+        <div className="col-md-2">
               <button className="btn btn-primary add-button">
               <Link  className="linkadd" to="/super-admin/reg-admin"><i class="fa-solid fa-plus"></i>Register Admin</Link>
               </button>
@@ -154,30 +170,30 @@ export default class SuperControlAdmin extends Component {
           <h4>Admin List</h4>
 
           <ul className="list-group">
-            {products &&
-              products.map((product, index) => (
+            {
+            admins.map((admin, index) => (
             <div className={
                   "list-group-item " +
                   (index === currentIndex ? "active" : "")
                 }
-                onClick={() => this.setActiveProduct(product, index)}
+                onClick={() => this.setActiveAdmin(admin, index)}
                 key={index}
                 >    
                 <div className="row eachadmins mt-4"> 
                     <div className="col-sm-4">
-                        <img src={photo} alt="photo" className="adminimg"></img>
+                        <img src={admin.imgurl} alt="photo" className="adminimg"></img>
                     </div>   
 
                     <div className="col-sm-7">
                     <div className="Name">
-                             Name :{product.title}
+                             Name :{admin.firstname}
                         </div>
-                    <p className="Place">Phone :{product.productionarea}</p>
-                    <p className="Price">Email :{product.currentprice}</p>
+                    <p className="Place">Phone :{admin.phone}</p>
+                    <p className="Price">Email :{admin.email}</p>
                     </div> 
 
                     <div className="col-sm-1">
-                    <Link  className="deleteadmin" to="/super-admin/add-product"><i class="fa-solid fa-trash-can"></i></Link>
+                    <button  className="deleteadmin" onClick={this.deleteAdmin}><i class="fa-solid fa-trash-can"></i></button>
 
 
                     </div>        
@@ -188,69 +204,85 @@ export default class SuperControlAdmin extends Component {
               ))}
           </ul>
 
-          <button
+          {/* <button
             className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllProducts}
+            onClick={this.removeAllAdmins}
           >
             Remove All
-          </button>
+          </button> */}
         </div>
         <div className="col-md-6 description">
-          {currentProduct ? (
+          {currentAdmin ? (
             <div>
               <h4>Admin</h4>
               <div className="row">
                 <div className="col-sm-6">
-                            <img src={photo} alt="photo" className="adminimglarge"></img>
+                            <img src={admins.imgurl} alt="photo" className="adminimglarge"></img>
                 </div> 
              <div className="col-sm-6">
                 <div>
                     <label>
-                    <strong>Name :</strong>
+                    <strong>FirstName :</strong>
                     </label>{" "}
-                    {currentProduct.title}
+                    {currentAdmin.firstname}
                 </div>
                 <div>
                     <label>
-                    <strong>Gender :</strong>
+                    <strong>Lastname :</strong>
                     </label>{" "}
-                    {currentProduct.description}
+                    {currentAdmin.lastname}
                 </div>
               
               <div>
                 <label>
                   <strong>Email :</strong>
                 </label>{" "}
-                {currentProduct.productionarea}
+                {currentAdmin.email}
               </div>
               <div>
                 <label>
                   <strong>Phone :</strong>
                 </label>{" "}
-                {currentProduct.measurement}
+                {currentAdmin.phone}
               </div>
               <div>
                 <label>
-                  <strong>Age :</strong>
+                  <strong>Created By :</strong>
                 </label>{" "}
-                {currentProduct.prevprice}
+                {currentAdmin.Createdby}
               </div>
+
+              <div>
+                <label>
+                  <strong>Created At :</strong>
+                </label>{" "}
+                {currentAdmin.created_at}
+              </div>
+
+              <div>
+                <label>
+                  <strong>Language :</strong>
+                </label>{" "}
+                {currentAdmin.lang}
+              </div>
+
+
               </div>
               {/* <div>
                 <label>
                   <strong>Curr Price</strong>
                 </label>{" "}
-                {currentProduct.currentprice}
+                {currentAdmin.currentprice}
               </div> */}
               {/* <div>
                 <label>
                   <strong>Status:</strong>
                 </label>{" "}
-                {currentProduct.published ? "Published" : "Pending"}
+                {currentAdmin.published ? "Published" : "Pending"}
               </div> */}
 
               <Link
-                to={"/super/products/" + currentProduct.id}
+                to={"/super/admins/" + currentAdmin.id}
                 className="badge badge-warning col-sm-2 btn btn-primary"
               >
                 Edit

@@ -9,79 +9,305 @@ import './headerInfo.css'    //For Header
 export default class SuperAdminAddPr extends Component {
   constructor(props) {
     super(props);
-    this.onChangeTitle = this.onChangeTitle.bind(this);
-    this.onChangeDescription = this.onChangeDescription.bind(this);
+    this.onChangeProdName = this.onChangeProdName.bind(this);
+    this.onChangeProdUnitId = this.onChangeProdUnitId.bind(this);
     this.onChangeProdArea = this.onChangeProdArea.bind(this);
-    this.onChangeMeasurement = this.onChangeMeasurement.bind(this);
+   // this.onChangeMeasurement = this.onChangeMeasurement.bind(this);
     this.onChangeCurrPrice = this.onChangeCurrPrice.bind(this);
     this.saveProduct = this.saveProduct.bind(this);
     this.newProduct = this.newProduct.bind(this);
+  //  this.response_data = this.response_data.bind(this);
 
     this.state = {
-      id: null,
-      name: "",
-      production_area: "", 
-      unit_id: 0,
-      current_price: 0,
-      created_by: 0,
-      created_at: 0,
-      last_update_time:0
+    //  response_data: {
+        msg: "",
+        product: {
+          id: null,
+          name: "",
+          production_area: "",
+          unit_id: 0,
+          current_price: 0,
+          created_by:0,
+          created_at: 0,
+          last_update_time: 0
+        },
+        status_code: 0,
+    //  },
+      submitted: false
     };
   }
 
-  onChangeTitle(e) {
+  onChangeProdName(e) {
     this.setState({
       name: e.target.value
-    });
+      });
   }
 
-  onChangeDescription(e) {
+
+
+  // onChangeProdName(e) {
+  //   const name = e.target.value;
+
+  //   this.setState(function(prevState) {
+  //     return {
+  //       response_data: {
+  //         ...prevState.response_data,
+  //         product: {
+  //           ...prevState.product,
+  //           name: name
+  //         }
+  //       }
+  //     };
+  //   });
+  // }
+
+  // onChangeProdName(e) {
+  //   const name = e.target.value;
+    
+  //   this.setState(prevState => ({
+  //     response_data: {
+  //       ...prevState.response_data,
+  //       product: {
+  //         ...prevState.product,
+  //         name: name
+  //       }
+  //     }
+  //   }));
+  // }
+
+
+
+  // onChangeProdUnitId(e) {
+  //   this.setState({
+  //     unit_id: e.target.value
+  //   });
+  // }
+
+  // onChangeProdUnitId(e) {
+  //   const unit_id = e.target.value;
+
+  //   this.setState(function(prevState) {
+  //     return {
+  //       response_data: {
+  //         ...prevState.response_data,
+  //         product: {
+  //           ...prevState.product,
+  //           unit_id: unit_id
+  //         }
+  //       }
+  //     };
+  //   });
+  // }
+
+  // onChangeProdUnitId(e) {
+  //   const unit_id = e.target.value;
+    
+  //   this.setState(prevState => ({
+  //     response_data: {
+  //       ...prevState.response_data,
+  //       product: {
+  //         ...prevState.product,
+  //         unit_id: unit_id
+  //       }
+  //     }
+  //   }));
+  // }
+
+
+  // onChangeProdUnitId(e) {
+  //  // const unit_id = e.target.value;
+    
+  //   this.setState({
+  //       product: {
+  //         unit_id : e.target.value
+  //       }
+  //     }
+  //   );
+  // }
+
+  onChangeProdUnitId(e) {
     this.setState({
       unit_id: e.target.value
-    });
+      });
   }
+
+
+  
+
+  // onChangeProdArea(e) {
+  //   this.setState({
+  //     production_area: e.target.value
+  //   });
+  // }
+
+  // onChangeProdArea(e) {
+  //   const production_area = e.target.value;
+
+  //   this.setState(function(prevState) {
+  //     return {
+  //       response_data: {
+  //         ...prevState.response_data,
+  //         product: {
+  //           ...prevState.product,
+  //           production_area: production_area
+  //         }
+  //       }
+  //     };
+  //   });
+  // }
+
+  // onChangeProdArea(e) {
+  //   const production_area = e.target.value;
+    
+  //   this.setState(prevState => ({
+  //     response_data: {
+  //       ...prevState.response_data,
+  //       product: {
+  //         ...prevState.product,
+  //         production_area: production_area
+  //       }
+  //     }
+  //   }));
+  // }
+
+
+  // onChangeProdArea(e) {
+  //   //const unit_id = e.target.value;
+    
+  //   this.setState({
+  //       product: {
+  //         production_area: e.target.value
+  //       }
+  //     }
+  //   );
+  // }
+  
 
   onChangeProdArea(e) {
     this.setState({
       production_area: e.target.value
-    });
+      });
   }
-  onChangeMeasurement(e) {
-    this.setState({
-      measurement: e.target.value
-    });
-  }
+
+  
+
+  // onChangeCurrPrice(e) {
+  //   this.setState({
+  //     current_price: e.target.value
+  //   });
+  // }
+
+  // onChangeCurrPrice(e) {
+  //   const current_price = e.target.value;
+
+  //   this.setState(function(prevState) {
+  //     return {
+  //       response_data: {
+  //         ...prevState.response_data,
+  //         product: {
+  //           ...prevState.product,
+  //           current_price: current_price
+  //         }
+  //       }
+  //     };
+  //   });
+  // }
+
+  // onChangeCurrPrice(e) {
+  //   const current_price = e.target.value;
+    
+  //   this.setState(prevState => ({
+  //     response_data: {
+  //       ...prevState.response_data,
+  //       product: {
+  //         ...prevState.product,
+  //         current_price: current_price
+  //       }
+  //     }
+  //   }));
+  // }
+
+  // onChangeCurrPrice(e) {
+  //   //const unit_id = e.target.value;
+    
+  //   this.setState({
+  //       product: {
+  //         current_price: e.target.value
+  //       }
+  //     }
+  //   );
+  // }
+
+
   onChangeCurrPrice(e) {
     this.setState({
       current_price: e.target.value
-    });
+      });
   }
+  
+
+ 
+
 
   saveProduct() {
     var data = {
-      name: this.state.name,
       unit_id: this.state.unit_id,
+      name: this.state.name,
       production_area: this.state.production_area,
       current_price:this.state.current_price
-      // prevprice: this.state.prevprice,
-      // currentprice: this.state.currentprice
+
+      // unit_id: 6,
+      // name: "Faniman",
+      // production_area: "AA",
+      // current_price:2000
     };
+    console.log(data);
 
     ProductDataService.create(data)
       .then(response => {
+        console.log(response.data)
         this.setState({
-          id: response.data.id,
-          name: response.data.name,
-          unit_id: response.data.unit_id,
-          production_area: response.data.production_area,
-          current_price: response.data.current_price,
-          created_by: response.data.created_by,
-          created_at: response.data.created_at,
-          last_update_time: response.data.last_update_time
+          // id: response.data.id,
+          // name: response.data.name,
+          // unit_id: response.data.unit_id,
+          // production_area: response.data.production_area,
+          // current_price: response.data.current_price,
+          // created_by: response.data.created_by,
+          // created_at: response.data.created_at,
+          // last_update_time: response.data.last_update_time
+       // response_data: {
+          msg: response.data.msg,
+          product: {
+            id: response.data.product.id,
+            name: response.data.product.name,
+            production_area: response.data.product.production_area,
+            unit_id: response.data.product.unit_id,
+            current_price: response.data.product.current_price,
+            created_by:response.data.product.current_price,
+            created_at: response.data.product.created_at,
+            last_update_time: response.data.product.last_update_time
+          },
+          status_code: response.data.status_code,
+       // }
+          submitted: true
+        
+
+
+
+
+          // id: response.data.response_data.id,
+          // name: response.data.response_data.name,
+          // unit_id: response.data.response_data.unit_id,
+          // production_area: response.data.response_data.production_area,
+          // current_price: response.data.response_data.current_price,
+          // created_by: response.data.response_data.created_by,
+          // created_at: response.data.response_data.created_at,
+          // last_update_time: response.data.response_data.last_update_time
 
          // submitted: true
         });
         console.log(response.data);
+      //  console.log(response_data);
       })
       .catch(e => {
         console.log(e);
@@ -89,19 +315,29 @@ export default class SuperAdminAddPr extends Component {
   }
 
   newProduct() {
-    this.setState({
-      id: null,
-      name: "",
-      production_area: "", 
-      unit_id: 0,
-      current_price: 0,
-      created_by: 0,
-      created_at: 0,
-      last_update_time:0
-    });
+    this.state = {
+    //  response_data: {
+        msg: "",
+        product: {
+          id: null,
+          name: "",
+          production_area: "",
+          unit_id: 0,
+          current_price: 0,
+          created_by:0,
+          created_at: 0,
+          last_update_time: 0
+        },
+        status_code: 0,
+    //  }
+        submitted: false
+    };
   }
 
   render() {
+  //  const {product} = this.state;
+  //  console.log(product);
+//console.log(response_data.product);
     return (
         <>
          <header id="navitem">
@@ -135,22 +371,54 @@ export default class SuperAdminAddPr extends Component {
                 id="title"
                 required
                 value={this.state.name}
-                onChange={this.onChangeTitle}
+                onChange={this.onChangeProdName}
                 name="title"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">Unit ID</label>
-              <input
-                type="text"
+              <label htmlFor="unitId">Unit ID</label>
+              <select name="unitId" id="unitId" required className="form-control" value={this.state.unit_id} onChange={this.onChangeProdUnitId} type="number">
+                  <optgroup label="Mass">
+                      <option value="1">Kg</option>
+                      <option value="2">g</option>
+                      <option value="3">Kun</option>
+                      <option value="4">Ton</option>
+                  </optgroup>
+
+                  <optgroup label="Volume">
+                      <option value="5">L</option>
+                      <option value="6">M3</option>
+                      <option value="7">Gal</option>
+                 </optgroup>
+                 <optgroup label="Item">
+                      <option value="8">SIT</option>
+                      <option value="9">DZ</option>
+                      <option value="10">HDZ</option>
+                      <option value="11">QDZ</option>
+                 </optgroup>
+                 <optgroup label="Size">
+                      <option value="12">SM</option>
+                      <option value="13">LG</option>
+                      <option value="14">MD</option>
+                 </optgroup>
+
+                 <optgroup label="Length">
+                      <option value="15">M</option>
+                      <option value="16">KM</option>
+                      <option value="17">CM</option>
+                 </optgroup>
+             </select>
+
+              {/* <input
+                type="number"
                 className="form-control"
-                id="description"
+                id="unitId"
                 required
                 value={this.state.unit_id}
-                onChange={this.onChangeDescription}
-                name="description"
-              />
+                onChange={this.onChangeProdUnitId}
+                name="unitId"
+              /> */}
             </div>
 
             <div className="form-group">
@@ -174,7 +442,7 @@ export default class SuperAdminAddPr extends Component {
                 id="measurement"
                 required
                 value={this.state.measurement}
-                onChange={this.onChangeMeasurement}
+                onChange={this.onChangeProdUnitId}
                 name="measurement"
               />
             </div> */}

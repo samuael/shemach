@@ -12,7 +12,7 @@ export default class Products extends Component {
     this.setActiveProduct = this.setActiveProduct.bind(this);
     this.removeAllProducts = this.removeAllProducts.bind(this);
     this.searchProduct = this.searchProduct.bind(this);
-
+   
     this.state = {
       res_data: {
         status_code: 0,
@@ -54,6 +54,8 @@ export default class Products extends Component {
 
   componentDidMount() {
     console.log(this.props);
+   // const dt = this.props.location.state;
+
     this.retrieveProducts();
   }
 
@@ -74,6 +76,7 @@ export default class Products extends Component {
         }
         //console.log(response.data);
         );
+        console.log(this.props.location.state);
         console.log(response.data);
       })
       .catch(e => {
@@ -115,9 +118,12 @@ export default class Products extends Component {
 
     ProductService.findByTitle(this.state.searchProduct)
       .then(response => {
-        this.setState({
-          products: response.data
-        });
+        this.setState(prevState => ({
+          res_data: {
+            ...prevState.res_data,
+            products: response.data
+          } 
+        }));
         console.log(response.data);
       })
       .catch(e => {
@@ -129,6 +135,7 @@ export default class Products extends Component {
     const { searchProduct, products, prodduct, res_data, currentProduct, currentIndex } = this.state;
     console.log(prodduct);
     console.log(res_data);
+    console.log(this.state)
     return (
       <div id="productsmain">
       <div className="list row">

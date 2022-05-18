@@ -26,13 +26,19 @@
 #supercontroladmins .add-button {
     align-items: flex-start;
     margin-top: 10%;
-    margin-left: 150px;
+    /* margin-left: 150px; */
+    width: max-content;
     text-align: center;
     background-color: aliceblue;
    
 
 
 }
+
+/* #supercontroladmins .addadmin {
+  justify-content: left;
+  align-items: flex-start;
+} */
 
 .linkadd {
     text-decoration: none;

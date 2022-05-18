@@ -7,21 +7,15 @@ import {Switch, Route, Link} from 'react-router-dom'
 export default class ProductComponent extends Component {
   constructor(props) {
     super(props);
-    this.onChangeTitle = this.onChangeTitle.bind(this);
-    this.onChangeDescription = this.onChangeDescription.bind(this);
-    this.onChangeProductionArea = this.onChangeProductionArea.bind(this);
-    this.onChangeMeasurement = this.onChangeMeasurement.bind(this);
-    this.onChangePrevPrice = this.onChangePrevPrice.bind(this);
     this.onChangeCurrPrice = this.onChangeCurrPrice.bind(this);
     this.getProduct = this.getProduct.bind(this);
-    // this.updatePublished = this.updatePublished.bind(this);
+ //   this.getProduct = this.getProduct.bind(this);
     this.updateProduct = this.updateProduct.bind(this);
     this.deleteProduct = this.deleteProduct.bind(this);
 
     this.state = {
-      res_data: {
-        status_code: 0,
-        product: {
+      status_code: 0,
+      currentProduct: { 
           id: null,
           name: "",
           production_area: "",
@@ -32,19 +26,6 @@ export default class ProductComponent extends Component {
           last_update_time: 0
         },
         msg: ""
-      }
-      // status_code:0,
-      // product: {
-      //   id: null,
-      //   name: "",
-      //   production_area: "",
-      //   unit_id: 0,
-      //   current_price: 0,
-      //   created_by:0,
-      //   created_at: 0,
-      //   last_update_time: 0
-      // },
-      // msg: ""
     };
   }
 
@@ -52,125 +33,100 @@ export default class ProductComponent extends Component {
     this.getProduct(this.props.match.params.id);
   }
 
-  onChangeTitle(e) {
-    const name = e.target.value;
+  // onChangeTitle(e) {
+  //   const name = e.target.value;
+
+  //   this.setState(function(prevState) {
+  //     return {
+  //       res_data: {
+  //         ...prevState.res_data,
+  //         product: {
+  //           ...prevState.product,
+  //           name: name
+  //         }
+  //       }
+  //     };
+  //   });
+  // }
+
+  onChangeCurrPrice(e) {
+    const current_price = e.target.value;
 
     this.setState(function(prevState) {
       return {
-        product: {
-          ...prevState.product,
-          name: name
+        currentProduct: {
+          ...prevState.currentProduct,
+          current_price: current_price
         }
       };
     });
   }
 
-  onChangeDescription(e) {
-    const production_area = e.target.value;
-    
-    this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        description: production_area
-      }
-    }));
-  }
-  onChangeProductionArea(e) {
-    const productionarea = e.target.value;
-    
-    this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        productionarea: productionarea
-      }
-    }));
-  }
 
-  onChangeMeasurement(e) {
-    const measurement = e.target.value;
-    
-    this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        measurement: measurement
-      }
-    }));
-  }
+  // onChangeCurrPrice(e) {
+  //   this.setState({
+  //     current_price: e.target.value
+  //   });
+  // }
 
-  onChangePrevPrice(e) {
-    const prevprice = e.target.value;
-    
-    this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        prevprice: prevprice
-      }
-    }));
-  }
-
-  onChangeCurrPrice(e) {
-    const current_price = e.target.value;
-    
-    this.setState(prevState => ({
-      product: {
-        ...prevState.product,
-        current_price: current_price
-      }
-    }));
-  }
 
 
   getProduct(id) {
     ProductService.get(id)
       .then(response => {
         this.setState({
-          res_data: response.data
+        //  currentProduct: response.data
+          status_code: response.data.status_code,
+          currentProduct: { 
+              id: response.data.product.id,
+              name: response.data.product.name,
+              production_area: response.data.product.production_area,
+              unit_id: response.data.product.unit_id,
+              current_price: response.data.product.current_price,
+              created_by:response.data.product.created_by,
+              created_at: response.data.product.created_at,
+              last_update_time: response.data.product.last_update_time
+            },
+            msg: response.data.msg
         });
         console.log(response.data);
-        console.log(response.data.product);
-        console.log(response.data);
+        console.log(this.state);
+        console.log(this.state.currentProduct);
+       // console.log(response.data.product);
+        
       })
       .catch(e => {
         console.log(e);
       });
   }
 
-  // updatePublished(status) {
-  //   var data = {
-  //     id: this.state.product.id,
-  //     title: this.state.product.title,
-  //     description: this.state.product.description,
-  //     productionarea: this.state.product.productionarea,
-  //     prevprice: this.state.product.prevprice,
-  //     currentprice: this.state.product.currentprice,
-  //     published: status
-  //   };
-
-  //   ProductService.update(this.state.product.id, data)
-  //     .then(response => {
-  //       this.setState(prevState => ({
-  //         product: {
-  //           ...prevState.product,
-  //           published: status
-  //         }
-  //       }));
-  //       console.log(response.data);
-  //     })
-  //     .catch(e => {
-  //       console.log(e);
-  //     });
-  // }
-
   updateProduct() {
-    ProductService.update(
-      this.state.product.id,
-      this.state.product
+    var data = {
+      id:parseInt(this.state.currentProduct.id),
+      cost:parseInt(this.state.currentProduct.current_price)
+
+    }
+
+    var token = 
+    console.log(data);
+    ProductService.update(data
+      // this.state.currentProduct.id,
+      // this.state.currentProduct.current_price
+      // parseInt(this.state.currentProduct.id),
+      // parseInt(this.state.currentProduct.current_price)
     )
       .then(response => {
         console.log(response.data);
-        this.setState({
-          message: "The product was updated successfully!"
-        });
+        this.setState(prevState => ({
+          res_data: {
+            ...prevState.res_data,
+            msg: "The product was updated successfully!"
+          }
+        }));
+        // this.setState({
+
+        //   msg: "The product was updated successfully!"
+        // });
       })
       .catch(e => {
         console.log(e);
@@ -189,9 +145,11 @@ export default class ProductComponent extends Component {
   }
 
   render() {
-    const { res_data } = this.state;
-   // console.log(res_data);
-   // console.log(res_data.product);
+   const {currentProduct} = this.state;
+   console.log(this.state.currentProduct);
+  //  console.log(res_data.product);
+  //  console.log(res_data.msg);
+  // console.log(res_data.product.name);
 
     return (
       <>
@@ -222,7 +180,7 @@ export default class ProductComponent extends Component {
 	</header>
 
       <div id="procomponent">
-        {res_data.product ? (
+        {currentProduct ? (
           <div className="edit-form mt-4">
             <h4>Product</h4>
             <form className="row infoeditprice">
@@ -234,7 +192,7 @@ export default class ProductComponent extends Component {
                   className="form-control"
                   disabled="disabled"
                   id="title"
-                  value={res_data.product.name}
+                  value={currentProduct.name}
                   onChange={this.onChangeTitle}
                 />
               </div>
@@ -245,7 +203,7 @@ export default class ProductComponent extends Component {
                   className="form-control"
                   disabled="disabled"
                   id="description"
-                  value={res_data.product.unit_id}
+                  value={currentProduct.unit_id}
                   // onChange={this.onChangeDescription}
                 />
               </div>
@@ -256,7 +214,7 @@ export default class ProductComponent extends Component {
                   className="form-control"
                   disabled="disabled"
                   id="productionarea"
-                  value={res_data.product.production_area}
+                  value={currentProduct.production_area}
                   // onChange={this.onChangeProductionArea}
                 />
               </div>
@@ -267,7 +225,7 @@ export default class ProductComponent extends Component {
                   className="form-control"
                   disabled="disabled"
                   id="measurement"
-                  value={res_data.product.created_by}
+                  value={currentProduct.created_by}
                   // onChange={this.onChangeMeasurement}
                 />
               </div>
@@ -282,7 +240,7 @@ export default class ProductComponent extends Component {
                   className="form-control"
                   disabled="disabled"
                   id="prevprice"
-                  value={res_data.product.created_at}
+                  value={currentProduct.created_at}
                  // onChange={this.onChangePrevPrice}
                 />
               </div>
@@ -292,7 +250,7 @@ export default class ProductComponent extends Component {
                   type="number"
                   className="form-control"
                   id="currentprice"
-                  value={res_data.product.current_price}
+                  value={this.state.currentProduct.current_price}
                  onChange={this.onChangeCurrPrice}
                 />
               </div>
@@ -338,7 +296,7 @@ export default class ProductComponent extends Component {
             >
               Update
             </button>
-            <p>{this.state.message}</p>
+            {/* <p>{this.state.msg}</p> */}
           </div>
         ) : (
           <div>
