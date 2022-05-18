@@ -117,6 +117,7 @@ create table merchant(
     stores integer default 0,
     posts_count  integer not null default 0,
     registerd_by integer not null,
+    subscriptions smallint [] default array[]::smallint[]
     address_ref integer not null
 ) inherits ( users);
 

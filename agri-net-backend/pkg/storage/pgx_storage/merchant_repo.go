@@ -10,6 +10,7 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
 )
 
@@ -56,10 +57,10 @@ func (repo *MerchantRepo) RegisterMerchant(ctx context.Context, Merchant *model.
 }
 func (repo *MerchantRepo) GetMerchantByID(ctx context.Context, id int) (*model.Merchant, error) {
 	merchant := &model.Merchant{}
-	er := repo.DB.QueryRow(ctx, `select id,firstname,lastname,phone,email,imageurl,created_at,password,lang,stores,posts_count,registerd_by,address_ref  from merchant where id=$1`, id).
+	er := repo.DB.QueryRow(ctx, `select id,firstname,lastname,phone,email,imageurl,created_at,password,lang,stores,posts_count,registerd_by,address_ref,subscriptions  from merchant where id=$1`, id).
 		Scan(
 			&(merchant.ID), &(merchant.Firstname), &(merchant.Lastname), &(merchant.Phone), &(merchant.Email), &(merchant.Imgurl), &(merchant.CreatedAt), &(merchant.Password), &(merchant.Lang), &(merchant.StoresCount),
-			&(merchant.PostsCount), &(merchant.RegisteredBy), &(merchant.AddressRef),
+			&(merchant.PostsCount), &(merchant.RegisteredBy), &(merchant.AddressRef), &(merchant.Subscriptions),
 		)
 	if er != nil {
 		println(er.Error())
@@ -76,4 +77,20 @@ func (repo *MerchantRepo) GetMerchantByID(ctx context.Context, id int) (*model.M
 		merchant.Address = &address
 	}
 	return merchant, nil
+}
+
+func (repo *MerchantRepo) CreateSubscriptions(ctx context.Context, productid uint8, merchantid uint64) (status int) {
+	status = 0
+	if er := repo.DB.QueryRow(ctx, "select * from MerchantCreateNewSubscription( $1,$2::smallint )", merchantid, productid).Scan(&(status)); er != nil {
+		return state.STATUS_DBQUERY_ERROR
+	}
+	return status
+}
+
+func (repo *MerchantRepo) UnsubscribeProduct(ctx context.Context, productid uint8, merchantid uint64) (status int) {
+	status = 0
+	if er := repo.DB.QueryRow(ctx, "select * from MerchantUnSubscribeToProduct( $1,$2::smallint )", merchantid, productid).Scan(&(status)); er != nil {
+		return state.STATUS_DBQUERY_ERROR
+	}
+	return status
 }

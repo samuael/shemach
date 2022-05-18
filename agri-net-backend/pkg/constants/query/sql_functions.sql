@@ -212,7 +212,61 @@ $$
 $$ language plpgsql;
 
 
+-- Create subscription and Unsubscription for 
 
+
+create or replace function MerchantCreateNewSubscription( imerchantid integer, productid smallint ) returns integer as 
+$$
+    declare
+        merchantid integer;
+        statustrack integer;
+    begin
+        select id into merchantid from merchant where id=imerchantid;
+        if not found then
+            return -1;
+        end if;
+        select id into statustrack from product where id =productid;
+        if not found then
+            return -2;
+        end if;
+        with rows as ( update merchant set subscriptions = array_append(subscriptions, productid::smallint)
+         where (not productid::smallint = any( subscriptions )) and id = imerchantid returning 1)
+        select count(*) into statustrack from rows;
+        if not found or statustrack = 0 then
+            return -3;
+        end if;
+        return 0;
+    end;
+$$ language plpgsql;
+
+
+create or replace function MerchantUnSubscribeToProduct(imerchantid integer,productid smallint) returns integer as 
+$$
+    declare
+        merchantid integer;
+        statustrack integer;
+    begin
+        select id into merchantid from merchant where id=imerchantid;
+        if not found then
+            return -1;
+        end if;
+        select id into statustrack from product where id =productid;
+        if not found then
+            return -2;
+        end if;
+        
+        with rows as ( update merchant set subscriptions = array_remove(subscriptions, productid::smallint)
+         where (productid::smallint = any( subscriptions )) and id = imerchantid returning 1)
+        
+        select count(*) into statustrack from rows;
+        if (not found or statustrack = 0) then
+            return -3;
+        end if;
+        return 0;
+    end;
+$$ language plpgsql;
+
+-- Merchants Subscription and unsubscription method completed
 
 create or replace function getTheRoleOfUserByIdOrEmail( userid integer , iemail varchar)  returns integer as 
 $$
