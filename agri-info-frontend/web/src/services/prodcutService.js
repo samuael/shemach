@@ -1,6 +1,15 @@
 import http from "../httpbase";
+import LoginPage from "../components/imports/LoginPageImp"
 
 class prodcutService {
+
+  //User Login
+  userlogin(data) {
+    return http.post("/login", data);
+  }
+
+
+
 
   getOne() {
     return http.get("/product");

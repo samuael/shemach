@@ -2,8 +2,9 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Home from './components/pages/Loginn';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Home from './components/pages/LoginPage';
+// import Home from './components/pages/Loginn';
+import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
 import Products from './components/pages/InfoAdmin';
 import SuperProducts from './components/pages/SuperAdminProd';
 import ProductComponent from './components/imports/ProductComponent';
@@ -27,8 +28,8 @@ function App() {
         <Route path='/products' component={Products} />
         <Route path='/super-admin/products' component={SuperProducts} />
         {/* <Route path='/products' exact component={Products} /> */}
-        <Route path='/broadcast/received' exact component={Broadreceive} />
-        <Route path='/broadcast/create' exact component={BroadCreate} />
+        <Route path='/super-admin/broadcast/received' exact component={Broadreceive} />
+        <Route path='/super-admin/broadcast/create' exact component={BroadCreate} />
         <Route path="/info/product/:id" component={ProductComponent} />
         <Route path="/super/products/:id" component={SuperProductEdit} />
         <Route path='/super-admin/add-product' component={SuperAdminAddPr} />

@@ -43,7 +43,7 @@ export default class SuperAdminRegisterAdmin extends Component {
           created_at: 0,
           lang: "",
           password: "",
-          broadcasted_messages: "",
+          broadcasted_messages: 0,
           Createdby: 0
         },
         
