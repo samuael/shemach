@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -200,18 +201,18 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 		ImageRoutes       []string `json:"image_routes"`
 		Error             string   `json:"error,omitempty"`
 	}{}
-	postID, err := strconv.Atoi(c.Query("post_id"))
+	err := c.Request.ParseMultipartForm(9999999999999999)
+	if err != nil {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.TranslateIt(err.Error()) //"  bad multipart for file file Size Exceeds the limit")
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+	postID, err := strconv.Atoi(c.Param("postid"))
 	if err != nil || postID <= 0 {
 		res.Error = translation.Translate(session.Lang, "bad query , missing post id")
 		res.StatusCode = http.StatusBadRequest
 		c.JSON(res.StatusCode, res)
-		return
-	}
-	err = c.Request.ParseMultipartForm(999999999999999999)
-	if err != nil {
-		res.StatusCode = http.StatusBadRequest
-		res.Msg = translation.TranslateIt("bad multipart for file file Size Exceeds the limit")
-		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 	post, er := chandler.Service.GetPostByID(ctx, uint64(postID))
@@ -229,6 +230,10 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 		sf := &MultipartData{}
 		sf.File, sf.Header, sf.Error = c.Request.FormFile("image" + strconv.Itoa(a))
 		if sf.File == nil || sf.Header == nil || sf.Error != nil {
+			if sf.Error != nil {
+				log.Println(sf.Error.Error())
+			}
+			log.Println("Something has happened")
 			continue
 		}
 		defer sf.File.Close()
@@ -252,6 +257,7 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 		}
 		_, era := io.Copy(file, sf.File)
 		if era != nil {
+			log.Println(era.Error())
 			continue
 		}
 		postImageFiles[a] = file
@@ -259,7 +265,7 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 		postMultipartFiles[a] = sf
 		filenames[a] = filename
 	}
-	if len(postMultipartFiles) == 0 {
+	if len(postImageFiles) == 0 {
 		res.Error = translation.TranslateIt("no image file was uploaded")
 		res.StatusCode = http.StatusBadRequest
 		c.JSON(res.StatusCode, res)
@@ -304,7 +310,7 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 	}
 	err = chandler.ResourceService.SaveImagesResources(ctx, images)
 	if err != nil {
-		res.Error = translation.Translate(session.Lang, "internal problem, please try again later!")
+		res.Error = translation.Translate(session.Lang, err.Error()+"internal problem, please try again later!")
 		res.StatusCode = http.StatusInternalServerError
 		c.JSON(res.StatusCode, res)
 		return
@@ -316,7 +322,7 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 	}
 	err = chandler.Service.SaveNewPostImages(ctx, post.ID, post.Images)
 	if err != nil {
-		res.Error = translation.Translate(session.Lang, "internal problem, please try again later!")
+		res.Error = translation.Translate(session.Lang, err.Error()+"internal problem, please try again later!")
 		res.StatusCode = http.StatusInternalServerError
 		c.JSON(res.StatusCode, res)
 		return
@@ -332,4 +338,10 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 	res.BluredImageRoutes = blurredImageRoutes
 	res.ImageRoutes = imageRoutes
 	c.JSON(res.StatusCode, res)
+}
+
+// GetPOstByID returns the post as *model.Crop
+func (chandler *CropHandler) GetPostByID(c *gin.Context) {
+	// ctx := c.Request.Context()
+
 }

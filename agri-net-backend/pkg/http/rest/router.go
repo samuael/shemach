@@ -110,10 +110,10 @@ func Route(
 	// Crop related routes
 	// This routes are applicable for only Merchants and Agents
 	router.POST("/api/cxp/post/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
-	router.POST("/api/cxp/post/images", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+	router.POST("/api/cxp/post/images/:postid", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
 
-	router.GET("/post/image/:id", resourcehandler.GetProductImage)
-	router.GET("/post/image/:id/blurred/", resourcehandler.GetBlurredImage)
+	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)
+	router.GET("/post/image/:id/blurred/", rules.Authenticated(), resourcehandler.GetBlurredImage)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{

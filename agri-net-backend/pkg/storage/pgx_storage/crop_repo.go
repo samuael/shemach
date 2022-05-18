@@ -52,10 +52,10 @@ func (repo *CropRepo) GetPostByID(ctx context.Context, postid uint64) (*model.Cr
 		return nil, er
 	}
 	if newval.StoreID != nil {
-		post.StoreID = (newval.StoreID).(uint64)
+		post.StoreID = uint64((newval.StoreID).(int32))
 	}
 	if newval.AgentID != nil {
-		post.AgentID = (newval.AgentID).(uint64)
+		post.AgentID = uint64((newval.AgentID).(int32))
 	}
 	var address model.Address
 	latitude := ""
@@ -72,7 +72,7 @@ func (repo *CropRepo) GetPostByID(ctx context.Context, postid uint64) (*model.Cr
 
 // SaveNewPostImages save the images of the crop
 func (repo *CropRepo) SaveNewPostImages(ctx context.Context, postid uint64, images []int) error {
-	er := repo.DB.QueryRow(ctx, "update crop set image=$1 where id=$2 returning crop_id", images, postid).Scan(&postid)
+	er := repo.DB.QueryRow(ctx, "update crop set images=$1 where crop_id=$2 returning crop_id", images, postid).Scan(&postid)
 	if er != nil {
 		return er
 	}

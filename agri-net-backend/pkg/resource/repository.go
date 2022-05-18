@@ -8,4 +8,5 @@ import (
 
 type IResourceRepo interface {
 	SaveImagesResources(ctx context.Context, resources []*model.PostImg) error
+	GetImageByID(ctx context.Context, imgid uint64) (*model.PostImg, error)
 }
