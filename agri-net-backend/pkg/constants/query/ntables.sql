@@ -174,7 +174,7 @@ create table crop (
     remaining_quantity integer default 0,
     selling_price decimal not null default 0,
     address_id integer references address(address_id) not null,
-    images  smallint [] default array[]::smallint[],
+    images  integer [] default array[]::integer[],
     created_at integer  not null default ROUND(extract(  epoch from now())),
     store_id integer references store(store_id),
     agent_id integer,

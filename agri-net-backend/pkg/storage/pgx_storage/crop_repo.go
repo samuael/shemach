@@ -2,6 +2,7 @@ package pgx_storage
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
@@ -32,4 +33,48 @@ func (repo *CropRepo) CreateCrop(ctx context.Context, crop *model.Crop) (int, er
 	}
 	crop.ID = uint64(result)
 	return result, nil
+}
+
+func (repo *CropRepo) GetPostByID(ctx context.Context, postid uint64) (*model.Crop, error) {
+	post := &model.Crop{}
+	newval := &struct {
+		StoreID interface{}
+		AgentID interface{}
+	}{}
+	er := repo.DB.QueryRow(ctx, `select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned from crop where crop_id=$1`, postid).
+		Scan(
+			&(post.ID), &(post.TypeID), &(post.Description), &(post.Negotiable),
+			&(post.RemainingQuantity), &(post.SellingPrice),
+			&(post.AddressRef), &(post.Images), &(post.CreatedAt),
+			&(newval.StoreID), &(newval.AgentID), &(post.StoreOwned),
+		)
+	if er != nil {
+		return nil, er
+	}
+	if newval.StoreID != nil {
+		post.StoreID = (newval.StoreID).(uint64)
+	}
+	if newval.AgentID != nil {
+		post.AgentID = (newval.AgentID).(uint64)
+	}
+	var address model.Address
+	latitude := ""
+	longitude := ""
+	ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, post.AddressRef).
+		Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+	if ers == nil {
+		address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+		address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+		post.Address = &address
+	}
+	return post, nil
+}
+
+// SaveNewPostImages save the images of the crop
+func (repo *CropRepo) SaveNewPostImages(ctx context.Context, postid uint64, images []int) error {
+	er := repo.DB.QueryRow(ctx, "update crop set image=$1 where id=$2 returning crop_id", images, postid).Scan(&postid)
+	if er != nil {
+		return er
+	}
+	return nil
 }

@@ -11,6 +11,7 @@ type ISuperadminService interface {
 	CheckTheExistanceOfSuperadmin(ctx context.Context) int
 	GetSuperadminByEmail(ctx context.Context) (*model.Superadmin, int, error)
 	GetSuperadminByID(ctx context.Context, id int) (*model.Superadmin, error)
+	GetAllSuperadmins(ctx context.Context) ([]*model.Superadmin, error)
 }
 
 type SuperadminService struct {
@@ -33,4 +34,8 @@ func (service *SuperadminService) GetSuperadminByEmail(ctx context.Context) (*mo
 
 func (service *SuperadminService) GetSuperadminByID(ctx context.Context, id int) (*model.Superadmin, error) {
 	return service.Repo.GetSuperadminByID(ctx, id)
+}
+
+func (service *SuperadminService) GetAllSuperadmins(ctx context.Context) ([]*model.Superadmin, error) {
+	return service.Repo.GetAllSuperadmins(ctx)
 }

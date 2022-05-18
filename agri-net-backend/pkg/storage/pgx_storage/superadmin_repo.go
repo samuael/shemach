@@ -51,3 +51,22 @@ func (repo *SuperadminRepo) GetSuperadminByID(ctx context.Context, id int) (*mod
 	}
 	return superadmin, nil
 }
+
+func (repo *SuperadminRepo) GetAllSuperadmins(ctx context.Context) ([]*model.Superadmin, error) {
+	superadmins := []*model.Superadmin{}
+	rows, er := repo.DB.Query(ctx, "select id ,firstname ,lastname ,phone ,email ,created_at ,password,registered_admins,registered_products from superadmin")
+	if er != nil {
+		return nil, er
+	}
+	for rows.Next() {
+		superadmin := &model.Superadmin{}
+		er = rows.Scan(&(superadmin.ID), &(superadmin.Firstname), &(superadmin.Lastname), &(superadmin.Phone), &(superadmin.Email), &(superadmin.CreatedAtUnix),
+			&(superadmin.Password), &(superadmin.RegisteredAdmins), &(superadmin.RegisteredProducts))
+		if er != nil {
+			println(er.Error())
+			continue
+		}
+		superadmins = append(superadmins, superadmin)
+	}
+	return superadmins, er
+}
