@@ -86,7 +86,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             child: Container(
                               padding: EdgeInsets.only(top: 60),
                               height: MediaQuery.of(context).size.height * 0.55,
-                              width: MediaQuery.of(context).size.width * 0.9,
+                              width: (MediaQuery.of(context).size.width > 1000)
+                                  ? (MediaQuery.of(context).size.width * 0.3)
+                                  : (MediaQuery.of(context).size.width * 0.8),
                               child: Center(
                                 child: Card(
                                   elevation: 5,
@@ -115,8 +117,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                   color: Colors.white,
                                 ),
-                                child: Image.asset(
-                                  "/images/logo.jpg",
+                                child: new Image.asset(
+                                  'assets/images/logo.jpg',
                                   width: 80,
                                   height: 80,
                                 ),

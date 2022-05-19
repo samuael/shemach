@@ -1,15 +1,25 @@
 import '../../libs.dart';
 
+const String ROLE_AGENT = "agent";
+const String ROLE_SUPERADMIN = "superadmin";
+const String ROLE_MERCHANT = "merchant";
+const String ROLE_INFOADMIN = "infoadmin";
+const String ROLE_ADMIN = "admin";
+
 class StaticDataStore {
   // static const String HOST = "10.5.202.116";
-  static const String HOST = "127.0.0.1";
+// 192.168.203.52
+  static const String HOST = "10.5.228.227";
   static const int PORT = 8080;
+
   static const String SCHEME = "http://";
   static String get URI {
     return "$SCHEME$HOST:$PORT";
   }
 
+  static String USER_TOKEN = "";
   static String TOKEN = "";
+  static String ROLE = "";
   static Map<String, String> HEADERS = {};
   static DeviceType DType = DeviceType.Unknown;
 

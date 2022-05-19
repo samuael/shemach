@@ -8,7 +8,7 @@ class AgriNetLogo extends StatelessWidget {
     return CircleAvatar(
       child: ClipOval(
         child: Image.asset(
-          'images/logo.jpg',
+          'assets/images/logo.jpg',
           width: 70,
           height: 70,
           fit: BoxFit.cover,
