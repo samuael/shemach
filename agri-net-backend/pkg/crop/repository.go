@@ -10,4 +10,5 @@ type ICropRepo interface {
 	CreateCrop(ctx context.Context, crop *model.Crop) (int, error)
 	GetPostByID(ctx context.Context, postid uint64) (*model.Crop, error)
 	SaveNewPostImages(ctx context.Context, postid uint64, images []int) error
+	GetPosts(ctx context.Context, offset, limit uint) ([]*model.Crop, error)
 }

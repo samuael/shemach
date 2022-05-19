@@ -111,6 +111,8 @@ func Route(
 	// This routes are applicable for only Merchants and Agents
 	router.POST("/api/cxp/post/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
 	router.POST("/api/cxp/post/images/:postid", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+	router.GET("/api/posts", rules.Authenticated(), crophandler.Getposts)
+	router.GET("/api/post/:id", rules.Authenticated(), crophandler.GetPostByID)
 
 	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)
 	router.GET("/post/image/:id/blurred/", rules.Authenticated(), resourcehandler.GetBlurredImage)
