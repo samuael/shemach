@@ -340,8 +340,29 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 	c.JSON(res.StatusCode, res)
 }
 
-// GetPOstByID returns the post as *model.Crop
-func (chandler *CropHandler) GetPostByID(c *gin.Context) {
+// Getposts   returns the list of  crops posted in the system.
+func (chandler *CropHandler) Getposts(c *gin.Context) {
 	// ctx := c.Request.Context()
+	// offset, er := strconv.Atoi(c.Query("offset"))
+	// res := &struct {
+	// 	Msg        string        `json:"msg,omitempty"`
+	// 	StatusCode int           `json:"status_code"`
+	// 	Posts      []*model.Crop `json:"posts,omitempty"`
+	// }{}
+	// if er != nil {
+	// 	offset = 0
+	// }
+	// limit, er = strconv.Atoi(c.Query("limit"))
+	// if er != nil {
+	// 	limit = offset + 10
+	// }
 
+	// posts, er := chandler.Service.GetPosts(ctx, offset, limit)
+	// if er != nil {
+	// 	res.StatusCode = hthp.StatusNotFound
+	// 	res.Msg = translation.TranslateIt("posts not found")
+	// }
+	// res.Posts = posts
+	// res.StausCode = http.StatusOK
+	// res.Msg = translation.Tranalst
 }
