@@ -1,15 +1,5 @@
 import '../../libs.dart';
 
-// ID        uint64 `json:"id,omitempty"`
-// Firstname string `json:"firstname"`
-// Lastname  string `json:"lastname"`
-// Phone     string `json:"phone,omitempty"`
-// Email     string `json:"email"`
-// Imgurl    string `json:"imgurl,omitempty"`
-// CreatedAt uint64 `json:"created_at,omitempty"`
-// Lang      string `json:"lang"`
-// Password  string `json:"-"`
-
 class User {
   int id;
   String firstname;
@@ -58,3 +48,6 @@ class User {
     };
   }
 }
+
+
+

@@ -11,45 +11,25 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final user = UserData.myUser;
 
-    return Scaffold(
-      body: Column(
-        children: [
-          AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            toolbarHeight: 10,
-          ),
-          Center(
-              child: Padding(
-                  padding: EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w700,
-                      color: Color.fromRGBO(64, 105, 225, 1),
-                    ),
-                  ))),
-          InkWell(
-              onTap: () {
-                navigateSecondPage(context, EditImagePage());
-              },
-              child: DisplayImage(
-                // imagePath: user.image,
-                imgSrc: user.image,
-                onPressed: () {},
-              )),
-          buildUserInfoDisplay(context, user.name, 'Name', EditNameFormPage()),
-          buildUserInfoDisplay(
-              context, user.phone, 'Phone', EditPhoneFormPage()),
-          buildUserInfoDisplay(
-              context, user.email, 'Email', EditEmailFormPage()),
-          Expanded(
-            child: buildAbout(context, user),
-            flex: 4,
-          )
-        ],
-      ),
+    return Column(
+      children: [
+        InkWell(
+            onTap: () {
+              navigateSecondPage(context, EditImagePage());
+            },
+            child: DisplayImage(
+              // imagePath: user.image,
+              imgSrc: user.image,
+              onPressed: () {},
+            )),
+        buildUserInfoDisplay(context, user.name, 'Name', EditNameFormPage()),
+        buildUserInfoDisplay(context, user.phone, 'Phone', EditPhoneFormPage()),
+        buildUserInfoDisplay(context, user.email, 'Email', EditEmailFormPage()),
+        Expanded(
+          child: buildAbout(context, user),
+          flex: 4,
+        )
+      ],
     );
   }
 

@@ -2,7 +2,7 @@ import '../../libs.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String RouteName = "homescreen";
-  HomeScreen({Key? key}) : super(key: key);
+  HomeScreen();
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -11,24 +11,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        appBar: UserScreenAppBarDrawer(),
-        body: Center(
-          child: Container(
-            child: Row(
-              children: [
-                CollapsingSideBarDrawer(),
-              ],
-            ),
+    return BlocBuilder<UserBloc, UserState>(builder: ((context, state) {
+      if (state is UserLoggedInState) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).canvasColor,
+            toolbarHeight: MediaQuery.of(context).size.height / 13,
+            elevation: 5,
+            leading: AgriNetLogo(),
+            title: UserScreenAppBarDrawer(user: state.user),
           ),
-        ),
-      ),
-    );
+          body: CollapsingSideBarDrawer(),
+        );
+      }
+      return AuthScreen();
+    }));
   }
 }

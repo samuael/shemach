@@ -2,18 +2,21 @@ import '../../libs.dart';
 
 class UserEvent {}
 
+class UserLoggedInItEvent extends UserEvent {}
+
 class UserLoggedInEvent extends UserEvent {
   User user;
-  String role;
-  UserLoggedInEvent({required this.user, required this.role});
+  UserLoggedInEvent({required this.user});
 }
 
-class UserWithNoRoleEvent extends UserEvent {}
+class SomethingWentWrongEvent extends UserEvent {}
 
-class AgentLoggedInEvent extends UserEvent {}
+class AllProductsEvent extends UserEvent {}
 
-class MerchantLoggedInEvent extends UserEvent {}
+class UserProductsEvent extends UserEvent {}
 
-class AdminLoggedInEvent extends UserEvent {}
+class UserProfileEvent extends UserEvent {}
 
-class SuperAdminLoggedInEvent extends UserEvent {}
+class UserNotificationEvent extends UserEvent {}
+
+class UserLoggOutEvent extends UserEvent {}

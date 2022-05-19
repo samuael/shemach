@@ -1,5 +1,4 @@
 import '../../libs.dart';
-import 'package:agri_net_frontend/auth/model/admin_model.dart';
 
 final notifications = [
   ProductNotification(

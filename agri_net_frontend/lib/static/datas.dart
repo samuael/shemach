@@ -8,7 +8,7 @@ const String ROLE_ADMIN = "admin";
 
 class StaticDataStore {
   // static const String HOST = "10.5.202.116";
-
+// 192.168.203.52
   static const String HOST = "10.5.228.227";
   static const int PORT = 8080;
 
@@ -17,7 +17,9 @@ class StaticDataStore {
     return "$SCHEME$HOST:$PORT";
   }
 
+  static String USER_TOKEN = "";
   static String TOKEN = "";
+  static String ROLE = "";
   static Map<String, String> HEADERS = {};
   static DeviceType DType = DeviceType.Unknown;
 

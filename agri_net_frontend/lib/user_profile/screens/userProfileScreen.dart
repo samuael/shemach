@@ -20,29 +20,23 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'User Profile',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primaryColor: Colors.black,
-          fontFamily: 'Roboto',
-          elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                  primary: Colors.black,
-                  shadowColor: Colors.grey,
-                  elevation: 20,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(0.0))))),
-          inputDecorationTheme: InputDecorationTheme(
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(0.0))),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              alignment: Alignment.centerLeft,
-              primary: Colors.black,
-            ),
-          )),
-      home: ProfilePage(),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).canvasColor,
+          elevation: 5,
+          toolbarHeight: MediaQuery.of(context).size.height / 13,
+          leading: IconButton(
+              color: Colors.black,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: BackButton()),
+          title: Text(
+            "Edit Profile",
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+        ),
+        body: ProfilePage());
   }
 }

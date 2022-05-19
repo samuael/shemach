@@ -181,18 +181,31 @@ class _LoginWidgetState extends State<LoginWidget> {
                   if (userSate is AuthAdminLoggedIn) {
                     context.read<AuthBloc>().add(
                         AuthAdminLoggedInEvent(userSate.user, userSate.role));
-                    if (userSate.role == ROLE_SUPERADMIN) {
-                      context.read<UserBloc>().add(SuperAdminLoggedInEvent());
-                    }
-                    if (userSate.role == ROLE_AGENT) {
-                      context.read<UserBloc>().add(AgentLoggedInEvent());
-                    }
-                    if (userSate.role == ROLE_MERCHANT) {
-                      context.read<UserBloc>().add(MerchantLoggedInEvent());
-                    }
-                    if (userSate.role == ROLE_ADMIN) {
-                      context.read<UserBloc>().add(AdminLoggedInEvent());
-                    }
+                    context
+                        .read<UserBloc>()
+                        .add(UserLoggedInEvent(user: userSate.user));
+                    Navigator.of(context).pushNamed(HomeScreen.RouteName);
+
+                    // } else {
+                    //   Navigator.pushNamed(context, AuthScreen.RouteName);
+                    // }
+
+                    // context.read<UserBloc>().add(UserLoggedInEvent(
+                    //     user: userSate.user, role: userSate.role));
+
+                    // if (userSate.role == ROLE_SUPERADMIN) {
+                    //   context.read<UserBloc>().add(SuperAdminLoggedInEvent());
+                    // }
+                    // if (userSate.role == ROLE_AGENT) {
+                    //   context.read<UserBloc>().add(AgentLoggedInEvent());
+                    // }
+                    // if (userSate.role == ROLE_MERCHANT) {
+                    //   context.read<UserBloc>().add(MerchantLoggedInEvent());
+                    // }
+                    // if (userSate.role == ROLE_ADMIN) {
+                    //   context.read<UserBloc>().add(AdminLoggedInEvent());
+                    // }
+
                   } else if (userSate is AuthAdminLoginNotSuccesful) {
                     context
                         .read<AuthBloc>()

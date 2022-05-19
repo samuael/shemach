@@ -1,37 +1,32 @@
 import '../../libs.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> implements Cubit<UserState> {
-  UserBloc(UserState initialState) : super(initialState);
+  UserBloc({required this.userRepo}) : super(UserLoggedInItState());
+  final UserRepo userRepo;
 
   Stream<UserState> mapEventToState(UserEvent userEvent) async* {
+    if (userEvent is UserLoggedInItEvent) {
+      yield (UserLoggedInItState());
+    }
     if (userEvent is UserLoggedInEvent) {
-      yield (UserLoggedInState());
+      yield (UserLoggedInState(user: userEvent.user));
     }
-    if (userEvent is AgentLoggedInEvent) {
-      yield (AgentLoggedInState());
+    if (userEvent is AllProductsEvent) {
+      yield (UserProfileState());
     }
-    if (userEvent is SuperAdminLoggedInState) {
-      yield (SuperAdminLoggedInState());
-    }
-    if (userEvent is MerchantLoggedInState) {
-      yield (MerchantLoggedInState());
+    if (userEvent is UserNotificationState) {
+      yield (UserNotificationState());
     }
     ;
+    if (userEvent is UserProfileEvent) {
+      yield (UserProductsState());
+    }
+    if (userEvent is SomethingWentWrongEvent) {
+      yield (SomethingWentWrongState());
+    }
   }
 
-  Future<UserState> whoLoggedIn(UserLoggedInEvent successEvent) async {
-    final userState = successEvent.user;
-    final userRole = successEvent.role;
+  // Future<UserState> myProduct(AllProductsEvent event) {
 
-    if (userState != null && userRole != null && userRole == "superadmin") {
-      return (SuperAdminLoggedInState());
-    }
-    if (userState != null && userRole != null && userRole == "agent") {
-      return (AgentLoggedInState());
-    }
-    if (userState != null && userRole != null && userRole == "merchant") {
-      return (MerchantLoggedInState());
-    }
-    return UserWithNoRoleState();
-  }
+  // }
 }

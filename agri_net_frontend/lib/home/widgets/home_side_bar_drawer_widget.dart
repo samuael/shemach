@@ -2,7 +2,7 @@ import '../../libs.dart';
 import '../../theme.dart';
 
 class CollapsingSideBarDrawer extends StatefulWidget {
-  const CollapsingSideBarDrawer({Key? key}) : super(key: key);
+  CollapsingSideBarDrawer();
 
   @override
   State<CollapsingSideBarDrawer> createState() =>
@@ -42,8 +42,16 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
   Widget getWidget(context, widget) {
     var we = MediaQuery.of(context).size.width;
     var he = MediaQuery.of(context).size.height;
-    final elements =
-        Role == "admin" ? adminSideBarItems : superAdminSideBarItems;
+    final sideBarlItems = (StaticDataStore.ROLE == ROLE_ADMIN ||
+            StaticDataStore.ROLE == ROLE_INFOADMIN)
+        ? adminSideBarItems
+        : (StaticDataStore.ROLE == ROLE_AGENT)
+            ? agentSideBarItems
+            : (StaticDataStore.ROLE == ROLE_MERCHANT)
+                ? merchantSideBarItems
+                : (StaticDataStore.ROLE == ROLE_SUPERADMIN)
+                    ? superAdminSideBarItems
+                    : [];
     Widget divider;
     return Container(
       width: widthAnimation.value,
@@ -79,7 +87,7 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
           Expanded(
               child: ListView.builder(
             itemBuilder: (context, counter) {
-              if (counter == elements.length - 3) {
+              if (counter == sideBarlItems.length - 3) {
                 divider = Divider(
                   height: 200,
                 );
@@ -89,20 +97,20 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
               return Column(
                 children: [
                   CollapsingNavTile(
-                      elements[counter].title,
-                      elements[counter].icon,
+                      sideBarlItems[counter].title,
+                      sideBarlItems[counter].icon,
                       animationController,
                       currentSelectedIndex == counter, () {
                     setState(() {
                       currentSelectedIndex = counter;
-                      Navigator.pushNamed(context, elements[counter].path!);
+                      Navigator.pushNamed(context, sideBarlItems[counter].path);
                     });
                   }),
                   divider
                 ],
               );
             },
-            itemCount: elements.length,
+            itemCount: sideBarlItems.length,
           )),
         ],
       ),

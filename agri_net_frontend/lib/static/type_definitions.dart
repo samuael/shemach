@@ -49,7 +49,7 @@ class NavigationModel {
 
 List<NavigationModel> superAdminSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("Users", Icons.people),
+  NavigationModel("Users", Icons.people, path: UsersScreen.RouteName),
   NavigationModel("Search", Icons.search),
   NavigationModel("Notifications", Icons.notifications,
       path: NotificationScreen.RouteName),

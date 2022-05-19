@@ -3,7 +3,8 @@ import '../../theme.dart';
 
 class UserScreenAppBarDrawer extends StatefulWidget
     implements PreferredSizeWidget {
-  const UserScreenAppBarDrawer({Key? key}) : super(key: key);
+  User user;
+  UserScreenAppBarDrawer({required this.user});
 
   @override
   State<UserScreenAppBarDrawer> createState() => _UserScreenAppBarDrawerState();
@@ -19,34 +20,24 @@ class _UserScreenAppBarDrawerState extends State<UserScreenAppBarDrawer> {
     var we = MediaQuery.of(context).size.width;
     var he = MediaQuery.of(context).size.height;
     Widget divider;
-    return Material(
-      elevation: 5,
-      child: Container(
-        // color: appBarTheme,
-        width: we,
-        height: he / 11.5,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 30, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AgriNetLogo(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    children: [
-                      Container(child: LanguageDropDown()),
-                      SizedBox(
-                        width: 30,
-                      ),
-                      UserAccountePage(),
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
+    return Container(
+      width: we,
+      height: he / 11.5,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 30, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Row(
+              children: [
+                Container(child: LanguageDropDown()),
+                SizedBox(
+                  width: 30,
+                ),
+                UserAccountePage(user: widget.user),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -64,7 +55,7 @@ class _UserScreenAppBarDrawerState extends State<UserScreenAppBarDrawer> {
           ),
           DropdownMenuItem(
             child: Text(
-              "Amh",
+              "Eng",
             ),
             value: 1,
           )

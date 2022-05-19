@@ -39,7 +39,7 @@ class AuthProvider {
 
   Future<List<Map<String, dynamic>>?> searchMaids(
       String text, int offset) async {
-    final headers = {"Authorization": "Bearer ${StaticDataStore.TOKEN}"};
+    final headers = {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"};
     try {
       var response = await client.get(
         Uri.parse(StaticDataStore.URI +
@@ -86,7 +86,8 @@ class AuthProvider {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
 
         StaticDataStore.HEADERS = response.headers;
-        // Role = body["role"];
+        StaticDataStore.ROLE = body["role"];
+        StaticDataStore.USER_TOKEN = body["token"];
         // Token = body["token"];
         return UsersLoginResponse(
             statusCode: response.statusCode,
