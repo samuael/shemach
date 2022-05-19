@@ -3,6 +3,7 @@ package rest
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,6 +20,8 @@ import (
 
 type IMerchantHandler interface {
 	RegisterMerchant(c *gin.Context)
+	SubscribeForProduct(c *gin.Context)
+	UnsubscriberForProduct(c *gin.Context)
 }
 
 type MerchantHandler struct {
@@ -189,4 +192,74 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 		c.JSON(resp.StatusCode, resp)
 		return
 	}
+}
+
+// SubscribeForProduct ...
+func (mhandler *MerchantHandler) SubscribeForProduct(c *gin.Context) {
+	ctx := c.Request.Context()
+	res := &struct {
+		StatusCode int    `json:"status_code"`
+		Msg        string `json:"msg,omitempty"`
+	}{}
+	session := ctx.Value("session").(*model.Session)
+	productID, er := strconv.Atoi(c.Param("id"))
+	if er != nil || productID <= 0 {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.Translate(session.Lang, "invalid product id")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	status := mhandler.Service.CreateSubscriptions(ctx, uint8(productID), session.ID)
+	if status == -1 {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "merchant with this id doesn't exist")
+	} else if status == -2 {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "product with this id doesn't exist")
+	} else if status == -3 {
+		res.StatusCode = http.StatusConflict
+		res.Msg = translation.Translate(session.Lang, "you have already subscribed for a product")
+	}
+	if status < 0 {
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.Msg = translation.Translate(session.Lang, "subscription created succesfuly")
+	res.StatusCode = http.StatusOK
+	c.JSON(res.StatusCode, res)
+}
+
+// UnsubscriberForProduct
+func (mhandler *MerchantHandler) UnsubscriberForProduct(c *gin.Context) {
+	ctx := c.Request.Context()
+	res := &struct {
+		StatusCode int    `json:"status_code"`
+		Msg        string `json:"msg,omitempty"`
+	}{}
+	session := ctx.Value("session").(*model.Session)
+	productID, er := strconv.Atoi(c.Param("id"))
+	if er != nil || productID <= 0 {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.Translate(session.Lang, "invalid product id")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	status := mhandler.Service.UnsubscribeProduct(ctx, uint8(productID), session.ID)
+	if status == -1 {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "subscriber with this id doesn't exist")
+	} else if status == -2 {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "product with this id doesn't exist")
+	} else if status == -3 {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "you have not subscribed for this product yet")
+	}
+	if status < 0 {
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.Msg = translation.Translate(session.Lang, "un-subscribed succesfuly")
+	res.StatusCode = http.StatusOK
+	c.JSON(res.StatusCode, res)
 }

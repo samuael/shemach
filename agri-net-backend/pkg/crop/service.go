@@ -9,6 +9,8 @@ import (
 // ICropService interface representing the main crop type
 type ICropService interface {
 	CreateCrop(ctx context.Context, crop *model.Crop) (int, error)
+	GetPostByID(ctx context.Context, postid uint64) (*model.Crop, error)
+	SaveNewPostImages(ctx context.Context, postif uint64, images []int) error
 }
 
 // CropService ...
@@ -25,4 +27,12 @@ func NewCropService(repo ICropRepo) ICropService {
 // CreateCrop
 func (service *CropService) CreateCrop(ctx context.Context, crop *model.Crop) (int, error) {
 	return service.Repo.CreateCrop(ctx, crop)
+}
+
+// GetPostByID(ctx context.Context, postid uint64) (*model.Crop, error)
+func (service *CropService) GetPostByID(ctx context.Context, postid uint64) (*model.Crop, error) {
+	return service.Repo.GetPostByID(ctx, postid)
+}
+func (service *CropService) SaveNewPostImages(ctx context.Context, postid uint64, images []int) error {
+	return service.Repo.SaveNewPostImages(ctx, postid, images)
 }

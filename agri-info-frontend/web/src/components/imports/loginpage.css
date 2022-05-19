@@ -1,0 +1,238 @@
+/* .default-bg {
+    background: #fff;
+    color: #ccbdbd;
+  } */
+  /* .login-box {
+      width: fit-content;
+      height: fit-content;
+  } */
+
+  #login {
+    /* min-height: 100vh;  Overflow ballessa */
+    margin-top: 11%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    /* overflow: hidden; */
+  }
+
+ 
+  
+  .login-box {
+    max-width: 60%;
+    /* width: 90rem; */
+    margin: 0 auto;
+    box-shadow: 0 0 5px rgba(131, 79, 79, 0.4);
+    border-radius: 10px;
+  
+  }
+/* 
+  #login .baselogin{
+      align-content: flex-start;
+      
+    } */
+  
+  .bg-img {
+    padding: 0;
+    border-radius: 10px 0 0 10px;
+    align-content: center;
+    /* // background: rgba(0, 0,0, 0.04) url(http://localhost:3000/static/media/bg_img.0b3c570c.jpg) top left repeat; */
+    background: rgba(0, 0, 0, 0.04) url("../../assets/bg_img.jpg");
+    background-size: cover;
+    background-position: center;
+    top:0;
+    bottom: 0;
+    opacity: 1;
+  }
+
+  .info {
+    height: 400px;
+    position: relative;
+  }
+
+  .logo {
+    text-align: left;
+    margin: 20px;
+  }
+
+  .nav-brand {
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+    color: #505050;
+  }
+
+
+/* 
+  .info .btn-section {
+    position: absolute;
+    top: 40%;
+    right: 0;
+    margin-bottom: 0;
+  }
+  
+ .btn-section .link-btn  {
+    font-size: 12px;
+    font-weight: bold;
+  }
+  
+  .btn-section .link-btn.active {
+    background-color: #ff214f;
+    color: #fff;
+  } 
+  
+    .btn-section .btn-primary {
+   text-align: center;
+    line-height: 30px;
+    width: 100px;
+    text-transform: uppercase;
+    border-radius: 50px 0 0 50px;
+    margin-bottom: 15px;
+    border: none;
+    
+    &:focus{
+        outline: none;
+        box-shadow: none; 
+    }
+
+}*/
+
+
+
+
+
+
+
+
+/* Login Form */
+
+.form-section{
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+.title{
+    margin: 10px 0 50px 0;
+  }
+
+  .title > h3 {
+   font-size: 25px;
+   font-weight: bold;
+   color: fff;
+ }
+
+
+ .login-inner-form {
+   position: relative;
+   color: #979797;
+ }
+
+ .form-box {
+   float: right;
+   width: 100%;
+   position: relative;
+ }
+
+ .icon {
+   position: absolute;
+   right: 25px;
+   top: 10px;
+ }
+
+ .icon.email::before {
+   font-family: "Font Awesome 5 Free";
+   content: "\f0e0";
+ }
+
+ .icon.lock::before {
+   font-family: "Font Awesome 5 Free";
+   content: "\f023";
+   font-weight: bold;
+ }
+
+ .icon.user::before {
+   font-family: "Font Awesome 5 Free";
+   content: "\f007";
+ }
+
+ .input-text {
+   font-size: 14;
+   outline: border;
+   color: #616161;
+   border-radius: 50px;
+   border: 1px solid transparent;
+   background: #fff;
+   box-shadow: 0 0 5px rgba(0,0,0, 0.2);
+   padding: 11px 45px 11px 20px;
+   width: 100%;
+   margin-bottom: 10px;
+
+ }
+
+ .form-group .primary-btn {
+   background: #ff214f;
+   width: 100%;    
+   border: none;
+   color: #fff;
+   box-shadow: 0 0 5px rgba(0,0,0, 0.2);
+   padding: 10px 30px 9px 30px;
+   cursor: pointer;
+   height: 45px;
+   border-radius: 50px;
+   margin-top: 20px;
+
+   /* &:hover{
+       background: #d61d42;
+   } */
+}
+
+.form-group .primary-btn:hover {
+ background: #d61d42;
+ /* background: #1d6a88; */
+ width: 100%;    
+ border: none;
+ color: #fff;
+ box-shadow: 0 0 5px rgba(0,0,0, 0.2);
+ padding: 10px 30px 9px 30px;
+ cursor: pointer;
+ height: 45px;
+ border-radius: 50px;
+ margin-top: 20px;
+
+}
+
+.form-group .secondary-btn{
+ background: none;
+ /* width: 100%;     */
+ border: none;
+ color: rgb(2, 101, 248);
+ box-shadow: 0 0 5px rgba(0,0,0, 0.2);
+ padding: 10px 30px 9px 30px;
+ cursor: pointer;
+ height: 45px;
+ border-radius: 50px;
+ margin-top: 20px;
+ margin-bottom: 20px;
+
+ /* &:hover{
+     background: #d61d42;
+ } */
+}
+
+.form-group .secondary-btn:hover{
+ background: none;
+ /* width: 100%;     */
+ border: none;
+ color: rgb(14, 184, 236);
+ box-shadow: 0 0 5px rgba(0,0,0, 0.2);
+ padding: 10px 30px 9px 30px;
+ cursor: pointer;
+ height: 45px;
+ border-radius: 50px;
+ margin-top: 20px;
+ margin-bottom: 20px;
+}

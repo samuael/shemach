@@ -19,6 +19,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/resource"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
 	pgxstorage "github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
@@ -97,9 +98,14 @@ func main() {
 	storeservice := store.NewStoreService(storerepo)
 	storehandler := rest.NewStoreHandler(storeservice)
 
+	resourcerepo := pgx_storage.NewResourceRepo(conn)
+	resourceservice := resource.NewResourceService(resourcerepo)
+
+	resourcehandler := rest.NewResourceHandler(resourceservice)
+
 	croprepo := pgx_storage.NewCropRepo(conn)
 	cropservice := crop.NewCropService(croprepo)
-	crophandler := rest.NewCropHandler(cropservice, productservice, storeservice, merchantservice, agentservice)
+	crophandler := rest.NewCropHandler(cropservice, productservice, storeservice, merchantservice, agentservice, resourceservice)
 
 	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
 
@@ -107,11 +113,13 @@ func main() {
 		subscriberService,
 		broadcastHub,
 	)
-
 	go broadcastHub.Run()
-	rest.Route(rules, subscriberhandler,
-		superadminhandler, producthandler,
-		communicationHandler, messagehandler,
+	rest.Route(rules, 
+		subscriberhandler,
+		superadminhandler, 
+		producthandler,
+		communicationHandler, 
+		messagehandler,
 		infoadminhandler,
 		userhandler,
 		adminhandler,
@@ -120,5 +128,6 @@ func main() {
 		merchanthandler,
 		storehandler,
 		crophandler,
+		resourcehandler,
 	).Run(":8080")
 }

@@ -43,7 +43,7 @@ func (ahandler *AdminHandler) RegisterAdmin(c *gin.Context) {
 		Msg        string            `json:"msg"`
 		StatusCode int               `json:"status_code"`
 		Errors     map[string]string `json:"errors"`
-		Admin      *model.Admin      `json:"info_admin"`
+		Admin      *model.Admin      `json:"admin"`
 	}{
 		Errors: map[string]string{},
 	}

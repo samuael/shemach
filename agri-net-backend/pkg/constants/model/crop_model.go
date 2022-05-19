@@ -10,7 +10,7 @@ type Crop struct {
 	SellingPrice      float64  `json:"selling_price"`
 	Address           *Address `json:"address"`
 	AddressRef        uint64   `json:"-"`
-	Images            []string `json:"images"`
+	Images            []int    `json:"images"`
 	CreatedAt         uint64   `json:"created_at"`
 	StoreID           uint64   `json:"store_id"`
 	AgentID           uint64   `json:"agent_id"`

@@ -20,7 +20,7 @@ const HeaderSuper = () => {
                         <Link class="nav-link" to="/super-admin/control-admins"><i class="fa-solid fa-user"></i>Admins</Link>
                     </li>
                     <li class="nav-item pl-1">
-                        <Link class="nav-link" to="/super-admin/broadcast"><i class="fa-solid fa-bullhorn"></i>Broadcast </Link>
+                        <Link class="nav-link" to="/super-admin/broadcast/received"><i class="fa-solid fa-bullhorn"></i>Broadcast </Link>
                     </li>
                     <li class="nav-item pl-1">
                         <Link class="nav-link" to="/super-admin/dic"><i class="fa-solid fa-spell-check"></i>Dictionary </Link>

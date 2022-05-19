@@ -9,4 +9,6 @@ import (
 type IMerchantRepo interface {
 	RegisterMerchant(ctx context.Context, agent *model.Merchant) (int, error)
 	GetMerchantByID(ctx context.Context, id int) (*model.Merchant, error)
+	CreateSubscriptions(ctx context.Context, productid uint8, merchantid uint64) (status int)
+	UnsubscribeProduct(ctx context.Context, productid uint8, merchantid uint64) (status int)
 }

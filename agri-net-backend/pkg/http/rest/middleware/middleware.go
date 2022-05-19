@@ -73,7 +73,6 @@ func (m rules) AuthenticatedSubscriber() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		// ctx.Deadline( time.Now().Add(time.Second * 5))
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}
@@ -116,7 +115,6 @@ func (m *rules) Authorized() gin.HandlerFunc {
 		}
 		permitted := m.HasPermission(c.Request.URL.Path, session.Role, c.Request.Method)
 		if !permitted {
-			println("IT IS NOT AUTHORIZD'")
 			http.Error(c.Writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			c.Abort()
 			return

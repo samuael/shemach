@@ -30,6 +30,7 @@ func Route(
 	merchanthandler IMerchantHandler,
 	storehandler IStoreHandler,
 	crophandler ICropHandler,
+	resourcehandler IResourceHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -38,6 +39,9 @@ func Route(
 		AllowHeaders:     []string{"Content-type", "*"},
 		AllowCredentials: true,
 	}))
+
+	router.GET("/api/superadmin", rules.Authenticated(), superadminhandler.GetSuperadminByID)
+	router.GET("/api/superadmins", rules.Authenticated(), superadminhandler.GetSystemSuperadmin)
 
 	// subscriber related endpoints
 	router.POST("/api/info/register", subscriberhandler.RegisterSubscriber)
@@ -105,8 +109,14 @@ func Route(
 
 	// Crop related routes
 	// This routes are applicable for only Merchants and Agents
-	router.POST("/api/cxp/crop/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
-	router.POST("/api/cxp/crop/images", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+	router.POST("/api/cxp/post/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
+	router.POST("/api/cxp/post/images/:postid", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+
+	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)
+	router.GET("/post/image/:id/blurred/", rules.Authenticated(), resourcehandler.GetBlurredImage)
+
+	router.GET("/api/merchant/product/subscribe/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.SubscribeForProduct)
+	router.GET("/api/merchant/product/unsubscribe/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.UnsubscriberForProduct)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{
