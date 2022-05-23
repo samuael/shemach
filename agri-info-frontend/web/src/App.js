@@ -14,6 +14,7 @@ import SuperAdminRegAdmin from './components/imports/SuperAdminRegisterAdmin';
 import Broadreceive from './components/pages/BroadcastRec';
 import BroadCreate from './components/pages/BroadcastCreate';
 import SuperProductEdit from './components/imports/SuperProductEdit'
+import SuperEditAdmin from './components/imports/SuperEditAdmin'
 import SuperAdminDictionary from './components//pages/SuperAdminDictionary'
 // import ProductComponent '/components/imports/ProductComponent';
 
@@ -35,6 +36,8 @@ function App() {
         <Route path='/super-admin/add-product' component={SuperAdminAddPr} />
         <Route path='/super-admin/reg-admin' component={SuperAdminRegAdmin} />
         <Route path='/super-admin/control-admins' component={SuperControlAdmins} />
+        <Route path='/super-admin/admins/:id' component={SuperEditAdmin} />
+       
         <Route path='/super-admin/dic' component={SuperAdminDictionary} />
       </Switch>
     </Router>

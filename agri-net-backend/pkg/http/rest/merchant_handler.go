@@ -22,6 +22,7 @@ type IMerchantHandler interface {
 	RegisterMerchant(c *gin.Context)
 	SubscribeForProduct(c *gin.Context)
 	UnsubscriberForProduct(c *gin.Context)
+	MerchantsSearch(c *gin.Context)
 }
 
 type MerchantHandler struct {
@@ -262,4 +263,42 @@ func (mhandler *MerchantHandler) UnsubscriberForProduct(c *gin.Context) {
 	res.Msg = translation.Translate(session.Lang, "un-subscribed succesfuly")
 	res.StatusCode = http.StatusOK
 	c.JSON(res.StatusCode, res)
+}
+
+// MerchantsSearch
+func (mhandler *MerchantHandler) MerchantsSearch(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	response := &struct {
+		StatusCode int               `json:"status_code"`
+		Msg        string            `json:"msg"`
+		Merchants  []*model.Merchant `json:"merchants"`
+	}{
+		Merchants: []*model.Merchant{},
+	}
+	phone := c.Query("phone")
+	name := c.Query("name")
+	createdBy, er := strconv.Atoi(c.Query("created_by"))
+	if er != nil {
+		createdBy = 0
+	}
+	offset, er := strconv.Atoi(c.Query("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(c.Query("limit"))
+	if er != nil {
+		limit = offset + 10
+	}
+	merchants, er := mhandler.Service.SearchMerchants(ctx, phone, name, uint64(createdBy), uint(offset), uint(limit))
+	if er != nil {
+		response.StatusCode = http.StatusNotFound
+		response.Msg = translation.Translate(session.Lang, "mercahts not found ")
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	response.StatusCode = http.StatusOK
+	response.Msg = translation.Translate(session.Lang, "merchants found")
+	response.Merchants = merchants
+	c.JSON(response.StatusCode, response)
 }

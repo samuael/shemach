@@ -165,13 +165,18 @@ class LoginPageImp extends Component {
 
         const data = this.state;
         console.log(data);
+        console.log(data.token);
+        window.token = data.token;
 
        // this.props.history.push('/products')
         if (response.data.role === "infoadmin"){
-          this.props.history.push({pathname: '/products', state: data})
+          // this.props.history.push({pathname: '/products', state: data.token})
+          this.props.history.push('/products')
         }
         else if (response.data.role === "superadmin"){
-          this.props.history.push('/super-admin/products')
+         // this.props.history.push({pathname: '/super-admin/dic', state: data.token})
+         this.props.history.push('/super-admin/products')
+
         }
         else if (response.data.role === "admin"){
           this.props.history.push('/super-admin/products')

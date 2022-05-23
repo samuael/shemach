@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import ProductService from '../../services/prodcutService'
+import { withRouter } from 'react-router-dom'
 import { Link } from "react-router-dom";
 import './productsSuper.css'
 
-export default class ProductsSuper extends Component {
+class ProductsSuper extends Component {
   constructor(props) {
     super(props);
     this.onChangesearchProduct = this.onChangesearchProduct.bind(this);
@@ -14,6 +15,7 @@ export default class ProductsSuper extends Component {
     this.searchProduct = this.searchProduct.bind(this);
 
     this.state = {
+      tokenValue: this.props.location.state,
       res_data: {
         status_code: 0,
         products: [],
@@ -53,6 +55,8 @@ export default class ProductsSuper extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props.location.state);
+    console.log(this.state.tokenValue);
     this.retrieveProducts();
   }
 
@@ -153,7 +157,16 @@ export default class ProductsSuper extends Component {
         </div>
         <div className="col-md-4">
               <button className="btn btn-primary add-button">
-              <Link  className="linkadd" to="/super-admin/add-product"><i class="fa-solid fa-plus"></i>Add Product</Link>
+              <Link  
+              className="linkadd" 
+                  // to="/super-admin/add-product"
+                  to={{
+                    pathname: "/super-admin/add-product",
+                    state: this.state.tokenValue
+                }}
+              >
+                    <i className="fa-solid fa-plus"></i>Add Product
+              </Link>
               </button>
           </div>
         <div className="col-md-6">
@@ -251,7 +264,11 @@ export default class ProductsSuper extends Component {
               </div> */}
 
               <Link
-                to={"/super/products/" + currentProduct.id}
+              to={"/super/products/" + currentProduct.id}
+              //   to={{
+              //     pathname: "/super/products/" + currentProduct.id,
+              //     state: this.state.tokenValue
+              // }}
                 className="badge badge-warning"
               >
                 Edit
@@ -269,4 +286,6 @@ export default class ProductsSuper extends Component {
     );
   }
 }
+
+export default withRouter(ProductsSuper)
 

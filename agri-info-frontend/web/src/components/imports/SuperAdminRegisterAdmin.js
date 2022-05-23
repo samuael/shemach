@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withRouter } from 'react-router-dom'
 import ProductDataService from "../../services/prodcutService";
 import { Link } from "react-router-dom";
 import './superAdminRegisterAdmin.css'
@@ -6,7 +7,7 @@ import './headerInfo.css'    //For Header
 
 
 
-export default class SuperAdminRegisterAdmin extends Component {
+class SuperAdminRegisterAdmin extends Component {
   constructor(props) {
     super(props);
     this.onChangeFirstName = this.onChangeFirstName.bind(this);
@@ -31,6 +32,7 @@ export default class SuperAdminRegisterAdmin extends Component {
     // };
 
     this.state = {
+    //  tokenValue: this.props.location.state,
    //   response_data: {
         msg: "",
         status_code: 0,
@@ -85,6 +87,9 @@ export default class SuperAdminRegisterAdmin extends Component {
   // }
 
   saveAdmin() {
+    console.log(this.props.location.state);
+    console.log(this.state.tokenValue);
+    console.log(this.state.msg)
     var data = {
       firstname: this.state.firstname,
       lastname: this.state.lastname,
@@ -93,10 +98,14 @@ export default class SuperAdminRegisterAdmin extends Component {
       // prevprice: this.state.prevprice,
       // currentprice: this.state.currentprice
     };
+    
+    // var token = this.props.location.state;
+    var token = window.token;
 
     console.log(data);
+    console.log(token); 
 
-    ProductDataService.registerAdmin(data)
+    ProductDataService.registerInfoAdmin(data, token)
       .then(response => {
         this.setState({
           // id: response.data.id,
@@ -168,6 +177,8 @@ export default class SuperAdminRegisterAdmin extends Component {
   }
 
   render() {
+    console.log(this.props.location.state);
+    console.log(this.state.tokenValue);
     return (
         <>
          <header id="navitem">
@@ -273,4 +284,6 @@ export default class SuperAdminRegisterAdmin extends Component {
   }
 }
 
+
+export default withRouter(SuperAdminRegisterAdmin)
 

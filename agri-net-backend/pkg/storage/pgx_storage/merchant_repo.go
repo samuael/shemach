@@ -12,6 +12,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 type MerchantRepo struct {
@@ -93,4 +94,70 @@ func (repo *MerchantRepo) UnsubscribeProduct(ctx context.Context, productid uint
 		return state.STATUS_DBQUERY_ERROR
 	}
 	return status
+}
+
+//
+func (repo *MerchantRepo) SearchMerchants(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Merchant, error) {
+	merchants := []*model.Merchant{}
+	values := []interface{}{}
+	count := 1
+	statement := `select id,firstname,lastname,phone,email,imageurl,created_at,password,lang,stores,posts_count,registerd_by,address_ref,subscriptions from merchant where `
+	if phone != "" {
+		statement = fmt.Sprintf("%s phone ILIKE $%d", statement, count)
+		values = append(values, "%"+strings.Trim(phone, " +")+"%")
+		count++
+	}
+	name = strings.Trim(name, " ")
+	if name != "" {
+		if count > 1 {
+			statement = fmt.Sprintf(" %s or ", statement)
+		}
+		statement = fmt.Sprintf("%s firstname ILIKE $"+strconv.Itoa(count), statement)
+		values = append(values, "%"+name+"%")
+		statement = fmt.Sprintf("%s or ", statement)
+		count++
+		statement = fmt.Sprintf("%s lastname ILIKE $"+strconv.Itoa(count), statement)
+		values = append(values, "%"+name+"%")
+		count++
+	}
+	if createdBy > 0 {
+		if count > 1 {
+			statement = fmt.Sprintf(" %s or ", statement)
+		}
+		statement = fmt.Sprintf(" %s registerd_by=$"+strconv.Itoa(int(count)), statement)
+		values = append(values, createdBy)
+		count++
+	}
+	statement = fmt.Sprintf("%s ORDER BY id DESC OFFSET $%d LIMIT $%d ", statement, count, count+1)
+	values = append(values, offset, limit)
+	println(statement)
+	println(string(helper.MarshalThis(values)))
+	rows, er := repo.DB.Query(ctx, statement, values...)
+	if er != nil {
+
+		return nil, er
+	}
+	for rows.Next() {
+		merchant := &model.Merchant{}
+		erf := rows.Scan(
+			&(merchant.ID), &(merchant.Firstname), &(merchant.Lastname), &(merchant.Phone), &(merchant.Email), &(merchant.Imgurl), &(merchant.CreatedAt), &(merchant.Password), &(merchant.Lang), &(merchant.StoresCount),
+			&(merchant.PostsCount), &(merchant.RegisteredBy), &(merchant.AddressRef), &(merchant.Subscriptions),
+		)
+		if erf != nil {
+			println(erf.Error())
+			continue
+		}
+		var address model.Address
+		latitude := ""
+		longitude := ""
+		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, merchant.AddressRef).
+			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+		if ers == nil {
+			address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+			address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+			merchant.Address = &address
+		}
+		merchants = append(merchants, merchant)
+	}
+	return merchants, nil
 }
