@@ -3,7 +3,7 @@
 }
 
 #dict .topic {
-    margin-top: 5rem;
+    margin-top:3rem;
     margin-left: 5rem;
     font-style: italic;
     font-weight: bold;
@@ -45,4 +45,22 @@ textarea {
 
 #dict .addbutton {
     margin-left: 0px;
+}
+
+#dict .tablelist{
+    margin-top: 1rem;
+    margin-bottom: 5rem;
+}
+
+.page-header{
+    /* margin-top: 1rem; */
+    /* margin-bottom: 5rem; */
+    margin-left: 4rem;
+    font-size: 15px;
+}
+
+#dict table {
+    margin-left: 4rem;
+    font-size: 15px;
+
 }

@@ -14,6 +14,7 @@ export default class SuperControlAdmin extends Component {
     this.setActiveAdmin = this.setActiveAdmin.bind(this);
     this.removeAllAdmins = this.removeAllAdmins.bind(this);
     this.searchAdmin = this.searchAdmin.bind(this);
+    this.deleteAdmin = this.deleteAdmin.bind(this);
 
     this.state = {
      
@@ -121,8 +122,10 @@ export default class SuperControlAdmin extends Component {
       });
   }
 
-  deleteAdmin() {    
-    adminService.deleteAdmin(this.state.currentAdmin.id)
+  deleteAdmin() {   
+    var token  = window.token
+    console.log(token); 
+    adminService.deleteInfoAdmin(this.state.currentAdmin.id, token)
       .then(response => {
         console.log(response.data);
         this.props.history.push('/super-admin/control-admins')
@@ -281,12 +284,20 @@ export default class SuperControlAdmin extends Component {
                 {currentAdmin.published ? "Published" : "Pending"}
               </div> */}
 
-              <Link
-                to={"/super/admins/" + currentAdmin.id}
+              {/* <Link
+                to={"/super-admin/admins/" + currentAdmin.id}
                 className="badge badge-warning col-sm-2 btn btn-primary"
               >
                 Edit
-              </Link>
+              </Link> */}
+
+              <button
+              className="badge badge-danger col-sm-2 btn btn-primary"
+              onClick={this.deleteAdmin}
+            >
+              Delete
+            </button>
+
               </div>
             </div>
           ) : (

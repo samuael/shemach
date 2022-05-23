@@ -129,7 +129,7 @@ func (dhandler *DictionaryHandler) Translate(c *gin.Context) {
 	ctx := c.Request.Context()
 	input := &model.Dictionary{}
 	res := &struct {
-		Msg        string            `json:"msg,omitempty"`
+		Msg        string            `json:"msg,omitempty"`	
 		StatusCode int               `json:"status_code"`
 		Dictionary *model.Dictionary `json:"dictionary"`
 	}{}

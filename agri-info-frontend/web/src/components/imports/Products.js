@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import { withRouter } from 'react-router-dom'
 import ProductService from '../../services/prodcutService'
 import { Link } from "react-router-dom";
 import './products.css'
 
-export default class Products extends Component {
+class Products extends Component {
   constructor(props) {
     super(props);
     this.onChangesearchProduct = this.onChangesearchProduct.bind(this);
@@ -12,8 +13,10 @@ export default class Products extends Component {
     this.setActiveProduct = this.setActiveProduct.bind(this);
     this.removeAllProducts = this.removeAllProducts.bind(this);
     this.searchProduct = this.searchProduct.bind(this);
+   // this.tokenValue = this.props.location.state;
    
     this.state = {
+      tokenValue: this.props.location.state,
       res_data: {
         status_code: 0,
         products: [],
@@ -54,6 +57,9 @@ export default class Products extends Component {
 
   componentDidMount() {
     console.log(this.props);
+    console.log(this.props.location)
+    console.log(this.props.location.state);
+    console.log(this.state.tokenValue);
    // const dt = this.props.location.state;
 
     this.retrieveProducts();
@@ -283,8 +289,20 @@ export default class Products extends Component {
                 {currentProduct.published ? "Published" : "Pending"}
               </div> */}
 
-              <Link
+              {/* <Link
                 to={"/info/product/" + currentProduct.id}
+                state={this.state.tokenValue}
+                className="badge badge-warning"
+              >
+                Edit
+              </Link> */}
+                <Link
+                to={"/info/product/" + currentProduct.id}
+                // state={this.state.tokenValue}
+              //   to={{
+              //     pathname: "/info/product/" + currentProduct.id,
+              //     state: this.state.tokenValue
+              // }}
                 className="badge badge-warning"
               >
                 Edit
@@ -302,4 +320,6 @@ export default class Products extends Component {
     );
   }
 }
+
+export default withRouter(Products)
 

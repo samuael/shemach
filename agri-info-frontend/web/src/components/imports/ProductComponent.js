@@ -14,6 +14,7 @@ export default class ProductComponent extends Component {
     this.deleteProduct = this.deleteProduct.bind(this);
 
     this.state = {
+      tkValue: this.props.location.state,
       status_code: 0,
       currentProduct: { 
           id: null,
@@ -31,6 +32,8 @@ export default class ProductComponent extends Component {
 
   componentDidMount() {
     this.getProduct(this.props.match.params.id);
+    console.log(this.tkvalue);
+    console.log(this.props.location.state);
   }
 
   // onChangeTitle(e) {
@@ -87,7 +90,7 @@ export default class ProductComponent extends Component {
               created_at: response.data.product.created_at,
               last_update_time: response.data.product.last_update_time
             },
-            msg: response.data.msg
+            msg:""
         });
         console.log(response.data);
         console.log(this.state);
@@ -107,9 +110,13 @@ export default class ProductComponent extends Component {
 
     }
 
-    var token = 
+  //  var token = this.state.tkValue;
+  var token = window.token
+
+    
     console.log(data);
-    ProductService.update(data
+    console.log(token);
+    ProductService.update(data, token
       // this.state.currentProduct.id,
       // this.state.currentProduct.current_price
       // parseInt(this.state.currentProduct.id),
@@ -117,12 +124,9 @@ export default class ProductComponent extends Component {
     )
       .then(response => {
         console.log(response.data);
-        this.setState(prevState => ({
-          res_data: {
-            ...prevState.res_data,
-            msg: "The product was updated successfully!"
-          }
-        }));
+        this.setState({
+           msg: "The product was updated successfully!"
+        });
         // this.setState({
 
         //   msg: "The product was updated successfully!"
@@ -296,7 +300,7 @@ export default class ProductComponent extends Component {
             >
               Update
             </button>
-            {/* <p>{this.state.msg}</p> */}
+            <p>{this.state.msg}</p>
           </div>
         ) : (
           <div>

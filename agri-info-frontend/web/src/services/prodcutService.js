@@ -23,32 +23,32 @@ class prodcutService {
     return http.get(`/product?id=${id}`);
   }
 
-  create(data) {
-    return http.post("/superadmin/product/new", data);
+  // create(data) {
+  //   return http.post("/superadmin/product/new", data);
+  // }
+      //Create new product
+  create(data, token) {
+    return http.post("/superadmin/product/new", data , {
+      headers: {
+      "Authorization"  : "Bearer "+ token ,
+    }
+  });
   }
 
-  // create(data, token) {
-  //   return http.post("/superadmin/product/new", data , {
-  //     headers: {
-  //     "Authorization"  : "Bearer "+ token ,
-  //   }
-  // });
-  // }
-
-  // update(data, token) {
-  //   return http.put("/infoadmin/product", data , {
-  //     headers: {
-  //       "Authorization"  : "Bearer "+ token ,
-  //     }
+  update(data, token) {
+    return http.put("/infoadmin/product", data , {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
       
-  //   });
+    });
    
-  // }
-
-  update(data){
-     return http.put("/infoadmin/product", data);
-
   }
+
+  // update(data){
+  //    return http.put("/infoadmin/product", data);
+
+  // }
 
   delete(id) {
     return http.delete(`/products/${id}`);
@@ -73,13 +73,68 @@ class prodcutService {
     return http.get(`/infoadmin/search?name=${name}`);
   }
 
-  registerAdmin(data) {
-    return http.post("/superadmin/admin/new", data);
+
+  //superadmin
+
+      //superadmin register new infoadmin
+  registerInfoAdmin(data, token) {
+    return http.post("/superadmin/infoadmin/new", data, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+     );
+  }
+ 
+  // registerAdmin(data, token) {
+  //   return http.post("/superadmin/admin/new", data, {
+  //     headers: {
+  //       "Authorization"  : "Bearer "+ token ,
+  //     }
+  //   }
+  //    );
+  // }
+      
+
+  //superadmin create dictionary
+  createdict(data, token) {
+    return http.post("/superadmin/dictionary/new", data, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+     );
   }
 
-  deleteAdmin(id) {
-    return http.delete(`/superadmin/admin?id=${id}`);
+ // Superadmin SearchWord
+  superSearchWord(data, token) {
+    return http.get("/dictionary/translate", data, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+  }
 
+    //Superadmin SearchWord
+    // superSearchWord(data) {
+    //   return http.get("/dictionary/translate", data);
+    // }
+
+
+
+  deleteInfoAdmin(id, token) {
+    return http.delete(`/superadmin/admin?id=${id}`, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+
+  }
+
+  getAdmin(id) {
+    return http.get(`/infoadmin?id=${id}`);
   }
 
 

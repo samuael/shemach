@@ -19,6 +19,7 @@ export default class SuperAdminAddPr extends Component {
   //  this.response_data = this.response_data.bind(this);
 
     this.state = {
+  //    tkValue: this.props.location.state,
     //  response_data: {
         msg: "",
         product: {
@@ -251,31 +252,28 @@ export default class SuperAdminAddPr extends Component {
 
   saveProduct() {
     var data = {
-      unit_id: this.state.unit_id,
+      unit_id: parseInt(this.state.unit_id),
       name: this.state.name,
       production_area: this.state.production_area,
-      current_price:this.state.current_price
+      current_price:parseInt(this.state.current_price)
 
       // unit_id: 6,
       // name: "Faniman",
       // production_area: "AA",
       // current_price:2000
     };
-    console.log(data);
 
-    ProductDataService.create(data)
+    // var token = this.state.tkValue;
+    var token = window.token;
+    console.log(data);
+    console.log(token);
+
+    ProductDataService.create(data, token)
       .then(response => {
         console.log(response.data)
         this.setState({
-          // id: response.data.id,
-          // name: response.data.name,
-          // unit_id: response.data.unit_id,
-          // production_area: response.data.production_area,
-          // current_price: response.data.current_price,
-          // created_by: response.data.created_by,
-          // created_at: response.data.created_at,
-          // last_update_time: response.data.last_update_time
-       // response_data: {
+
+       // response_data: {parseInt(
           msg: response.data.msg,
           product: {
             id: response.data.product.id,
@@ -315,23 +313,43 @@ export default class SuperAdminAddPr extends Component {
   }
 
   newProduct() {
+    // this.state = {
+    // //  response_data: {
+    //     msg: "",
+    //     product: {
+    //       id: null,
+    //       name: "",
+    //       production_area: "",
+    //       unit_id: 0,
+    //       current_price: 0,
+    //       created_by:0,
+    //       created_at: 0,
+    //       last_update_time: 0
+    //     },
+    //     status_code: 0,
+    // //  }
+    //     submitted: false
+    // };
+
+
     this.state = {
-    //  response_data: {
-        msg: "",
-        product: {
-          id: null,
-          name: "",
-          production_area: "",
-          unit_id: 0,
-          current_price: 0,
-          created_by:0,
-          created_at: 0,
-          last_update_time: 0
-        },
-        status_code: 0,
-    //  }
-        submitted: false
-    };
+      //    tkValue: this.props.location.state,
+        //  response_data: {
+            msg: "",
+            product: {
+              id: null,
+              name: "",
+              production_area: "",
+              unit_id: 0,
+              current_price: 0,
+              created_by:0,
+              created_at: 0,
+              last_update_time: 0
+            },
+            status_code: 0,
+        //  },
+          submitted: false
+        };
   }
 
   render() {
@@ -380,6 +398,7 @@ export default class SuperAdminAddPr extends Component {
               <label htmlFor="unitId">Unit ID</label>
               <select name="unitId" id="unitId" required className="form-control" value={this.state.unit_id} onChange={this.onChangeProdUnitId} type="number">
                   <optgroup label="Mass">
+                  <option value="" selected disabled hidden>Choose here</option>
                       <option value="1">Kg</option>
                       <option value="2">g</option>
                       <option value="3">Kun</option>
