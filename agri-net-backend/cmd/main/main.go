@@ -25,6 +25,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/subscriber"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/superadmin"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/transaction"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/subosito/gotenv"
 )
@@ -107,6 +108,10 @@ func main() {
 	cropservice := crop.NewCropService(croprepo)
 	crophandler := rest.NewCropHandler(cropservice, productservice, storeservice, merchantservice, agentservice, resourceservice)
 
+	transactionrepo := pgx_storage.NewTransactionRepo(conn)
+	transactionservice := transaction.NewTransactionService(transactionrepo)
+	transactionhandler := rest.NewTransactionHandler(transactionservice, cropservice, merchantservice, storeservice)
+
 	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
@@ -114,11 +119,11 @@ func main() {
 		broadcastHub,
 	)
 	go broadcastHub.Run()
-	rest.Route(rules, 
+	rest.Route(rules,
 		subscriberhandler,
-		superadminhandler, 
+		superadminhandler,
 		producthandler,
-		communicationHandler, 
+		communicationHandler,
 		messagehandler,
 		infoadminhandler,
 		userhandler,
@@ -129,5 +134,6 @@ func main() {
 		storehandler,
 		crophandler,
 		resourcehandler,
+		transactionhandler,
 	).Run(":8080")
 }

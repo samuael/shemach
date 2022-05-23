@@ -738,3 +738,30 @@ $$
         return cropid;
     end;
 $$ language plpgsql;
+
+
+
+
+create or replace function declineTransaction(transactionid integer,userid integer) returns integer as 
+$$
+    declare 
+        dstate integer;
+        dcount integer;
+    begin
+        select state from transaction where requester_id=userid or seller_id=userid into dstate;
+        if not found then
+            return -1;
+        end if;
+        if dstate = 12 then
+            return -2;
+        end if;
+        with rows as (
+            delete from transaction where transaction_id=transactionid returning transaction_id
+        )
+        select count(*) into dcount from rows;
+        if found and dcount >0 then
+            return 0;
+        end if;
+        return -3;
+    end;
+$$ language plpgsql;

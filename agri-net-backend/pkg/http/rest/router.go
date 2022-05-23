@@ -31,6 +31,7 @@ func Route(
 	storehandler IStoreHandler,
 	crophandler ICropHandler,
 	resourcehandler IResourceHandler,
+	transactionhandler ITransactionHandler,
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -120,6 +121,10 @@ func Route(
 	router.GET("/api/merchant/product/subscribe/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.SubscribeForProduct)
 	router.GET("/api/merchant/product/unsubscribe/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.UnsubscriberForProduct)
 
+	// transaction related routes
+	router.POST("/api/merchant/transaction/new", rules.Authenticated(), rules.Authorized(), transactionhandler.CreateTransaction)
+	router.GET("/api/cxp/transactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyActiveTransactions)
+	router.DELETE("/api/cxp/transaction/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.DeclineTransaction)
 	router.RouterGroup.Use(FilterDirectory())
 	{
 		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"images/"))

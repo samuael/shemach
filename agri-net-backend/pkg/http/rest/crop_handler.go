@@ -367,6 +367,7 @@ func (chandler *CropHandler) Getposts(c *gin.Context) {
 	res.Posts = posts
 	res.StatusCode = http.StatusOK
 	res.Msg = translation.TranslateIt("fetched")
+	c.JSON(res.StatusCode, res)
 }
 
 // GetPostByID(c *gin.Context)

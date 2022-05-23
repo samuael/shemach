@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -11,12 +12,15 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/crop"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
+
 	"github.com/samuael/agri-net/agri-net-backend/pkg/transaction"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
 type ITransactionHandler interface {
 	CreateTransaction(c *gin.Context)
+	GetMyActiveTransactions(c *gin.Context)
+	DeclineTransaction(c *gin.Context)
 }
 
 // TransactionHandler transaction handler instance
@@ -86,12 +90,12 @@ func (thandler *TransactionHandler) CreateTransaction(c *gin.Context) {
 	}
 	product, er := thandler.ProductService.GetPostByID(ctx, input.ProductID)
 	if er != nil {
-		resp.Msg = translation.Translate(session.Lang, "product instance with this id doesn't exist")
+		resp.Msg = translation.Translate(session.Lang, "product instance with this id doesn't exist"+er.Error())
 		resp.StatusCode = http.StatusNotFound
 		c.JSON(resp.StatusCode, resp)
 		return
 	}
-	if !product.Closed {
+	if product.Closed {
 		resp.Msg = translation.Translate(session.Lang, "product with this id is not active for sell")
 		resp.StatusCode = http.StatusExpectationFailed
 		c.JSON(resp.StatusCode, resp)
@@ -111,6 +115,7 @@ func (thandler *TransactionHandler) CreateTransaction(c *gin.Context) {
 		if er == nil {
 			SellerID = store.OwnerID
 		} else {
+			println(er.Error())
 			resp.Msg = translation.Translate(session.Lang, "Internal Problem Please try again")
 			resp.StatusCode = http.StatusInternalServerError
 			c.JSON(resp.StatusCode, resp)
@@ -129,7 +134,79 @@ func (thandler *TransactionHandler) CreateTransaction(c *gin.Context) {
 		SellerStoreRef:    product.StoreID,
 		CreatedAt:         uint64(time.Now().Unix()), //
 	}
-	// transaction  , er :=
-	println(transaction)
+	er = thandler.Service.CreateNewTransaction(ctx, transaction)
+	if er != nil {
+		println(er.Error())
+		resp.StatusCode = http.StatusInternalServerError
+		resp.Msg = translation.Translate(session.Lang, "internal problem, please try again")
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	resp.StatusCode = http.StatusOK
+	resp.Msg = translation.Translate(session.Lang, "transaction created succesfuly")
+	resp.Transaction = transaction
+	c.JSON(resp.StatusCode, resp)
+}
 
+func (thandler *TransactionHandler) GetMyActiveTransactions(c *gin.Context) {
+	ctx := c.Request.Context()
+	session, ok := ctx.Value("session").(*model.Session)
+	if !ok {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	res := &struct {
+		StatusCode   int                  `json:"status_code"`
+		Msg          string               `json:"msg"`
+		Transactions []*model.Transaction `json:"transactions,omitempty"`
+	}{}
+	transactions, er := thandler.Service.GetMyActiveTransactions(ctx, session.ID)
+	if er != nil {
+		println(er.Error())
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "no transacion found")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.Transactions = transactions
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.Translate(session.Lang, "found transactions")
+	c.JSON(res.StatusCode, res)
+}
+
+func (thandler *TransactionHandler) DeclineTransaction(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	transactionID, er := strconv.Atoi(c.Param("id"))
+	res := &struct {
+		StatusCode int    `json:"status_code"`
+		Msg        string `json:"msg"`
+	}{}
+	if er != nil {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.Translate(session.Lang, "invalid transaction id")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	state, er := thandler.Service.DeclineTransaction(ctx, uint64(transactionID), session.ID)
+	if state < 0 || er != nil {
+		if state == -1 {
+			res.StatusCode = http.StatusNotFound
+			res.Msg = translation.Translate(session.Lang, "transaction not found")
+		} else if state == -2 {
+			res.StatusCode = http.StatusUnauthorized
+			res.Msg = translation.Translate(session.Lang, "transaction is already in contract state")
+		} else if state == -3 {
+			res.StatusCode = http.StatusNotFound
+			res.Msg = translation.Translate(session.Lang, "no transaction deleted")
+		} else {
+			res.StatusCode = http.StatusInternalServerError
+			res.Msg = translation.Translate(session.Lang, "internal problem, please try again later!")
+		}
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.Translate(session.Lang, "Transaction Deleted Succesfuly")
+	c.JSON(res.StatusCode, res)
 }
