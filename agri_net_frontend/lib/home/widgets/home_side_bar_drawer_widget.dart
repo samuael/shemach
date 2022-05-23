@@ -2,29 +2,12 @@ import '../../libs.dart';
 import '../../theme.dart';
 
 class CollapsingSideBarDrawer extends StatefulWidget {
-  const CollapsingSideBarDrawer({Key? key}) : super(key: key);
+  CollapsingSideBarDrawer();
 
   @override
   State<CollapsingSideBarDrawer> createState() =>
       _CollapsingSideBarDrawerState();
 }
-
-class NavigationModel {
-  String title;
-  IconData icon;
-
-  NavigationModel(this.title, this.icon) {}
-}
-
-List<NavigationModel> sideBarItems = [
-  NavigationModel("Products", Icons.home),
-  NavigationModel("My Stores", Icons.store),
-  NavigationModel("Contracts", Icons.person),
-  NavigationModel("Search", Icons.search),
-  NavigationModel("Notifications", Icons.notifications),
-  NavigationModel("Sttings", Icons.settings),
-  NavigationModel("Log Out", Icons.logout),
-];
 
 class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
     with SingleTickerProviderStateMixin {
@@ -59,6 +42,16 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
   Widget getWidget(context, widget) {
     var we = MediaQuery.of(context).size.width;
     var he = MediaQuery.of(context).size.height;
+    final sideBarlItems = (StaticDataStore.ROLE == ROLE_ADMIN ||
+            StaticDataStore.ROLE == ROLE_INFOADMIN)
+        ? adminSideBarItems
+        : (StaticDataStore.ROLE == ROLE_AGENT)
+            ? agentSideBarItems
+            : (StaticDataStore.ROLE == ROLE_MERCHANT)
+                ? merchantSideBarItems
+                : (StaticDataStore.ROLE == ROLE_SUPERADMIN)
+                    ? superAdminSideBarItems
+                    : [];
     Widget divider;
     return Container(
       width: widthAnimation.value,
@@ -94,9 +87,9 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
           Expanded(
               child: ListView.builder(
             itemBuilder: (context, counter) {
-              if (counter == sideBarItems.length - 3) {
+              if (counter == sideBarlItems.length - 3) {
                 divider = Divider(
-                  height: 150,
+                  height: 200,
                 );
               } else {
                 divider = Container();
@@ -104,19 +97,20 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
               return Column(
                 children: [
                   CollapsingNavTile(
-                      sideBarItems[counter].title,
-                      sideBarItems[counter].icon,
+                      sideBarlItems[counter].title,
+                      sideBarlItems[counter].icon,
                       animationController,
                       currentSelectedIndex == counter, () {
                     setState(() {
                       currentSelectedIndex = counter;
+                      Navigator.pushNamed(context, sideBarlItems[counter].path);
                     });
                   }),
                   divider
                 ],
               );
             },
-            itemCount: sideBarItems.length,
+            itemCount: sideBarlItems.length,
           )),
         ],
       ),

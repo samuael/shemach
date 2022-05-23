@@ -43,8 +43,8 @@ class _CollapsingNavTileState extends State<CollapsingNavTile> {
               : notSelectedListTileText,
         ),
         width: widthAnimation.value,
-        margin: EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-        padding: EdgeInsets.fromLTRB(3, 5, 0, 5),
+        margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+        padding: EdgeInsets.fromLTRB(2, 5, 0, 5),
         child: Row(
           children: [
             Icon(

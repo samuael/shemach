@@ -35,7 +35,7 @@ func Route(
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "OPTIONS"},
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:3001", "http://localhost:8080", "https://facebook.com"},
+		AllowOrigins:     []string{"http://localhost:8080"},
 		AllowHeaders:     []string{"Content-type", "*"},
 		AllowCredentials: true,
 	}))
@@ -100,8 +100,8 @@ func Route(
 	router.POST("/api/superadmin/dictionary/new", rules.Authenticated(), rules.Authorized(), dictionaryhandler.CreateDictionary)
 	router.PUT("/api/superadmin/dictionary", rules.Authenticated(), rules.Authorized(), dictionaryhandler.UpdateDictionary)
 	router.DELETE("/api/superadmin/dictionary", rules.Authenticated(), dictionaryhandler.DeleteDictionary)
-	router.GET("/api/dictionary/translate", dictionaryhandler.Translate)
-
+	router.POST("/api/dictionary/translate", dictionaryhandler.Translate)
+	router.GET("/api/dictionaries", dictionaryhandler.GetRecentDictionaries)
 	// Store related routes
 	router.POST("/api/admin/store/new", rules.Authenticated(), rules.Authorized(), storehandler.CreateStore)
 	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)
@@ -111,6 +111,8 @@ func Route(
 	// This routes are applicable for only Merchants and Agents
 	router.POST("/api/cxp/post/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
 	router.POST("/api/cxp/post/images/:postid", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+	router.GET("/api/posts", rules.Authenticated(), crophandler.Getposts)
+	router.GET("/api/post/:id", rules.Authenticated(), crophandler.GetPostByID)
 
 	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)
 	router.GET("/post/image/:id/blurred/", rules.Authenticated(), resourcehandler.GetBlurredImage)

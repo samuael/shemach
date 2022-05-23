@@ -112,15 +112,19 @@ class _LoginWidgetState extends State<LoginWidget> {
               border: OutlineInputBorder(),
               suffix: GestureDetector(
                   child: hidePassword
-                      ? Image.asset("icons/icons8-eyelashes-3d-30.png",
+                      ? Image.asset('assets/icons/icons8-eyelashes-3d-30.png',
                           color: Theme.of(context).primaryColor,
                           width: 20,
                           height: 20)
                       : Image.asset(
-                          "icons/icons8-eyebrow-30.png",
+                          'assets/icons/icons8-eyebrow-30.png',
                           color: Theme.of(context).primaryColor,
                           width: 20,
                           height: 20,
+                          errorBuilder: (context, stg, stgh) {
+                            return Icon(Icons.security,
+                                color: Theme.of(context).primaryColor);
+                          },
                         ),
                   onTap: () {
                     setState(() {
@@ -171,20 +175,42 @@ class _LoginWidgetState extends State<LoginWidget> {
                     passwordController.text != "") {
                   // Either the email controller or the password controller are empty string.
                   context.read<AuthBloc>().add(AdminLoginInProgressEvent());
-                  final result = await context.read<AuthBloc>().login(
+                  final userSate = await context.read<AuthBloc>().login(
                       AuthLoginEvent(
                           emailController.text, passwordController.text));
-                  if (result is AuthAdminLoggedIn) {
+                  if (userSate is AuthAdminLoggedIn) {
+                    context.read<AuthBloc>().add(
+                        AuthAdminLoggedInEvent(userSate.user, userSate.role));
+                    context
+                        .read<UserBloc>()
+                        .add(UserLoggedInEvent(user: userSate.user));
+                    Navigator.of(context).pushNamed(HomeScreen.RouteName);
+
+                    // } else {
+                    //   Navigator.pushNamed(context, AuthScreen.RouteName);
+                    // }
+
+                    // context.read<UserBloc>().add(UserLoggedInEvent(
+                    //     user: userSate.user, role: userSate.role));
+
+                    // if (userSate.role == ROLE_SUPERADMIN) {
+                    //   context.read<UserBloc>().add(SuperAdminLoggedInEvent());
+                    // }
+                    // if (userSate.role == ROLE_AGENT) {
+                    //   context.read<UserBloc>().add(AgentLoggedInEvent());
+                    // }
+                    // if (userSate.role == ROLE_MERCHANT) {
+                    //   context.read<UserBloc>().add(MerchantLoggedInEvent());
+                    // }
+                    // if (userSate.role == ROLE_ADMIN) {
+                    //   context.read<UserBloc>().add(AdminLoggedInEvent());
+                    // }
+
+                  } else if (userSate is AuthAdminLoginNotSuccesful) {
                     context
                         .read<AuthBloc>()
-                        .add(AuthAdminLoggedInEvent(result.admin));
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        HomeScreen.RouteName, (route) => false);
-                  } else if (result is AuthAdminLoginNotSuccesful) {
-                    context
-                        .read<AuthBloc>()
-                        .add(AuthAdminLoginNotSuccesfulEvent(result.Msg));
-                  } else if (result is AuthAdminLoginOnProgress) {
+                        .add(AuthAdminLoginNotSuccesfulEvent(userSate.Msg));
+                  } else if (userSate is AuthAdminLoginOnProgress) {
                     context.read<AuthBloc>().add(AdminLoginInProgressEvent());
                   }
                 }

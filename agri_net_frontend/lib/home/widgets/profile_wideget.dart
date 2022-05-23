@@ -2,7 +2,8 @@ import '../../libs.dart';
 import '../../theme.dart';
 
 class UserAccountePage extends StatefulWidget {
-  const UserAccountePage({Key? key}) : super(key: key);
+  User user;
+  UserAccountePage({required this.user});
 
   @override
   State<UserAccountePage> createState() => _UserAccountePageState();
@@ -14,13 +15,15 @@ class _UserAccountePageState extends State<UserAccountePage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).pushNamed(ProfileScreen.RouteName);
+        },
         child: Row(
           children: [
             CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
-                  'images/pp.jpg',
+                  "assets/images/pp.jpg",
                   width: 70,
                   height: 70,
                   fit: BoxFit.cover,
@@ -31,7 +34,7 @@ class _UserAccountePageState extends State<UserAccountePage> {
               width: 10,
             ),
             Text(
-              "User Name",
+              widget.user.firstname,
               style: UserNameFontStyle,
             )
           ],

@@ -98,13 +98,7 @@ var PhoneRX = regexp.MustCompile(`^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\
 
 // MatchesPattern checks if a given input form field matchs a given pattern
 func MatchesPattern(email string, pattern *regexp.Regexp) bool {
-	if email == "" {
-		return false
-	}
-	if !pattern.MatchString(email) {
-		return false
-	}
-	return true
+	return !(email == "" || !pattern.MatchString(email))
 }
 
 func IsValidDate(date string) (info string, success bool) {

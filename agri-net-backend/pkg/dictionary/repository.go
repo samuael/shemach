@@ -11,4 +11,5 @@ type IDictionaryRepo interface {
 	Translate(ctx context.Context, dict *model.Dictionary) error
 	DeleteTranslation(ctx context.Context, dict *model.Dictionary) (int, error)
 	UpdateTranslation(ctx context.Context, dict *model.Dictionary) error
+	GetDictionaries(ctx context.Context, offset, limit uint) ([]*model.Dictionary, error)
 }

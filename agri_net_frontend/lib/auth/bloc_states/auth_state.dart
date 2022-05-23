@@ -5,8 +5,9 @@ class AuthBlocState {}
 class AuthStateInit extends AuthBlocState {}
 
 class AuthAdminLoggedIn extends AuthBlocState {
-  Admin admin;
-  AuthAdminLoggedIn(this.admin);
+  User user;
+  String role;
+  AuthAdminLoggedIn(this.user, this.role);
 }
 
 class AuthAdminLoginNotSuccesful extends AuthBlocState {

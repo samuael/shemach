@@ -12,6 +12,7 @@ class AuthProvider {
   Future<List<Map<String, dynamic>>?> loadMaids(int offset) async {
     final headers = {"Authorization": "Bearer ${StaticDataStore.TOKEN}"};
     print("Loading clients ");
+
     try {
       var response = await client.get(
         Uri(
@@ -22,7 +23,6 @@ class AuthProvider {
         ),
         headers: headers,
       );
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = jsonDecode(response.body) as List<dynamic>;
         final map = body.map<Map<String, dynamic>>((elem) {
@@ -39,7 +39,7 @@ class AuthProvider {
 
   Future<List<Map<String, dynamic>>?> searchMaids(
       String text, int offset) async {
-    final headers = {"Authorization": "Bearer ${StaticDataStore.TOKEN}"};
+    final headers = {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"};
     try {
       var response = await client.get(
         Uri.parse(StaticDataStore.URI +
@@ -63,13 +63,13 @@ class AuthProvider {
 
   Future<UsersLoginResponse> loginAdmin(String email, String password) async {
     try {
-      print("$email   $password");
+      print("Sending login request with :" + "$email   $password");
       var response = await client.post(
         Uri(
           scheme: "http",
           host: StaticDataStore.HOST,
           port: StaticDataStore.PORT,
-          path: "/api/login/",
+          path: "/api/login",
         ),
         body: jsonEncode(
           {
@@ -80,20 +80,20 @@ class AuthProvider {
         headers: {"Content-Type": "application/json"},
       );
 
-      print(response.headers);
+      print(
+          "You have the following response body ${response.body} and response status ${response.statusCode} DD:");
       if (response.statusCode == 200) {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
-        if (body["success"] == true) {
-          StaticDataStore.HEADERS = response.headers;
-          return UsersLoginResponse(
-              statusCode: response.statusCode,
-              msg: "${body["message"]}",
-              user: Admin.fromJson(body["user"] as Map<String, dynamic>));
-        }
+
+        StaticDataStore.HEADERS = response.headers;
+        StaticDataStore.ROLE = body["role"];
+        StaticDataStore.USER_TOKEN = body["token"];
+        // Token = body["token"];
         return UsersLoginResponse(
-          statusCode: response.statusCode,
-          msg: "${body["message"]}",
-        );
+            statusCode: response.statusCode,
+            msg: "${body["msg"]}",
+            user: User.fromJson(body["user"] as Map<String, dynamic>),
+            role: "${body["role"]}");
       } else if (response.statusCode == 401 ||
           response.statusCode == 500 ||
           response.statusCode == 404) {

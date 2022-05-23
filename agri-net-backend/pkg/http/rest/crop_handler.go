@@ -29,6 +29,8 @@ import (
 type ICropHandler interface {
 	CreateProduct(c *gin.Context)
 	UploadProductImages(c *gin.Context)
+	Getposts(c *gin.Context)
+	GetPostByID(c *gin.Context)
 }
 type CropHandler struct {
 	Service         crop.ICropService
@@ -340,8 +342,58 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 	c.JSON(res.StatusCode, res)
 }
 
-// GetPOstByID returns the post as *model.Crop
-func (chandler *CropHandler) GetPostByID(c *gin.Context) {
-	// ctx := c.Request.Context()
+// Getposts   returns the list of  crops posted in the system.
+func (chandler *CropHandler) Getposts(c *gin.Context) {
+	ctx := c.Request.Context()
+	offset, er := strconv.Atoi(c.Query("offset"))
+	res := &struct {
+		Msg        string        `json:"msg,omitempty"`
+		StatusCode int           `json:"status_code"`
+		Posts      []*model.Crop `json:"posts,omitempty"`
+	}{}
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(c.Query("limit"))
+	if er != nil {
+		limit = offset + 10
+	}
 
+	posts, er := chandler.Service.GetPosts(ctx, uint(offset), uint(limit))
+	if er != nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("posts not found")
+	}
+	res.Posts = posts
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.TranslateIt("fetched")
+}
+
+// GetPostByID(c *gin.Context)
+func (chandler *CropHandler) GetPostByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	res := &struct {
+		StatusCode int         `json:"status_code"`
+		Msg        string      `json:"msg"`
+		Post       *model.Crop `json:"post"`
+	}{}
+	session := ctx.Value("session").(*model.Session)
+	id, er := strconv.Atoi(c.Param("id"))
+	if er != nil || id <= 0 {
+		res.StatusCode = http.StatusBadRequest
+		res.Msg = translation.Translate(session.Lang, "bad request payload")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	post, er := chandler.Service.GetPostByID(ctx, uint64(id))
+	if er != nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.Translate(session.Lang, "post not found")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.Post = post
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.Translate(session.Lang, "post found")
+	c.JSON(res.StatusCode, res)
 }
