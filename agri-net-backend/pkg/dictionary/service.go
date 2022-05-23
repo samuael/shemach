@@ -11,6 +11,7 @@ type IDictionaryService interface {
 	Translate(ctx context.Context, dict *model.Dictionary) error
 	DeleteTranslation(ctx context.Context, dict *model.Dictionary) (int, error)
 	UpdateTranslation(ctx context.Context, dict *model.Dictionary) error
+	GetDictionaries(ctx context.Context, offset, limit uint) ([]*model.Dictionary, error)
 }
 
 type DictionaryService struct {
@@ -35,4 +36,8 @@ func (service *DictionaryService) DeleteTranslation(ctx context.Context, dict *m
 }
 func (service *DictionaryService) UpdateTranslation(ctx context.Context, dict *model.Dictionary) error {
 	return service.Repo.UpdateTranslation(ctx, dict)
+}
+
+func (service *DictionaryService) GetDictionaries(ctx context.Context, offset, limit uint) ([]*model.Dictionary, error) {
+	return service.Repo.GetDictionaries(ctx, offset, limit)
 }

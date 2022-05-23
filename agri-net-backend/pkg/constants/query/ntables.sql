@@ -179,5 +179,54 @@ create table crop (
     created_at integer  not null default ROUND(extract(  epoch from now())),
     store_id integer references store(store_id),
     agent_id integer,
-    store_owned boolean
+    store_owned boolean,
+    closed boolean default false
+);
+
+
+create table transaction (
+    transaction_id serial primary key,
+    price decimal not null , 
+    quantity decimal not null , 
+    state smallint not null default 1,
+    deadline integer not null default (ROUND(extract(  epoch from now())) + 86400),
+    description varchar(500) default '',
+    crop_id integer references crop(crop_id) not null,
+    requester_id integer not null,
+    requester_store_ref integer not null,
+    seller_id integer not null,
+    seller_store_ref integer ,
+    created_at integer not null default ROUND(extract(  epoch from now())),
+    kebd_amount decimal default 0.0,
+    guarantee_amount decimal default 0.0
+);  
+
+create table transaction_changes (
+    transaction_changes_id serial primary key,
+    state smallint not null,
+    transaction_id integer references transaction(transaction_id),
+    description text default '',
+    price decimal,
+    qty decimal,
+    created_at integer not null default ROUND( extract(epoch from now()))
+);
+
+
+create table kebd_transaction_info(
+    kebd_transaction_info_id serial primary key,
+    transaction_id integer references transaction(transaction_id),
+    state smallint not null,
+    kebd_amount decimal not null,
+    deadline integer not null default ROUND(extract(epoch from now())),
+    description varchar(500) default '',
+    created_at integer not null default round( extract(expoch from now()))
+);
+
+create table transaction_guarantee_info(
+    transaction_guarantee_info_id serial primary key,
+    transaction_id integer references transaction(transaction_id),
+    state smallint not null,
+    description varchar(500) default '',
+    amount decimal not null,
+    created_at integer not null default round( extract(expoch from now()))
 );

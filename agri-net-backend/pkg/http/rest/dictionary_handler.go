@@ -16,6 +16,7 @@ type IDictionaryHandler interface {
 	UpdateDictionary(c *gin.Context)
 	DeleteDictionary(c *gin.Context)
 	Translate(c *gin.Context)
+	GetRecentDictionaries(c *gin.Context)
 }
 
 type DictionaryHandler struct {
@@ -150,5 +151,33 @@ func (dhandler *DictionaryHandler) Translate(c *gin.Context) {
 	}
 	res.StatusCode = http.StatusOK
 	res.Dictionary = input
+	c.JSON(res.StatusCode, res)
+}
+
+// GetRecentDictionaries ...
+func (dhandler *DictionaryHandler) GetRecentDictionaries(c *gin.Context) {
+	ctx := c.Request.Context()
+	offset, er := strconv.Atoi(c.Query("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(c.Query("limit"))
+	if er != nil {
+		limit = 0
+	}
+	res := &struct {
+		Msg          string              `json:"msg"`
+		StatusCode   int                 `json:"status_code"`
+		Dictionaries []*model.Dictionary `json:"dictionaries,omitempty"`
+	}{}
+	dictionaries, er := dhandler.Service.GetDictionaries(ctx, uint(offset), uint(limit))
+	if er != nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("no dictionaries found ")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.StatusCode = http.StatusOK
+	res.Dictionaries = dictionaries
 	c.JSON(res.StatusCode, res)
 }

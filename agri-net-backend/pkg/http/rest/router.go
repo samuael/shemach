@@ -100,8 +100,8 @@ func Route(
 	router.POST("/api/superadmin/dictionary/new", rules.Authenticated(), rules.Authorized(), dictionaryhandler.CreateDictionary)
 	router.PUT("/api/superadmin/dictionary", rules.Authenticated(), rules.Authorized(), dictionaryhandler.UpdateDictionary)
 	router.DELETE("/api/superadmin/dictionary", rules.Authenticated(), dictionaryhandler.DeleteDictionary)
-	router.GET("/api/dictionary/translate", dictionaryhandler.Translate)
-
+	router.POST("/api/dictionary/translate", dictionaryhandler.Translate)
+	router.GET("/api/dictionaries", dictionaryhandler.GetRecentDictionaries)
 	// Store related routes
 	router.POST("/api/admin/store/new", rules.Authenticated(), rules.Authorized(), storehandler.CreateStore)
 	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)

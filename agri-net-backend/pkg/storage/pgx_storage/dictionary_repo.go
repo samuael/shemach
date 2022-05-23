@@ -63,7 +63,6 @@ func (repo *DictionaryRepo) DeleteTranslation(ctx context.Context, dict *model.D
 	if er != nil && erf != nil {
 		return 0, erf
 	}
-
 	return int(raff.RowsAffected() + raff2.RowsAffected()), nil
 }
 func (repo *DictionaryRepo) UpdateTranslation(ctx context.Context, dict *model.Dictionary) error {
@@ -78,4 +77,21 @@ func (repo *DictionaryRepo) UpdateTranslation(ctx context.Context, dict *model.D
 		return errors.New("no row is affected")
 	}
 	return nil
+}
+
+func (repo *DictionaryRepo) GetDictionaries(ctx context.Context, offset, limit uint) ([]*model.Dictionary, error) {
+	dictionaries := []*model.Dictionary{}
+	rows, er := repo.DB.Query(ctx, "select id,sentence ,lang ,translation from dictionary ORDER BY id DESC OFFSET $1 LIMIT $2 ", offset, limit)
+	if er != nil {
+		return nil, er
+	}
+	for rows.Next() {
+		dict := &model.Dictionary{}
+		era := rows.Scan(&(dict.ID), &(dict.Text), &(dict.Lang), &(dict.Translation))
+		if era != nil {
+			continue
+		}
+		dictionaries = append(dictionaries, dict)
+	}
+	return dictionaries, nil
 }

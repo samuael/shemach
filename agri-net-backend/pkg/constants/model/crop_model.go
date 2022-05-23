@@ -15,4 +15,5 @@ type Crop struct {
 	StoreID           uint64   `json:"store_id"`
 	AgentID           uint64   `json:"agent_id"`
 	StoreOwned        bool     `json:"store_owned"`
+	Closed            bool     `json:"closed"`
 }

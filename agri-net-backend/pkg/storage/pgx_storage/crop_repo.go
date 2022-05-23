@@ -41,12 +41,13 @@ func (repo *CropRepo) GetPostByID(ctx context.Context, postid uint64) (*model.Cr
 		StoreID interface{}
 		AgentID interface{}
 	}{}
-	er := repo.DB.QueryRow(ctx, `select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned from crop where crop_id=$1`, postid).
+	er := repo.DB.QueryRow(ctx, `select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop where crop_id=$1`, postid).
 		Scan(
 			&(post.ID), &(post.TypeID), &(post.Description), &(post.Negotiable),
 			&(post.RemainingQuantity), &(post.SellingPrice),
 			&(post.AddressRef), &(post.Images), &(post.CreatedAt),
 			&(newval.StoreID), &(newval.AgentID), &(post.StoreOwned),
+			&(post.Closed),
 		)
 	if er != nil {
 		return nil, er
@@ -81,7 +82,7 @@ func (repo *CropRepo) SaveNewPostImages(ctx context.Context, postid uint64, imag
 
 func (repo *CropRepo) GetPosts(ctx context.Context, offset, limit uint) ([]*model.Crop, error) {
 	posts := []*model.Crop{}
-	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned from crop LIMIT $1  OFFSET $2", limit, offset)
+	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop LIMIT $1  OFFSET $2", limit, offset)
 	if er != nil {
 		return nil, er
 	}
@@ -97,7 +98,7 @@ func (repo *CropRepo) GetPosts(ctx context.Context, offset, limit uint) ([]*mode
 				&(post.ID), &(post.TypeID), &(post.Description), &(post.Negotiable),
 				&(post.RemainingQuantity), &(post.SellingPrice),
 				&(post.AddressRef), &(post.Images), &(post.CreatedAt),
-				&(newval.StoreID), &(newval.AgentID), &(post.StoreOwned),
+				&(newval.StoreID), &(newval.AgentID), &(post.StoreOwned), &(post.Closed),
 			)
 		if er != nil {
 			continue
