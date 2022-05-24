@@ -12,7 +12,13 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      body: Column(
+        children: [
+          Container(
+            child: TextField(),
+          )
+        ],
+      ),
     );
   }
 }

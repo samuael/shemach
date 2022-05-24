@@ -12,6 +12,11 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   PageController pageController = PageController();
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   int index = 1;
   void changeWidget() {
     if (index == 1) {

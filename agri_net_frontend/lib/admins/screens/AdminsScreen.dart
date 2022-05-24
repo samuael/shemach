@@ -1,16 +1,24 @@
+import 'dart:ffi';
+
 import '../../libs.dart';
 
-class UsersScreen extends StatefulWidget {
-  static String RouteName = "users";
-  const UsersScreen({Key? key}) : super(key: key);
+class AdminsScreen extends StatefulWidget {
+  static String RouteName = "admins";
+  const AdminsScreen({Key? key}) : super(key: key);
 
   @override
-  State<UsersScreen> createState() => _UsersScreenState();
+  State<AdminsScreen> createState() => _AdminsScreenState();
 }
 
-class _UsersScreenState extends State<UsersScreen> {
+class _AdminsScreenState extends State<AdminsScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<AdminsBloc>(context).add(GetAllAdminsEvent());
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).canvasColor,
@@ -27,50 +35,65 @@ class _UsersScreenState extends State<UsersScreen> {
             style: TextStyle(
                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
           ),
-        ),
-        body: Column(
-          children: [
-            Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        context.read<AdminsBloc>().add(CreateNewUserEvent());
-                      },
-                      icon: Icon(Icons.add)),
-                  Text(
-                    "New",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+          actions: [
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed(RegisterAdminPage.RouteName);
+                  },
+                  icon: Icon(Icons.add),
+                  color: Colors.black,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed(RegisterAdminPage.RouteName);
+                    },
+                    child: Text(
+                      "New",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            BlocBuilder<AdminsBloc, UsersState>(builder: (context, state) {
-              if (state is GetAllUsersEvent) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (state is AllUsersRetrievedState) {
-                return Positioned(
-                  child: userRow(state.usersList),
-                );
-              }
-              if (state is NoUserFoundState) {
-                return Center(child: Text("No User is registered yet!"));
-              }
-              return Center(
-                child: Text("Some thing went wrong"),
-              );
-            }),
           ],
-        ));
+        ),
+        body: BlocBuilder<AdminsBloc, AdminsState>(builder: (context, state) {
+          if (state is GetAllAdminsState) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is AllAdminsRetrievedState) {
+            return Column(
+              children: [
+                Expanded(
+                  child: userRow(state.usersList),
+                ),
+              ],
+            );
+          }
+          if (state is NoAdminFoundState) {
+            return Column(
+              children: [
+                Text("No User is registered yet!"),
+              ],
+            );
+          }
+          return Column(
+            children: [
+              Text("Some thing went wrong"),
+            ],
+          );
+        }));
   }
 
   Widget userRow(List<User> users) {

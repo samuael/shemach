@@ -19,6 +19,11 @@ class _LoginWidgetState extends State<LoginWidget> {
   bool hidePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,

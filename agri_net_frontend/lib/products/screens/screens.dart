@@ -1,2 +1,2 @@
 export 'product_screen.dart';
-export 'productForm.dart';
+export '../widgets/productForm.dart';

@@ -10,51 +10,59 @@ class ProductProvider {
   static Client client = Client();
   ProductProvider();
 
-  Future<Product> getProducts() async {
+  Future<List<Product>> getProducts() async {
+    final header = {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"};
+    List<Product> products = [];
+
     var respo = await client.get(
-      Uri(
-        scheme: "http",
-        host: StaticDataStore.HOST,
-        port: StaticDataStore.PORT,
-        path: "/api/product/get",
-      ),
-    );
-    return Product.fromJson(json.decode(respo.body));
+        Uri(
+          scheme: "http",
+          host: StaticDataStore.HOST,
+          port: StaticDataStore.PORT,
+          path: "/api/products",
+        ),
+        headers: {"Content-Type": "application/json"});
+    print(respo.body);
+    if (respo.statusCode == 200 || respo.statusCode == 201) {
+      Map<String, dynamic> bodyMap = jsonDecode(respo.body);
+      List<dynamic> tempProducts = bodyMap["products"];
+      for (int i = 0; i < tempProducts.length; i++) {
+        products.add((Product.fromJson(tempProducts[i])));
+      }
+      print("Success\n\n");
+      return products;
+    } else {
+      print("Failure\n\n");
+      throw Exception('Failed to load post');
+    }
   }
 
-  Future<ProductResponse> createProduct(int pid, String productName,
-      String location, double amounte, double price) async {
+  Future<ProductResponse> createProduct(int unit_id, String productName,
+      String production_area, double current_price) async {
+    final header = {"Authorization": "Bearer${StaticDataStore.USER_TOKEN}"};
     try {
       var res = await client.post(
           Uri(
             scheme: "http",
             host: StaticDataStore.HOST,
             port: StaticDataStore.PORT,
-            path: "/api/product/create",
+            path: "/api/superadmin/product/new",
           ),
           body: {
-            "pid": pid,
-            "productName": productName,
-            "location": location,
-            "amounte": amounte,
-            "price": price
+            "unit_id": unit_id,
+            "name": productName,
+            "production_area": production_area,
+            "current_price": current_price
           },
-          headers: {
-            "Content-Type": "application/json"
-          });
+          headers: header);
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         // copy the json resonse and
-        var body = jsonDecode(res.body) as Map<String, dynamic>;
-        // final map = body.map<Map<String, dynamic>>((elem) {
-        //   return (elem as Map<String, dynamic>);
-        // }).toList();
-        // return map;
+        var body = jsonDecode(res.body);
         return ProductResponse(
             statusCode: res.statusCode,
-            // msg: "$body["msg"]",
             msg: "${body["msg"]}",
-            product: Product.fromJson(body["msg"] as Map<String, dynamic>));
+            product: Product.fromJson(body["product"]));
       } else {
         var body = jsonDecode(res.body) as Map<String, dynamic>;
         return ProductResponse(
@@ -65,9 +73,4 @@ class ProductProvider {
           statusCode: 999, msg: "Sorry something went wrong");
     }
   }
-
-  // getALLProduct() {}
-  // getProductById() {}
-  // updateProduct(int pid) {}
-  // deleteProduct(int pid) {}
 }

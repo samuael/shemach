@@ -2,33 +2,34 @@ import '../../libs.dart';
 
 class ProductEvent {}
 
-class GetProductListInItEvent extends ProductEvent {}
-
 class GetProductListEvent extends ProductEvent {}
-
-class GetProductListOnProdressEvent extends ProductEvent {}
 
 class ProductListFetchedEvent extends ProductEvent {
   List<Product> products;
   ProductListFetchedEvent(this.products);
 }
 
-// POST EVENTS
-
-class PostNewProductInItEvent extends ProductEvent {}
+class PostNewProductInit extends ProductEvent {}
 
 class PostNewProductEvent extends ProductEvent {
-  int pid;
+  int unit_id;
   String productName;
-  String location;
-  double amounte;
-  double price;
+  String production_area;
+  double current_price;
 
   PostNewProductEvent(
-      this.pid, this.productName, this.location, this.amounte, this.price);
+      {required this.unit_id,
+      required this.productName,
+      required this.production_area,
+      required this.current_price});
 }
 
 class NewProductPostedEvent extends ProductEvent {
   Product product;
-  NewProductPostedEvent(this.product);
+  NewProductPostedEvent({required this.product});
+}
+
+class FailedToPostNewProductEvent extends ProductEvent {
+  String msg;
+  FailedToPostNewProductEvent({required this.msg});
 }
