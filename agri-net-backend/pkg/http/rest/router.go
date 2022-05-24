@@ -108,6 +108,7 @@ func Route(
 	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)
 	router.GET("/api/store", rules.Authenticated(), storehandler.GetMerchantByID)
 	router.GET("/api/merchants", rules.Authenticated(), merchanthandler.MerchantsSearch)
+	router.GET("/api/agents", rules.Authenticated(), agenthandler.AgentsSearch)
 
 	// Crop related routes
 	// This routes are applicable for only Merchants and Agents

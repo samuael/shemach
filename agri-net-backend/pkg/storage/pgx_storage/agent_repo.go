@@ -101,3 +101,66 @@ func (repo *AgentRepo) GetAgentsAddress(ctx context.Context, agent_id int) (*mod
 	}
 	return nil, ers
 }
+
+// SearchAgent
+func (repo *AgentRepo) SearchAgent(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Agent, error) {
+	agents := []*model.Agent{}
+	values := []interface{}{}
+	count := 1
+	statement := `select id,firstname,lastname,phone,email,imageurl,created_at,password,lang,posts_count,field_address_ref,registered_by from agent where `
+	if phone != "" {
+		statement = fmt.Sprintf("%s phone ILIKE $%d", statement, count)
+		values = append(values, "%"+strings.Trim(phone, " +")+"%")
+		count++
+	}
+	name = strings.Trim(name, " ")
+	if name != "" {
+		if count > 1 {
+			statement = fmt.Sprintf(" %s or ", statement)
+		}
+		statement = fmt.Sprintf("%s firstname ILIKE $"+strconv.Itoa(count), statement)
+		values = append(values, "%"+name+"%")
+		statement = fmt.Sprintf("%s or ", statement)
+		count++
+		statement = fmt.Sprintf("%s lastname ILIKE $"+strconv.Itoa(count), statement)
+		values = append(values, "%"+name+"%")
+		count++
+	}
+	if createdBy > 0 {
+		if count > 1 {
+			statement = fmt.Sprintf(" %s or ", statement)
+		}
+		statement = fmt.Sprintf(" %s registered_by=$"+strconv.Itoa(int(count)), statement)
+		values = append(values, createdBy)
+		count++
+	}
+	statement = fmt.Sprintf("%s ORDER BY id DESC OFFSET $%d LIMIT $%d ", statement, count, count+1)
+	values = append(values, offset, limit)
+	rows, er := repo.DB.Query(ctx, statement, values...)
+	if er != nil {
+
+		return nil, er
+	}
+	for rows.Next() {
+		agent := &model.Agent{}
+		erf := rows.Scan(
+			&(agent.ID), &(agent.Firstname), &(agent.Lastname), &(agent.Phone), &(agent.Email), &(agent.Imgurl), &(agent.CreatedAt), &(agent.Password), &(agent.Lang),
+			&(agent.PostsCount), &(agent.FieldAddressRef), &(agent.RegisteredBy))
+		if erf != nil {
+			println(erf.Error())
+			continue
+		}
+		var address model.Address
+		latitude := ""
+		longitude := ""
+		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, agent.FieldAddressRef).
+			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+		if ers == nil {
+			address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+			address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+			agent.FieldAddress = &address
+		}
+		agents = append(agents, agent)
+	}
+	return agents, nil
+}

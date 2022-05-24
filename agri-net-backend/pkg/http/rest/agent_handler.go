@@ -3,6 +3,7 @@ package rest
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -20,6 +21,7 @@ import (
 type IAgentHandler interface {
 	RegisterAgent(c *gin.Context)
 	// GetAgentByID(c *gin.Context)
+	AgentsSearch(c *gin.Context)
 }
 
 type AgentHandler struct {
@@ -183,4 +185,42 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		c.JSON(resp.StatusCode, resp)
 		return
 	}
+}
+
+// MerchantsSearch
+func (ahandler *AgentHandler) AgentsSearch(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	response := &struct {
+		StatusCode int            `json:"status_code"`
+		Msg        string         `json:"msg"`
+		Agents     []*model.Agent `json:"agents"`
+	}{
+		Agents: []*model.Agent{},
+	}
+	phone := c.Query("phone")
+	name := c.Query("name")
+	createdBy, er := strconv.Atoi(c.Query("created_by"))
+	if er != nil {
+		createdBy = 0
+	}
+	offset, er := strconv.Atoi(c.Query("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(c.Query("limit"))
+	if er != nil {
+		limit = offset + 10
+	}
+	agents, er := ahandler.Service.SearchAgents(ctx, phone, name, uint64(createdBy), uint(offset), uint(limit))
+	if er != nil {
+		response.StatusCode = http.StatusNotFound
+		response.Msg = translation.Translate(session.Lang, "agents not found ")
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	response.StatusCode = http.StatusOK
+	response.Msg = translation.Translate(session.Lang, "agents found")
+	response.Agents = agents
+	c.JSON(response.StatusCode, response)
 }

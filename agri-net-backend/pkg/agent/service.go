@@ -10,6 +10,7 @@ type IAgentService interface {
 	RegisterAgent(ctx context.Context, agent *model.Agent) (int, error)
 	GetAgentByID(ctx context.Context, id int) (*model.Agent, error)
 	GetAgentsAddress(ctx context.Context, agent_id int) (*model.Address, error)
+	SearchAgents(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Agent, error)
 }
 
 type AgentService struct {
@@ -33,4 +34,9 @@ func (service *AgentService) GetAgentByID(ctx context.Context, id int) (*model.A
 
 func (service *AgentService) GetAgentsAddress(ctx context.Context, agent_id int) (*model.Address, error) {
 	return service.Repo.GetAgentsAddress(ctx, agent_id)
+}
+
+// SearchAgent
+func (service *AgentService) SearchAgents(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Agent, error) {
+	return service.Repo.SearchAgent(ctx, phone, name, createdBy, offset, limit)
 }
