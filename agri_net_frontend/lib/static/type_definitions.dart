@@ -49,21 +49,26 @@ class NavigationModel {
 
 List<NavigationModel> superAdminSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("Users", Icons.people, path: UsersScreen.RouteName),
+  NavigationModel("Admins", Icons.people, path: AdminsScreen.RouteName),
   NavigationModel("Search", Icons.search),
-  NavigationModel("Notifications", Icons.notifications,
-      path: NotificationScreen.RouteName),
+  NavigationModel(
+    "Notifications",
+    Icons.notifications,
+  ),
   NavigationModel("Sttings", Icons.settings),
   NavigationModel("Log Out", Icons.logout, path: AuthScreen.RouteName),
 ];
 
 List<NavigationModel> adminSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("Merchants", Icons.store),
+  NavigationModel("Merchants", Icons.store,
+      path: RegisteredMerchantsScreen.RouteName),
   NavigationModel("Agents", Icons.person),
   NavigationModel("Search", Icons.search),
-  NavigationModel("Notifications", Icons.notifications,
-      path: NotificationScreen.RouteName),
+  NavigationModel(
+    "Notifications",
+    Icons.notifications,
+  ),
   NavigationModel("Sttings", Icons.settings),
   NavigationModel("Log Out", Icons.logout),
 ];
@@ -72,7 +77,10 @@ List<NavigationModel> merchantSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
   NavigationModel("My Stores", Icons.store),
   NavigationModel("My Produts", Icons.store),
-  NavigationModel("Contracts", Icons.person, path: ContractScreen.RouteName),
+  NavigationModel(
+    "Contracts",
+    Icons.person,
+  ),
   NavigationModel("Search", Icons.search),
   NavigationModel("Notifications", Icons.notifications),
   NavigationModel("Sttings", Icons.settings),
@@ -82,7 +90,10 @@ List<NavigationModel> merchantSideBarItems = [
 List<NavigationModel> agentSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
   NavigationModel("My Produts", Icons.store),
-  NavigationModel("Contracts", Icons.person, path: ContractScreen.RouteName),
+  NavigationModel(
+    "Contracts",
+    Icons.person,
+  ),
   NavigationModel("Search", Icons.search),
   NavigationModel("Notifications", Icons.notifications),
   NavigationModel("Sttings", Icons.settings),

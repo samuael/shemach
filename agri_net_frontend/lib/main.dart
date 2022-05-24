@@ -1,3 +1,5 @@
+import 'package:agri_net_frontend/admins/widgets/register_admin_form.dart';
+
 import 'libs.dart';
 
 void main() {
@@ -11,13 +13,14 @@ void main() {
           UserBloc(userRepo: UserRepo(userProvider: UserProvider())),
     ),
     BlocProvider(create: (context) {
-      return AdminsBloc(usersRepo: UsersRepo(usersProvider: UsersProvider()))
-        ..add(GetAllUsersEvent());
+      return AdminsBloc(
+          adminsRepo: AdminsRepo(adminsProvider: AdminsProvider()))
+        ..add(GetAllAdminsEvent());
     }),
     BlocProvider(create: (context) {
       return ProductBloc(
         repo: ProductRepo(provider: ProductProvider()),
-      );
+      )..add(GetProductListEvent());
     }),
   ], child: MyHomePage()));
 }
@@ -58,21 +61,31 @@ class MyHomePageState extends State<MyHomePage> {
             return MaterialPageRoute(builder: (context) {
               return ProfileScreen();
             });
-          } else if (route == ContractScreen.RouteName) {
+          } else if (route == RegisteredMerchantsScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
-              return ContractScreen();
+              return RegisteredMerchantsScreen();
             });
-          } else if (route == NotificationScreen.RouteName) {
-            return MaterialPageRoute(builder: (context) {
-              return NotificationScreen();
-            });
-          } else if (route == HomeScreen.RouteName) {
+          }
+          // else if (route == ContractScreen.RouteName) {
+          //   return MaterialPageRoute(builder: (context) {
+          //     return ContractScreen();
+          //   });
+          // } else if (route == NotificationScreen.RouteName) {
+          //   return MaterialPageRoute(builder: (context) {
+          //     return NotificationScreen();
+          //   });
+          // }
+          else if (route == HomeScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return HomeScreen();
             });
-          } else if (route == UsersScreen.RouteName) {
+          } else if (route == AdminsScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
-              return UsersScreen();
+              return AdminsScreen();
+            });
+          } else if (route == RegisterAdminPage.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return RegisterAdminPage();
             });
           }
         });
