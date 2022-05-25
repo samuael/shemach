@@ -127,6 +127,12 @@ func Route(
 	router.POST("/api/merchant/transaction/new", rules.Authenticated(), rules.Authorized(), transactionhandler.CreateTransaction)
 	router.GET("/api/cxp/transactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyActiveTransactions)
 	router.DELETE("/api/cxp/transaction/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.DeclineTransaction)
+	router.POST("/api/cxp/transaction/amend", rules.Authenticated(), rules.Authorized(), transactionhandler.TransactionAmendmenRequest)
+	router.GET("/api/merchant/transaction/request/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.AcceptAmendmentRequest)
+	router.POST("/api/merchant/transaction/request/ammend", rules.Authenticated(), rules.Authorized(), transactionhandler.PerformAmend)
+	router.POST("/api/cxp/transaction/request/kebd", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestKebd)
+	router.POST("/api/merchant/transaction/request/guarantee", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestGuaranteePayment)
+
 	router.RouterGroup.Use(FilterDirectory())
 	{
 		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"images/"))

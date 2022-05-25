@@ -38,7 +38,7 @@ type TransactionRequest struct {
 type KebdAmountRequest struct {
 	TransactionState
 	KebdAmount  float64 `json:"kebd_amount"`
-	Deadline    uint64  `json:"deacline"`
+	Deadline    uint64  `json:"deadline"`
 	Description string  `json:"description"`
 }
 

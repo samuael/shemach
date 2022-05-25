@@ -201,6 +201,7 @@ create table transaction (
     guarantee_amount decimal default 0.0
 );  
 
+
 create table transaction_changes (
     transaction_changes_id serial primary key,
     state smallint not null,
@@ -217,16 +218,16 @@ create table kebd_transaction_info(
     transaction_id integer references transaction(transaction_id),
     state smallint not null,
     kebd_amount decimal not null,
-    deadline integer not null default ROUND(extract(epoch from now())),
+    deadline integer not null,
     description varchar(500) default '',
-    created_at integer not null default round( extract(expoch from now()))
+    created_at integer not null default round( extract(epoch from now()))
 );
 
 create table transaction_guarantee_info(
     transaction_guarantee_info_id serial primary key,
-    transaction_id integer references transaction(transaction_id),
+    transaction_id integer references transaction(transaction_id) unique,
     state smallint not null,
     description varchar(500) default '',
     amount decimal not null,
-    created_at integer not null default round( extract(expoch from now()))
+    created_at integer not null default round( extract(epoch from now()))
 );

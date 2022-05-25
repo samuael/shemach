@@ -212,6 +212,7 @@ func (ahandler *AgentHandler) AgentsSearch(c *gin.Context) {
 	if er != nil {
 		limit = offset + 10
 	}
+	name = strings.Trim(name, " ")
 	agents, er := ahandler.Service.SearchAgents(ctx, phone, name, uint64(createdBy), uint(offset), uint(limit))
 	if er != nil {
 		response.StatusCode = http.StatusNotFound

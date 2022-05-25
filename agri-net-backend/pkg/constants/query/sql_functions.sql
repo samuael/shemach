@@ -765,3 +765,187 @@ $$
         return -3;
     end;
 $$ language plpgsql;
+
+
+
+create or replace function acceptTransactionAmendmentRequest(merchantid integer, requestid integer) returns integer as 
+$$
+    declare
+        transactionreq transaction_changes;
+        transactionid integer;
+        buyerid integer;
+    begin
+        select * from transaction_changes into transactionreq where transaction_changes_id=requestid;
+        if not found then
+            return -4;
+        end if;
+        select id into merchantid from merchant where id=merchantid;
+        if not found then
+            return -1;
+        end if;
+        select requester_id into buyerid from transaction where transaction_id=transactionreq.transaction_id;
+        if not found then
+            return -2;
+        end if;
+        if buyerid <> merchantid then
+            return -3;
+        end if;
+        update transaction set price=transactionreq.price, quantity=transactionreq.qty, state=3 where transaction_id=transactionreq.transaction_id returning transaction_id into transactionid;
+        if not found then 
+            return -5;
+        end if;
+        delete from transaction_changes where transaction_changes_id=transactionreq.transaction_changes_id;
+        update transaction set state=3 where transaction_id=transactionreq.transaction_id;
+        return 0;
+    end;
+$$ language plpgsql;
+
+create or replace function amendTransaction(buyerid integer, transactionrequestid integer,dprice decimal, dquantity integer , descs varchar(500)) returns integer as 
+$$
+    declare
+        transactionid integer;
+        transactionreq transaction_changes;
+        buyerid integer;
+        change_description boolean;
+    begin
+        select * from transaction_changes into transactionreq where transaction_changes_id=transactionrequestid;
+        if not found then
+            return -1;
+        end if;
+        select requester_id into buyerid from transaction where transaction_id=transactionreq.transaction_id;
+        if not found then
+            return -2;
+        end if;
+        if descs <> '' and transactionreq.description <> descs then
+            change_description= true;
+        else 
+            change_description= false;
+        end if;
+        if change_description then
+            update transaction set price=dprice, quantity=dquantity, description=descs,state=3 
+            where transaction_id=transactionreq.transaction_id returning transaction_id into transactionid;
+        else
+            update transaction set price=dprice, quantity=dquantity, state=3 
+            where transaction_id=transactionreq.transaction_id returning transaction_id into transactionid;
+        end if;
+
+        if not found then 
+            return -3;
+        end if;
+        delete from transaction_changes where transaction_changes_id=transactionreq.transaction_changes_id;
+        update transaction set state=3 where transaction_id=transactionreq.transaction_id;
+        return 0;
+    end;
+$$ language plpgsql;
+
+-- createGuaranteeRequest
+create or replace function createKebdRequest( sellerid integer , iamount decimal, ideadline integer, descs varchar(500), trid integer ) returns integer as 
+$$
+    declare
+        transactioninst transaction;
+        thecxp integer;
+        kebdinfoid integer;
+        kebd kebd_transaction_info;
+    begin
+        select * from transaction into transactioninst where transaction_id= trid;
+        if not found then
+            return -1;
+        end if;
+        if transactioninst.state >= 5 then
+            return -2;
+        end if;
+        if transactioninst.seller_id <> sellerid then
+            return -6;
+        end if;
+        select id into thecxp from merchant where id=sellerid;
+        if not found then
+            select id into thecxp from agent where id = sellerid;
+            if not found then
+                return -4;
+            end if;
+        end if;
+        select * into kebd from kebd_transaction_info where transaction_id=trid;
+        if found and kebd.deadline = ideadline and kebd.description=descs 
+        and kebd.kebd_amount=iamount then
+            return -3;
+        elseif found then
+                update kebd_transaction_info set transaction_id=trid,state=4,kebd_amount=iamount,deadline=ideadline,description=descs where kebd_transaction_info_id=kebd.kebd_transaction_info_id returning kebd_transaction_info_id into kebdinfoid;
+                if found then
+                    return kebd.kebd_transaction_info_id;
+                end if;
+        end if;
+        insert into kebd_transaction_info(transaction_id,state,kebd_amount,deadline,description)
+        values( trid,4, iamount,ideadline,descs) returning kebd_transaction_info_id into kebdinfoid;
+        if not found then
+            return -5;
+        end if;
+        update transaction set state=4 where transaction_id= trid;
+        return kebdinfoid;
+    end;
+$$ language plpgsql;
+
+create or replace function createNewTrasactionAmendmentRequest( istate integer , trid integer,descs varchar(500) , prices decimal , quant integer) returns integer as 
+$$
+    declare 
+        requestid integer;
+        dtransaction transaction;
+    begin
+        select * into dtransaction from transaction where transaction_id =trid;
+        if not found then
+            return -1;
+        end if;
+    insert into transaction_changes( state,transaction_id,
+    description,price,qty) values(istate,trid,descs,prices,quant) returning transaction_changes_id into requestid;
+    if not found then
+        return -2;
+    end if;
+    update transaction set state=2 where transaction_id=dtransaction.transaction_id returning transaction_id into trid;
+    if not found then
+        rollback;
+        return -3;
+    end if;
+    return requestid;
+    end;
+$$ language plpgsql;
+
+create or replace function createGuaranteeRequest( buyerid integer , iamount decimal, descs varchar(500), trid integer ) returns integer as 
+$$
+    declare
+        transactioninst transaction;
+        thecxp integer;
+        guaranteeinfoid integer;
+        guarantee transaction_guarantee_info;
+    begin
+        select * from transaction into transactioninst where transaction_id= trid;
+        if not found then
+            return -1;
+        end if;
+        if transactioninst.state >= 9 then
+            return -2;
+        end if;
+        if transactioninst.requester_id <> buyerid then
+            return -6;
+        end if;
+        select id into thecxp from merchant where id=buyerid;
+        if not found then
+                return -4;
+        end if;
+        select * into guarantee from transaction_guarantee_info where transaction_id=trid;
+        if found and guarantee.description=descs 
+        and guarantee.amount=iamount then
+            return -3;
+        elseif found then
+                update transaction_guarantee_info set  state=7,amount=iamount,description=descs where transaction_guarantee_info_id=guarantee.transaction_guarantee_info_id returning transaction_guarantee_info_id into guaranteeinfoid;
+                if found then
+                    return guarantee.transaction_guarantee_info_id;
+                end if;
+        end if;
+        insert into transaction_guarantee_info(transaction_id,state,amount,description)
+        values( trid,7, iamount,descs) returning transaction_guarantee_info_id into guaranteeinfoid;
+        if not found then
+            return -5;
+        end if;
+        update transaction set state=7 where transaction_id= trid;
+        return guaranteeinfoid;
+    end;
+$$ language plpgsql;

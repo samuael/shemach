@@ -12,7 +12,6 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
-	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 type MerchantRepo struct {
@@ -96,7 +95,6 @@ func (repo *MerchantRepo) UnsubscribeProduct(ctx context.Context, productid uint
 	return status
 }
 
-//
 func (repo *MerchantRepo) SearchMerchants(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Merchant, error) {
 	merchants := []*model.Merchant{}
 	values := []interface{}{}
@@ -108,7 +106,18 @@ func (repo *MerchantRepo) SearchMerchants(ctx context.Context, phone, name strin
 		count++
 	}
 	name = strings.Trim(name, " ")
-	if name != "" {
+	if len(strings.Split(name, " ")) > 1 {
+		if count > 1 {
+			statement = fmt.Sprintf(" %s or ", statement)
+		}
+		statement = fmt.Sprintf(" %s ( firstname ILIKE $"+strconv.Itoa(count), statement)
+		values = append(values, "%"+(strings.Split(name, " ")[0])+"%")
+		statement = fmt.Sprintf("%s and ", statement)
+		count++
+		statement = fmt.Sprintf("%s lastname ILIKE $%d ) ", statement, count)
+		values = append(values, "%"+(strings.Split(name, " ")[1])+"%")
+		count++
+	} else if name != "" {
 		if count > 1 {
 			statement = fmt.Sprintf(" %s or ", statement)
 		}
@@ -130,8 +139,6 @@ func (repo *MerchantRepo) SearchMerchants(ctx context.Context, phone, name strin
 	}
 	statement = fmt.Sprintf("%s ORDER BY id DESC OFFSET $%d LIMIT $%d ", statement, count, count+1)
 	values = append(values, offset, limit)
-	println(statement)
-	println(string(helper.MarshalThis(values)))
 	rows, er := repo.DB.Query(ctx, statement, values...)
 	if er != nil {
 

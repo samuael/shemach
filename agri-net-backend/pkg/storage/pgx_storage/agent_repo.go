@@ -114,7 +114,18 @@ func (repo *AgentRepo) SearchAgent(ctx context.Context, phone, name string, crea
 		count++
 	}
 	name = strings.Trim(name, " ")
-	if name != "" {
+	if len(strings.Split(name, " ")) > 1 {
+		if count > 1 {
+			statement = fmt.Sprintf(" %s or ", statement)
+		}
+		statement = fmt.Sprintf(" %s ( firstname ILIKE $"+strconv.Itoa(count), statement)
+		values = append(values, "%"+(strings.Split(name, " ")[0])+"%")
+		statement = fmt.Sprintf("%s and ", statement)
+		count++
+		statement = fmt.Sprintf("%s lastname ILIKE $%d ) ", statement, count)
+		values = append(values, "%"+(strings.Split(name, " ")[1])+"%")
+		count++
+	} else if name != "" {
 		if count > 1 {
 			statement = fmt.Sprintf(" %s or ", statement)
 		}
