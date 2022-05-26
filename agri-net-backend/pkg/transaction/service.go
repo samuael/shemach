@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 )
 
 type ITransactionService interface {
@@ -17,6 +18,12 @@ type ITransactionService interface {
 	SetTransactionAmendment(ctx context.Context, userid uint64, req *model.TransactionRequest) (int, error)
 	CreateKebdRequest(ctx context.Context, cxpid uint64, input *model.KebdAmountRequest) (int, error)
 	CreateGuaranteeRequest(ctx context.Context, cxpid uint64, input *model.GuaranteeAmountRequest) (int, error)
+	SellerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error
+	BuyerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error
+	GetTransactionNotifications(ctx context.Context, role string, userid uint64) ([]*model.TransactionNotification, int, error)
+	GetTransactionNotificationByTransactionID(ctx context.Context, trid uint64) (*model.TransactionRequest, error)
+	GetKebdNotificationByTransactionID(ctx context.Context, trid uint64) (*model.KebdAmountRequest, error)
+	GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error)
 }
 
 type TransactionService struct {
@@ -63,4 +70,54 @@ func (service *TransactionService) CreateKebdRequest(ctx context.Context, cxpid 
 }
 func (service *TransactionService) CreateGuaranteeRequest(ctx context.Context, cxpid uint64, input *model.GuaranteeAmountRequest) (int, error) {
 	return service.Repo.CreateGuaranteeRequest(ctx, cxpid, input)
+}
+
+func (service *TransactionService) SellerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error {
+	return service.Repo.SellerAcceptTransaction(ctx, sellerid, transactionID)
+}
+
+func (service *TransactionService) BuyerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error {
+	return service.Repo.BuyerAcceptTransaction(ctx, sellerid, transactionID)
+}
+
+func (service *TransactionService) GetTransactionNotifications(ctx context.Context, role string, userid uint64) ([]*model.TransactionNotification, int, error) {
+	notifications := []*model.TransactionNotification{}
+	transactions, er := service.Repo.GetMyActiveTransactions(ctx, userid)
+	if er != nil {
+		return nil, -1, er
+	}
+	for x := range transactions {
+		notif := &model.TransactionNotification{
+			TransactionID: uint64(transactions[x].ID),
+		}
+		switch transactions[x].State {
+		case state.TS_AMENDMENT_REQUESTED, state.TS_AMENDED:
+			notif.TransactionNotification, er = service.Repo.GetTransactionNotificationByTransactionID(ctx, uint64(transactions[x].ID))
+			if er != nil {
+				println(er.Error())
+			}
+		case state.TS_KEBD_REQUESTED, state.TS_KEBD_REQUEST_AMENDMENT_REQUEST_SENT, state.TS_KEBD_AMENDED:
+			notif.KebdNotification, er = service.Repo.GetKebdNotificationByTransactionID(ctx, uint64(transactions[x].ID))
+			if er != nil {
+				println(er.Error())
+			}
+		case state.TS_GUARANTEE_AMOUNT_REQUEST_SENT, state.TS_GUARANTEE_AMOUNT_AMEND_REQUEST_SENT, state.TS_GUARANTEE_AMOUNT_AMENDED:
+			notif.GuaranteeNotification, er = service.Repo.GetGuaranteeNotificationByTransactionID(ctx, uint64(transactions[x].ID))
+			if er != nil {
+				println(er.Error())
+			}
+		}
+		notifications = append(notifications, notif)
+	}
+	return notifications, 0, nil
+}
+
+func (service *TransactionService) GetTransactionNotificationByTransactionID(ctx context.Context, trid uint64) (*model.TransactionRequest, error) {
+	return service.Repo.GetTransactionNotificationByTransactionID(ctx, trid)
+}
+func (service *TransactionService) GetKebdNotificationByTransactionID(ctx context.Context, trid uint64) (*model.KebdAmountRequest, error) {
+	return service.Repo.GetKebdNotificationByTransactionID(ctx, trid)
+}
+func (service *TransactionService) GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error) {
+	return service.Repo.GetGuaranteeNotificationByTransactionID(ctx, trid)
 }

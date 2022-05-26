@@ -141,3 +141,55 @@ func (repo *TransactionRepo) CreateGuaranteeRequest(ctx context.Context, cxpid u
 	er := repo.DB.QueryRow(ctx, "select * from createGuaranteeRequest($1,$2, $3,$4)", cxpid, input.Amount, input.Description, input.TransactionID).Scan(&state)
 	return state, er
 }
+
+func (repo *TransactionRepo) SellerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error {
+	er := repo.DB.QueryRow(ctx, "update transaction set state=10 where transaction_id=$1 and seller_id=$2 returning transaction_id", transactionID, sellerid).Scan(&(transactionID))
+	return er
+}
+func (repo *TransactionRepo) BuyerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error {
+	er := repo.DB.QueryRow(ctx, "update transaction set state=11 where transaction_id=$1 and seller_id=$2 returning transaction_id", transactionID, sellerid).Scan(&(transactionID))
+	return er
+}
+
+func (repo *TransactionRepo) GetTransactionNotificationByTransactionID(ctx context.Context, trid uint64) (*model.TransactionRequest, error) {
+	treq := &model.TransactionRequest{}
+	er := repo.DB.QueryRow(ctx, `select transaction_changes_id
+	,state
+	,transaction_id
+	,description
+	,price
+	,qty
+	,created_at from transaction_changes where transaction_id=$1`, trid).Scan(
+		&(treq.ID), &(treq.State), &(treq.TransactionID), &(treq.Description), &(treq.Price),
+		&(treq.Quantity), &(treq.CreatedAt),
+	)
+	return treq, er
+}
+func (repo *TransactionRepo) GetKebdNotificationByTransactionID(ctx context.Context, trid uint64) (*model.KebdAmountRequest, error) {
+	kreq := &model.KebdAmountRequest{}
+	er := repo.DB.QueryRow(ctx, `select kebd_transaction_info_id
+	,transaction_id
+	,state
+	,kebd_amount
+	,deadline
+	,description
+	,created_at  from kebd_transaction_info where transaction_id=$1`, trid).Scan(
+		&(kreq.ID), &(kreq.TransactionID), &(kreq.State), &(kreq.KebdAmount), &(kreq.Deadline),
+		&(kreq.Description), &(kreq.CreatedAt),
+	)
+	return kreq, er
+}
+func (repo *TransactionRepo) GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error) {
+	greq := &model.GuaranteeAmountRequest{}
+	er := repo.DB.QueryRow(ctx, ` select transaction_guarantee_info_id
+	,transaction_id
+	,state
+	,description
+	,amount
+	,created_at from transaction_guarantee_info where transaction_id=$1`, trid).Scan(
+		&(greq.ID), &(greq.TransactionID), &(greq.State),
+		&(greq.Description), &(greq.Amount),
+		&(greq.CreatedAt),
+	)
+	return greq, er
+}

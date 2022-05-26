@@ -17,4 +17,9 @@ type ITransactionRepo interface {
 	SetTransactionAmendment(ctx context.Context, userid uint64, req *model.TransactionRequest) (int, error)
 	CreateKebdRequest(ctx context.Context, cxpid uint64, input *model.KebdAmountRequest) (int, error)
 	CreateGuaranteeRequest(ctx context.Context, cxpid uint64, input *model.GuaranteeAmountRequest) (int, error)
+	SellerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error
+	BuyerAcceptTransaction(ctx context.Context, sellerid, transactionID uint64) error
+	GetTransactionNotificationByTransactionID(ctx context.Context, trid uint64) (*model.TransactionRequest, error)
+	GetKebdNotificationByTransactionID(ctx context.Context, trid uint64) (*model.KebdAmountRequest, error)
+	GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error)
 }

@@ -48,3 +48,16 @@ type GuaranteeAmountRequest struct {
 	Description string  `json:"description"`
 	Amount      float64 `json:"amount"`
 }
+
+type TransactionNotificationResponse struct {
+	Msg           string                     `json:"msg"`
+	StatusCode    int                        `json:"status_code"`
+	Notifications []*TransactionNotification `json:"results"`
+}
+
+type TransactionNotification struct {
+	TransactionID           uint64                  `json:"tr_id"`
+	TransactionNotification *TransactionRequest     `json:"transaction_request"`
+	KebdNotification        *KebdAmountRequest      `json:"kebd_request"`
+	GuaranteeNotification   *GuaranteeAmountRequest `json:"guarantee_request"`
+}

@@ -132,6 +132,9 @@ func Route(
 	router.POST("/api/merchant/transaction/request/ammend", rules.Authenticated(), rules.Authorized(), transactionhandler.PerformAmend)
 	router.POST("/api/cxp/transaction/request/kebd", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestKebd)
 	router.POST("/api/merchant/transaction/request/guarantee", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestGuaranteePayment)
+	router.GET("/api/cxp/transaction/seller/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.SellerAcceptedTransaction)
+	router.GET("/api/merchant/transaction/buyer/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.BuyerAcceptTransaction)
+	router.GET("/api/cxp/mytransactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyTransactionNotifications)
 
 	router.RouterGroup.Use(FilterDirectory())
 	{
