@@ -1,9 +1,11 @@
 package state
 
 var ROLES = []string{
-	"MERCAHNT",
+
 	"ALL",
-	"ADMIN",
-	"SUPERADMIN",
-	"AGENT",
+	SUPERADMIN,
+	ADMIN,
+	INFO_ADMIN,
+	AGENT,
+	MERCHANT,
 }

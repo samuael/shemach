@@ -3,7 +3,8 @@ import 'package:agri_net_frontend/admins/widgets/register_admin_form.dart';
 import 'libs.dart';
 
 void main() {
-  runApp(MultiBlocProvider(providers: [
+  runApp(
+    MultiBlocProvider(providers: [
     BlocProvider<AuthBloc>(
         create: (context) => AuthBloc(
               repo: AuthRepo(provider: AuthProvider()),

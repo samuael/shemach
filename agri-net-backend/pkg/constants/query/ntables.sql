@@ -27,6 +27,7 @@ create table tempo_subscriber(
     lang text NOT NULL,
     role smallint not null default 2,
     confirmation char(5) not null,
+    trials smallint default 0,
     unix integer not null
 );
 

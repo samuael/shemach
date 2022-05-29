@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-
+import "package:flutter_bloc/flutter_bloc.dart";
 import "../../libs.dart";
 
 class RegistrationScreen extends StatefulWidget {
@@ -13,22 +13,31 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   TextEditingController phoneController = TextEditingController();
+  TextEditingController fullnameController = TextEditingController();
 
-  bool roleFarmer = true;
-  bool roleMerchant = false;
+  bool roleFarmer = false;
+  bool roleMerchant = true;
   bool roleConsumer = false;
   bool roleAll = false;
 
+  bool onProgress = false;
+
   int groupValue = 1;
+
+  Color messageColor = Colors.green;
+  String message = "";
 
   @override
   Widget build(BuildContext context) {
+    lang = groupValue == 1
+        ? "amh"
+        : (groupValue == 2 ? "oro" : (groupValue == 3 ? "tig" : "eng"));
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         title: Text(
-          " Registration ",
+          translate(lang, " Registration "),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -40,32 +49,36 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              padding: EdgeInsets.all(5),
-              child: Text(
-                " To Register, please provide your information ",
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Moms TypeWriter",
-                  fontSize: 14,
-                  // fontSize: 18
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
                 ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              child: Text(
-                "  ",
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "Elegant TypeWriter",
-                  // fontSize: 18
+                margin: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
                 ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                    30,
+                  ),
+                  // border: Border()
+                ),
+                child: onProgress
+                    ? LinearProgressIndicator(
+                        color: Theme.of(context).primaryColor,
+                        minHeight: 5,
+                      )
+                    : Text(
+                        message,
+                        style: TextStyle(
+                          color: messageColor,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Elegant TypeWriter",
+                        ),
+                      ),
               ),
             ),
             Container(
@@ -76,15 +89,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 horizontal: 20,
               ),
               child: TextField(
-                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                keyboardType: TextInputType.number,
                 cursorColor: Theme.of(context).primaryColorLight,
-                controller: phoneController,
+                controller: fullnameController,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
                 decoration: InputDecoration(
-                  labelText: "Full Name",
+                  labelText: translate(lang, "Full Name"),
                   fillColor: Colors.lightBlue,
                   hoverColor: Colors.lightBlue,
                   suffixIcon: Icon(Icons.person),
@@ -115,7 +126,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   fontWeight: FontWeight.bold,
                 ),
                 decoration: InputDecoration(
-                  labelText: "Phone",
+                  labelText: translate(lang, "Phone"),
                   fillColor: Colors.lightBlue,
                   hoverColor: Colors.lightBlue,
                   prefix: Container(
@@ -150,7 +161,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               alignment: AlignmentGeometry.lerp(
                   Alignment.topLeft, Alignment.center, 0),
               child: Text(
-                " Job Title ",
+                translate(lang, " Job Title "),
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
@@ -183,7 +194,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     checkAllRolesIfApplicable();
                                   });
                                 }),
-                            Text("Farmer"),
+                            Text(translate(lang, "Farmer")),
                           ]),
                           Row(
                             children: [
@@ -198,7 +209,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       checkAllRolesIfApplicable();
                                     });
                                   }),
-                              Text("Merchant"),
+                              Text(translate(lang, "Merchant")),
                             ],
                           ),
                           Row(children: [
@@ -213,7 +224,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                     checkAllRolesIfApplicable();
                                   });
                                 }),
-                            Text("Consumer"),
+                            Text(translate(lang, "Consumer")),
                           ]),
                           Row(
                             children: [
@@ -229,7 +240,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                       }
                                     });
                                   }),
-                              Text("All"),
+                              Text(translate(lang, "All")),
                             ],
                           ),
                         ],
@@ -245,7 +256,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           Row(
                             children: [
                               Text(
-                                "Langauge",
+                                translate(lang, "Langauge"),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FontStyle.italic,
@@ -313,8 +324,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(
-                vertical: 10,
+              margin: EdgeInsets.only(
+                top: 10,
               ),
               padding: EdgeInsets.symmetric(
                 horizontal: 30,
@@ -330,20 +341,91 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                 ),
                 onPressed: () async {
-                  // checking the validity of input values
-                  Navigator.of(context).pushNamed(
-                    ConfirmationScreen.RouteName,
-                    arguments: {
-                      "phone": phoneController.text,
-                    },
-                  );
+                  if (onProgress) {
+                    return;
+                  }
+                  lang = groupValue == 1
+                      ? "amh"
+                      : (groupValue == 2
+                          ? "oro"
+                          : (groupValue == 3 ? "tig" : "eng"));
+                  if (fullnameController.text != "" &&
+                      (phoneController.text != "" &&
+                          phoneController.text.length == 9) &&
+                      (roleFarmer || roleMerchant || roleConsumer || roleAll)) {
+                    setState(() {
+                      onProgress = true;
+                    });
+
+                    final registrationResult =
+                        await context.read<AuthBloc>().register(
+                              RegistrationInput(
+                                fullname: fullnameController.text,
+                                phone: "+251${phoneController.text.trim()}",
+                                role: 1,
+                                lang: lang,
+                              ),
+                            );
+                    if (registrationResult.statusCode == 200 ||
+                        registrationResult.statusCode == 201) {
+                      setState(() {
+                        message = registrationResult.msg;
+                        messageColor = Colors.green;
+                        onProgress= false;
+                      });
+                      Navigator.of(context)
+                          .pushNamed(ConfirmationScreen.RouteName, arguments: {
+                        "fullname": fullnameController.text,
+                        "phone": phoneController.text,
+                        "islogin" : false,
+                      });
+                    } else {
+                      setState(() {
+                        message = registrationResult.msg;
+                        messageColor = Colors.red;
+                      });
+                    }
+                  } else if (fullnameController.text == "") {
+                    setState(() {
+                      message = translate(lang, "please enter your full name");
+                      messageColor = Colors.red;
+                    });
+                  } else if (phoneController.text == "") {
+                    setState(() {
+                      message =
+                          translate(lang, "please enter your phone number");
+                      messageColor = Colors.red;
+                    });
+                  } else {
+                    setState(() {
+                      message = translate(lang, "please select a role");
+                      messageColor = Colors.red;
+                    });
+                  }
                 },
                 icon: Icon(Icons.app_registration),
                 label: Text(
-                  " Register ",
+                  translate(lang, " Register "),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+              ),
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .pushNamed(ConfirmationScreen.RouteName, arguments: {
+                  "fullname": fullnameController.text,
+                  "phone": phoneController.text,
+                });
+              },
+              child: Text(
+                "Confirmation",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
                 ),
               ),
             ),
@@ -360,6 +442,4 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       });
     }
   }
-
-  
 }

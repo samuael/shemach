@@ -49,6 +49,7 @@ func main() {
 		templates = template.Must(template.ParseGlob(os.Getenv("PATH_TO_TEMPLATES") + "*.html"))
 	})
 	defer conn.Close()
+	defer os.Exit(0)
 
 	authenticator := auth.NewAuthenticator()
 	rules := middleware.NewRules(authenticator)

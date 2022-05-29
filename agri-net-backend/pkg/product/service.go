@@ -71,9 +71,6 @@ var ProductTypes = map[string]map[int]map[string]string{
 		13: {"LG": "large"},
 		14: {"MD": "medium"},
 	},
-	// "amount": {
-
-	// },
 	"length": {
 		14: {"M": "meter"},
 		15: {"KM": "killo meter"},

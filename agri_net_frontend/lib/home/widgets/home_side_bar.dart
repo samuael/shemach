@@ -38,7 +38,7 @@ class _CollapsingNavTileState extends State<CollapsingNavTile> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(7.5)),
-          color: widget.isSelected
+          color: widget.ishome
               ? selectedListTileText
               : notSelectedListTileText,
         ),
@@ -50,7 +50,7 @@ class _CollapsingNavTileState extends State<CollapsingNavTile> {
             Icon(
               widget.icon,
               size: 25,
-              color: widget.isSelected
+              color: widget.ishome
                   ? selectedListTileIcon
                   : notSelectedListTileIcon,
             ),
@@ -60,7 +60,7 @@ class _CollapsingNavTileState extends State<CollapsingNavTile> {
             (widthAnimation.value >= 120)
                 ? Text(
                     widget.title,
-                    style: widget.isSelected
+                    style: widget.ishome
                         ? listTileSelectedtextstyle
                         : listTileDefaulttextstyle,
                   )

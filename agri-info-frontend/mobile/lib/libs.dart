@@ -3,3 +3,5 @@ export "products/products.dart";
 export "auth/auth.dart";
 export 'package:flutter/material.dart';
 export "static_datas.dart";
+export "translation.dart";
+export "home/home.dart";

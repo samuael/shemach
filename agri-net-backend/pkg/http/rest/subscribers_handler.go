@@ -149,7 +149,6 @@ func (shan *SubscriberHandler) RegisterSubscriber(c *gin.Context) {
 		c.JSON(res.StatusCode, res)
 		return
 	}
-	println(otpResponse)
 	// shan.OtpService <- otpResponse
 	ctx = context.WithValue(ctx, "tempo_subscriber", tempo)
 	status, er := shan.Service.RegisterTempoSubscriber(ctx)
@@ -356,6 +355,9 @@ func (shan *SubscriberHandler) ConfirmRegistrationSubscription(c *gin.Context) {
 	ctx = context.WithValue(ctx, "subscriber_phone", input.Phone)
 	pendingRegistrationSubscription, status, er := shan.Service.GetPendingRegistrationSubscriptionByPhone(ctx)
 	if status != state.STATUS_OK || er != nil {
+		if er != nil {
+			println(er.Error())
+		}
 		res.StatusCode = http.StatusNotFound
 		res.Msg = translation.TranslateIt("no pending subscription with this phone number")
 		c.JSON(res.StatusCode, res)
@@ -366,8 +368,8 @@ func (shan *SubscriberHandler) ConfirmRegistrationSubscription(c *gin.Context) {
 		subscriber := &model.Subscriber{
 			Fullname:      pendingRegistrationSubscription.Fullname,
 			Lang:          pendingRegistrationSubscription.Lang,
-			Subscriptions: []uint8{},
-			Role:          pendingRegistrationSubscription.Role,
+			Subscriptions: []int{},
+			Role:          int(pendingRegistrationSubscription.Role),
 			Phone:         pendingRegistrationSubscription.Phone,
 		}
 		ctx = context.WithValue(ctx, "subscriber", subscriber)

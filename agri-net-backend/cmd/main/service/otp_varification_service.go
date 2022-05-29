@@ -40,9 +40,12 @@ func (otpSer *OtpService) Run() {
 	agentConfirmationTicker := time.NewTicker(time.Hour * 1)
 
 	pendingConfirmationsDuration, er := strconv.Atoi(os.Getenv("PENDING_CONFIRMATION_DURATION"))
+	if er != nil {
+		pendingConfirmationsDuration = 30
+	}
 	pendingEmailConfirmationsDuration, er := strconv.Atoi(os.Getenv("PENDING_EMAIL_CONFIRMATION_DURATION"))
 	if er != nil {
-		pendingConfirmationsDuration = 10
+		pendingEmailConfirmationsDuration = 20
 	}
 	counter := 0
 	for {
@@ -55,7 +58,7 @@ func (otpSer *OtpService) Run() {
 					tm.Println()
 				}
 				tm.Clear()
-				timestamp := time.Now().Unix() - int64(pendingConfirmationsDuration*60)
+				timestamp := ((time.Now().Unix()) - int64(pendingConfirmationsDuration*60))
 				deletedConfirmationMessages, er := otpSer.SubscriberService.RemoveExpiredTempoSubscription(uint64(timestamp))
 				otpSer.SubscriberService.DeleteTempoLoginSubscriber(uint64(timestamp))
 				if er != nil {

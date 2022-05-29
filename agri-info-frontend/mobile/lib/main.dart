@@ -1,7 +1,21 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import "libs.dart";
 
+
+// class 
 void main() {
-  runApp(MyApp());
+  runApp(MultiBlocProvider(providers: [
+    BlocProvider<AuthBloc>(
+      create: (context) => AuthBloc(
+        AuthRepository(AuthDataProvider()),
+      ),
+    ),
+    BlocProvider<ProductsBloc>(
+      create: (context){
+        return ProductsBloc(ProductsRepository(ProductsProvider()));
+      }
+    )
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +46,15 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) {
                 final String phone =
                     (setting.arguments as Map<String, dynamic>)["phone"];
-                return ConfirmationScreen(phone);
+                final String fullname =(setting.arguments as Map<String, dynamic>)["fullname"];
+                bool islogin =((setting.arguments as Map<String, dynamic>)["islogin"]) as bool;
+                return ConfirmationScreen( phone, fullname,islogin:islogin );
+              });
+            }
+            case HomeScreen.RouteName:
+            {
+              return MaterialPageRoute(builder : (context){
+                return HomeScreen();
               });
             }
         }

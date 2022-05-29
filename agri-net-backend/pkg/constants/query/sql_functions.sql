@@ -2,8 +2,7 @@ create or replace function checkTheExistanceOfSubscriberByPhone( iphone varchar 
 $$
     declare 
         subscriberid integer;
-    begin 
-       
+    begin
         select id into subscriberid from tempo_subscriber where phone=iphone;
         if found then 
             return 2;

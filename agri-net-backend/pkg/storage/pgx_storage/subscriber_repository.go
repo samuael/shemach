@@ -8,6 +8,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/subscriber"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 // AdminRepo ...
@@ -60,6 +61,7 @@ func (repo *SubscriberRepo) GetSubscriberByPhone(ctx context.Context) (*model.Su
 		return subscriber, state.STATUS_DBQUERY_ERROR, er
 	}
 	subscriber.Phone = phone
+	println("Subscriptions: ", string(helper.MarshalThis(subscriber.Subscriptions)))
 	return subscriber, state.STATUS_OK, nil
 }
 

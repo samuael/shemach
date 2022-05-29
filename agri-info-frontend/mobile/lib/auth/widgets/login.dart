@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
-
+import "package:flutter_bloc/flutter_bloc.dart";
+import 'package:mobile/auth/auth.dart';
 import "../../libs.dart";
 
 class LoginWidget extends StatefulWidget {
@@ -13,9 +14,11 @@ class LoginWidget extends StatefulWidget {
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+
   bool logging = false;
+  String message = "";
+  Color messageColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +62,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
             cursorColor: Theme.of(context).primaryColorLight,
-            controller: emailController,
+            controller: phoneController,
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),
@@ -86,53 +89,79 @@ class _LoginWidgetState extends State<LoginWidget> {
             ),
             onChanged: (text) {
               if (text.length > 9) {
-                emailController.text = text.substring(1, 9);
+                phoneController.text = text.substring(0, 9);
               }
             },
           ),
         ),
-        // Container(
-        //   padding: EdgeInsets.symmetric(
-        //     horizontal: 20,
-        //     vertical: 10,
-        //   ),
-        //   child: TextField(
-        //     cursorColor: Theme.of(context).primaryColorLight,
-        //     obscureText: true,
-        //     controller: passwordController,
-        //     decoration: InputDecoration(
-        //         labelText: "Password",
-        //         border: OutlineInputBorder(),
-        //         suffixIcon: Icon(
-        //           Icons.remove_red_eye,
-        //         )),
-        //   ),
-        // ),
         Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 30,
-              vertical: 10,
+          padding: EdgeInsets.symmetric(
+            horizontal: 30,
+            vertical: 10,
+          ),
+          child: ElevatedButton.icon(
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(
+                EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 40,
+                ),
+              ),
             ),
-            child: ElevatedButton.icon(
-              style: ButtonStyle(
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                  EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 40,
-                  ),
-                ),
+            onPressed: () async {
+              // checking the validity of input values
+              if (phoneController.text.length == 9) {
+                setState(() {
+                  logging = true;
+                });
+                final response = await context
+                    .read<AuthBloc>()
+                    .loginSubscriber("+251${phoneController.text}");
+                if (response.statusCode == 200 || response.statusCode == 201) {
+                  setState(() {
+                    logging = false;
+                  });
+                  Navigator.of(context)
+                      .pushNamed(ConfirmationScreen.RouteName, arguments: {
+                    "fullname": "",
+                    "phone": phoneController.text,
+                    "islogin": true,
+                  });
+                } else {
+                  setState(() {
+                    this.message = response.msg;
+                    this.messageColor = Colors.red;
+                    logging = false;
+                  });
+                }
+              }
+            },
+            icon: Icon(Icons.login),
+            label: Text(
+              translate(lang, " Login "),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
-              onPressed: () async {
-                // checking the validity of input values
-              },
-              icon: Icon(Icons.login),
-              label: Text(
-                " Login ",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )),
+            ),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black26,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            translate(lang, message),
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: messageColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         GestureDetector(
           onTap: () {
             Navigator.of(context).pushNamed(RegistrationScreen.RouteName);

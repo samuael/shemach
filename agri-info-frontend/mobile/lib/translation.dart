@@ -3,27 +3,36 @@ final dictionary = {
     "amh"  : "temezgeb",
     "oro"  : "temezgeb",
     "tig"  : "temezgeb",
+  },
+  "confirm" : {
+    "amh" : "aregagt",
+    "oro" : "aregagt",
+    "tig" : "aregagt",
   }
 };
 
+String lang="amh";
 
 String translate(String lang , String sentence) {
-  final str = sentence;
+  final str = sentence.trim();
 	switch ( lang.toLowerCase() ) {
 	case "en": case "eng":{
 		return sentence;
   }
 	case "amh":case "am":case "amharic":case "amhara":{
-		sentence = ((dictionary[sentence.toLowerCase()])!["amh"])!;
+    final val = dictionary[sentence.toLowerCase()];
+		sentence = (val !=null) ? (val["amh"]??'') : sentence;
     break;
   }
 	case "oro": case "or":  case "oromifa": case"oromo":{
-		sentence = (dictionary[sentence.toLowerCase()]!["oro"])!;
-		return sentence;
+		final val = dictionary[sentence.toLowerCase()];
+		sentence = (val !=null) ? (val["oro"]??'') : sentence;
+    break;
   }
 	case "tigr": case "tig": case "tigray": case "tigrigna":{
-		sentence = (dictionary[sentence])!["tig"]!;
-		return sentence;
+		final val = dictionary[sentence.toLowerCase()];
+		sentence = (val !=null) ? (val["tig"]??'') : sentence;
+    break;
   }
 	}
 	if (sentence == "") {

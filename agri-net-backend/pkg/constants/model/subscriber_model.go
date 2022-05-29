@@ -1,11 +1,11 @@
 package model
 
 type Subscriber struct {
-	ID            uint64  `json:"id"`
-	Fullname      string  `json:"fullname"`
-	Lang          string  `json:"lang"`
-	Subscriptions []uint8 `json:"subscriptions"`
-	Role          uint8
+	ID            uint64 `json:"id"`
+	Fullname      string `json:"fullname"`
+	Lang          string `json:"lang"`
+	Subscriptions []int  `json:"subscriptions"`
+	Role          int
 	Phone         string `json:"phone"`
 }
 
@@ -24,8 +24,8 @@ func (ts *TempoSubscriber) GetSubscriber() *Subscriber {
 	return &Subscriber{
 		Fullname:      ts.Fullname,
 		Lang:          ts.Lang,
-		Subscriptions: []uint8{},
-		Role:          ts.Role,
+		Subscriptions: []int{},
+		Role:          int(ts.Role),
 		Phone:         ts.Phone,
 	}
 }
