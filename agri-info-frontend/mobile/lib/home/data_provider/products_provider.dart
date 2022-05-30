@@ -17,8 +17,10 @@ class ProductsProvider {
           path: "/api/products",
         )
       );
+      print(response.statusCode);
       if (response.statusCode == 200){
         final result  = ProductsResponse.fromJson(jsonDecode(response.body));
+        result.statusCode = response.statusCode;
         return result;
       }else if (response.statusCode < 500 && response.statusCode >=200 ){
         return ProductsResponse(msg : jsonDecode(response.body)["msg"] , statusCode : response.statusCode , products : []);

@@ -349,7 +349,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   if (onProgress) {
                     return;
                   }
-                  // try {
+                  try {
                   if (int.parse(controller1.text) >= 0 &&
                       int.parse(controller2.text) >= 0 &&
                       int.parse(controller3.text) >= 0 &&
@@ -383,12 +383,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       setState(() {
                         onProgress = false;
                       });
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          HomeScreen.RouteName, (route) => false);
                       context.read<AuthBloc>().add(
                           AuthSubscriberAuthenticatedEvent(
                               subscriber: result.subscriber!,
                               token: result.token));
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          HomeScreen.RouteName, (route) => false);
+                      
                       setState(() {
                         onProgress = false;
                       });
@@ -396,15 +397,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       setState(() {
                         this.message = result.msg;
                         messageColor = Colors.red;
-                        onProgress = true;
+                        onProgress = false;
                       });
                     }
                   }
-                  // } catch (e, a) {
-                  //   setState(() {
-                  //     onProgress = false;
-                  //   });
-                  // }
+                  } catch (e, a) {
+                    setState(() {
+                      onProgress = false;
+                    });
+                  }
                 },
               ),
             ],

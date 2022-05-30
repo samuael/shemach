@@ -153,14 +153,19 @@ class _LoginWidgetState extends State<LoginWidget> {
             ),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Text(
-            translate(lang, message),
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: messageColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: logging
+              ? CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                  strokeWidth: 5,
+                )
+              : Text(
+                  translate(lang, message),
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: messageColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
         ),
         GestureDetector(
           onTap: () {

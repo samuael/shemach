@@ -25,8 +25,9 @@ class AuthDataProvider {
         ),
       );
       print(response.statusCode);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final body = jsonDecode(response.body);
+        print(json);
         final respons = ResponseSubscription.fromJson(body);
         return respons;
       } else if (response.statusCode == 500) {
@@ -43,8 +44,9 @@ class AuthDataProvider {
           msg: "connection problem", statusCode: 999, errors: {});
     }
   }
-Future<AuthenticationResponse>  loginSubscriber(String phone) async {
-  try {
+
+  Future<AuthenticationResponse> loginSubscriber(String phone) async {
+    try {
       var response = await client.post(
         Uri(
           host: StaticDataStore.HOST,
@@ -53,26 +55,29 @@ Future<AuthenticationResponse>  loginSubscriber(String phone) async {
           path: "/api/subscription/login",
         ),
         body: jsonEncode(
-          {"phone" : phone},
+          {"phone": phone},
         ),
       );
-      print(response.statusCode );
-      if (response.statusCode == 201 || response.statusCode == 200){
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        print(json["token"]);
+        return AuthenticationResponse.fromJson(json);
+      } else if (response.statusCode < 500 && response.statusCode >= 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         return AuthenticationResponse.fromJson(json);
-      }else if (response.statusCode < 500 && response.statusCode >=200 ){
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return AuthenticationResponse.fromJson(json);
-      }else {
-        return AuthenticationResponse( msg: "Server Problem", errors:{}, statusCode: 500 );
+      } else {
+        return AuthenticationResponse(
+            msg: "Server Problem", errors: {}, statusCode: 500);
       }
     } catch (e, a) {
       print(e.toString());
-      return  AuthenticationResponse( msg: "Network connection problem",errors:{},statusCode:999);
+      return AuthenticationResponse(
+          msg: "Network connection problem", errors: {}, statusCode: 999);
     }
-}
-  Future<AuthenticationResponse>  register( RegistrationInput input) async {
-      try {
+  }
+
+  Future<AuthenticationResponse> register(RegistrationInput input) async {
+    try {
       var response = await client.post(
         Uri(
           host: StaticDataStore.HOST,
@@ -84,24 +89,28 @@ Future<AuthenticationResponse>  loginSubscriber(String phone) async {
           input.toJson(),
         ),
       );
-      print(response.statusCode );
-      if (response.statusCode == 201 || response.statusCode == 200){
+      print(response.statusCode);
+      print((response.body.toString()));
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        print(json);
+        return AuthenticationResponse.fromJson(json);
+      } else if (response.statusCode < 500 && response.statusCode >= 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         return AuthenticationResponse.fromJson(json);
-      }else if (response.statusCode < 500 && response.statusCode >=200 ){
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return AuthenticationResponse.fromJson(json);
-      }else {
-        return AuthenticationResponse( msg: "Server Problem", errors:{}, statusCode: 500 );
+      } else {
+        return AuthenticationResponse(
+            msg: "Server Problem", errors: {}, statusCode: 500);
       }
     } catch (e, a) {
       print(e.toString());
-      return  AuthenticationResponse( msg: "Network connection problem",errors:{},statusCode:999);
+      return AuthenticationResponse(
+          msg: "Network connection problem", errors: {}, statusCode: 999);
     }
   }
 
-
-  Future<SubscriberAuthenticationRespnse>  confirmRegistration(SubscriberConfirmation input) async{
+  Future<SubscriberAuthenticationRespnse> confirmRegistration(
+      SubscriberConfirmation input) async {
     try {
       var response = await client.post(
         Uri(
@@ -114,23 +123,33 @@ Future<AuthenticationResponse>  loginSubscriber(String phone) async {
           input.toJson(),
         ),
       );
-      print(response.statusCode );
-      if (response.statusCode == 201  || response.statusCode == 200){
+      print(response.statusCode);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        print(json);
+        return SubscriberAuthenticationRespnse.fromJson(json);
+      } else if (response.statusCode < 500 && response.statusCode >= 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         return SubscriberAuthenticationRespnse.fromJson(json);
-      }else if (response.statusCode < 500 && response.statusCode >=200 ){
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return SubscriberAuthenticationRespnse.fromJson(json);
-      }else {
-        return SubscriberAuthenticationRespnse( msg: "Server Problem", statusCode: 500, token : '', subscriber: null);
+      } else {
+        return SubscriberAuthenticationRespnse(
+            msg: "Server Problem",
+            statusCode: 500,
+            token: '',
+            subscriber: null);
       }
     } catch (e, a) {
       print(e.toString());
-      return  SubscriberAuthenticationRespnse( msg: "Network connection problem", token: '', subscriber: null,statusCode:999);
+      return SubscriberAuthenticationRespnse(
+          msg: "Network connection problem",
+          token: '',
+          subscriber: null,
+          statusCode: 999);
     }
   }
 
-  Future<SubscriberAuthenticationRespnse>  confirmLogin(SubscriberConfirmation input) async{
+  Future<SubscriberAuthenticationRespnse> confirmLogin(
+      SubscriberConfirmation input) async {
     try {
       var response = await client.post(
         Uri(
@@ -143,19 +162,28 @@ Future<AuthenticationResponse>  loginSubscriber(String phone) async {
           input.toJson(),
         ),
       );
-      print(response.statusCode );
-      if (response.statusCode == 201  || response.statusCode == 200){
+      print(response.statusCode);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        print(json);
+        return SubscriberAuthenticationRespnse.fromJson(json);
+      } else if (response.statusCode < 500 && response.statusCode >= 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         return SubscriberAuthenticationRespnse.fromJson(json);
-      }else if (response.statusCode < 500 && response.statusCode >=200 ){
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return SubscriberAuthenticationRespnse.fromJson(json);
-      }else {
-        return SubscriberAuthenticationRespnse( msg: "Server Problem", statusCode: 500, token : '', subscriber: null);
+      } else {
+        return SubscriberAuthenticationRespnse(
+            msg: "Server Problem",
+            statusCode: 500,
+            token: '',
+            subscriber: null);
       }
     } catch (e, a) {
       print(e.toString());
-      return  SubscriberAuthenticationRespnse( msg: "Network connection problem", token: '', subscriber: null,statusCode:999);
+      return SubscriberAuthenticationRespnse(
+          msg: "Network connection problem",
+          token: '',
+          subscriber: null,
+          statusCode: 999);
     }
   }
 
@@ -186,7 +214,7 @@ Future<AuthenticationResponse>  loginSubscriber(String phone) async {
 
   //     }
   //   } catch (e, a) {
-  //     return 
+  //     return
   //   }
   // }
 }

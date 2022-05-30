@@ -418,6 +418,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     .pushNamed(ConfirmationScreen.RouteName, arguments: {
                   "fullname": fullnameController.text,
                   "phone": phoneController.text,
+                  "islogin" : false,
                 });
               },
               child: Text(

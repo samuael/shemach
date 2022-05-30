@@ -4,15 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthRepository repository;
   
-  AuthBloc(this.repository) : super(AuthInit());
-
-  @override
-  Stream<AuthState> mapEventToState(AuthEvent event) async* {
-    if(event is AuthRegisterEvent){
-      yield AuthRegistrationOnProgressState(fullname : event.fullname, phone:event.phone, unixTime :((DateTime.now()).millisecondsSinceEpoch/1000).round());
-    }else if (event is AuthSubscriberAuthenticatedEvent){
-      yield AuthSubscriberAuthenticated(subscriber : event.subscriber, token:event.token);
-    }
+  AuthBloc(this.repository) : super(AuthInit()){
+    on<AuthRegisterEvent>((event , emit){
+      emit(AuthRegistrationOnProgressState(fullname : event.fullname, phone:event.phone, unixTime :((DateTime.now()).millisecondsSinceEpoch/1000).round()));
+    });
+    on<AuthSubscriberAuthenticatedEvent>((event , emit){
+      lang= event.subscriber.lang;
+      emit(AuthSubscriberAuthenticated(subscriber : event.subscriber, token:event.token));
+    });
   }
 
   Future<AuthenticationResponse> register( RegistrationInput input  ) async {
