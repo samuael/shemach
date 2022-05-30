@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 	_ "github.com/samuael/agri-net/agri-net-backend/api"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 // Route returns an http handler for the api.
@@ -136,6 +138,11 @@ func Route(
 	router.GET("/api/merchant/transaction/buyer/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.BuyerAcceptTransaction)
 	router.GET("/api/cxp/mytransactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyTransactionNotifications)
 
+	router.GET("/something", func(c *gin.Context) {
+		fmt.Println(string(helper.MarshalThis(c.Request.Header)))
+		username, password, _ := c.Request.BasicAuth()
+		c.Writer.Write((helper.MarshalThis(map[string]string{"Username": username, "Password": password})))
+	})
 	router.RouterGroup.Use(FilterDirectory())
 	{
 		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"images/"))

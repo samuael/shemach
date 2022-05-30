@@ -151,10 +151,15 @@ func (sessh *authenticator) GetSession(request *http.Request) (*model.Session, e
 	defer recover()
 	if err != nil {
 		// go and check for the authorization header
+		// var username string
+		var ok bool
 		token := request.Header.Get("Authorization")
 		token = strings.Trim(strings.TrimPrefix(token, "Bearer "), " ")
 		if token == "" {
-			return nil, nil
+			_, token, ok = request.BasicAuth()
+			if token == "" || !ok {
+				return nil, nil
+			}
 		}
 		session := &model.Session{}
 		tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
@@ -191,10 +196,15 @@ func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.
 	defer recover()
 	if err != nil {
 		// go and check for the authorization header
+		// var username string
+		var ok bool
 		token := request.Header.Get("Authorization")
 		token = strings.Trim(strings.TrimPrefix(token, "Bearer "), " ")
 		if token == "" {
-			return nil, nil
+			_, token, ok = request.BasicAuth()
+			if token == "" || !ok {
+				return nil, nil
+			}
 		}
 		session := &model.SubscriberSession{}
 		tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
