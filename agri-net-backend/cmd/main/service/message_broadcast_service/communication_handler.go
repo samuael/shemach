@@ -50,15 +50,25 @@ var upgrader = websocket.Upgrader{
 func (cch *ClientConnetionHandler) SubscriberHandleWebsocketConnection(c *gin.Context) {
 	response := c.Writer
 	request := c.Request
+	id, er := strconv.Atoi(c.Param("id"))
+	if er != nil || id <= 0 {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	ctx := c.Request.Context()
+	ctx = context.WithValue(ctx, "subscriber_id", uint64(id))
+	subscriber, status, er := cch.SubscriberService.GetSubscriberByID(ctx)
 	connection, erra := upgrader.Upgrade(response, request, nil)
 	if connection == nil || erra != nil {
 		return
 	}
-	ctx := request.Context()
-	session := ctx.Value("session").(*model.SubscriberSession)
-	// ---------------
-	ctx = context.WithValue(ctx, "subscriber_phone", session.Phone)
-	subscriber, status, er := cch.SubscriberService.GetSubscriberByPhone(ctx)
+
+	session := &model.SubscriberSession{
+		ID:       subscriber.ID,
+		Fullname: subscriber.Fullname,
+		Phone:    subscriber.Phone,
+		Lang:     subscriber.Lang,
+	}
 	if status != state.STATUS_OK || er != nil || subscriber == nil {
 		return
 	}
@@ -104,9 +114,12 @@ func (cch *ClientConnetionHandler) AdminsHandleWebsocketConnection(c *gin.Contex
 		return
 	}
 	ctx := c.Request.Context()
-	ctx = context.WithValue(ctx, "user_id", id)
+	ctx = context.WithValue(ctx, "user_id", uint64(id))
 	user, role, _, er := cch.UserService.GetUserByEmailOrID(ctx)
 	if user == nil || role <= 0 || role >= 5 || er != nil {
+		if er != nil {
+			println(er.Error())
+		}
 		c.Writer.WriteHeader(http.StatusForbidden)
 		return
 	}

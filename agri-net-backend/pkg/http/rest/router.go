@@ -65,7 +65,7 @@ func Route(
 	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 
 	// web socket end points
-	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
+	router.GET("/api/connection/subscriber/:id", communicationHandler.SubscriberHandleWebsocketConnection)
 	router.GET("/api/connection/admins/:id", communicationHandler.AdminsHandleWebsocketConnection)
 
 	// message related end points
