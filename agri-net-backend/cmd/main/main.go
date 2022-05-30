@@ -117,6 +117,7 @@ func main() {
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
 		subscriberService,
+		userservice,
 		broadcastHub,
 	)
 	go broadcastHub.Run()

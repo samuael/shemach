@@ -66,7 +66,7 @@ func Route(
 
 	// web socket end points
 	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
-	router.GET("/api/connection/admins", rules.Authenticated(), communicationHandler.AdminsHandleWebsocketConnection)
+	router.GET("/api/connection/admins/:id", communicationHandler.AdminsHandleWebsocketConnection)
 
 	// message related end points
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
@@ -138,10 +138,10 @@ func Route(
 	router.GET("/api/merchant/transaction/buyer/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.BuyerAcceptTransaction)
 	router.GET("/api/cxp/mytransactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyTransactionNotifications)
 
-	router.GET("/something", func(c *gin.Context) {
+	router.GET("/something/:id", func(c *gin.Context) {
 		fmt.Println(string(helper.MarshalThis(c.Request.Header)))
-		username, password, _ := c.Request.BasicAuth()
-		c.Writer.Write((helper.MarshalThis(map[string]string{"Username": username, "Password": password})))
+		_, password, _ := c.Request.BasicAuth()
+		c.Writer.Write((helper.MarshalThis(map[string]string{"Username": c.Param("id"), "Password": password})))
 	})
 	router.RouterGroup.Use(FilterDirectory())
 	{

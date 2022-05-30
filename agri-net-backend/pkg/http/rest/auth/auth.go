@@ -151,12 +151,13 @@ func (sessh *authenticator) GetSession(request *http.Request) (*model.Session, e
 	defer recover()
 	if err != nil {
 		// go and check for the authorization header
-		// var username string
+		var username string
 		var ok bool
 		token := request.Header.Get("Authorization")
 		token = strings.Trim(strings.TrimPrefix(token, "Bearer "), " ")
 		if token == "" {
-			_, token, ok = request.BasicAuth()
+			username, token, ok = request.BasicAuth()
+			println("The Token ", username, token)
 			if token == "" || !ok {
 				return nil, nil
 			}
