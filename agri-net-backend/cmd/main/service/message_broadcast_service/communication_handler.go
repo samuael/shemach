@@ -104,9 +104,12 @@ func (cch *ClientConnetionHandler) AdminsHandleWebsocketConnection(c *gin.Contex
 		return
 	}
 	ctx := c.Request.Context()
-	ctx = context.WithValue(ctx, "user_id", id)
+	ctx = context.WithValue(ctx, "user_id", uint64(id))
 	user, role, _, er := cch.UserService.GetUserByEmailOrID(ctx)
 	if user == nil || role <= 0 || role >= 5 || er != nil {
+		if er != nil {
+			println(er.Error())
+		}
 		c.Writer.WriteHeader(http.StatusForbidden)
 		return
 	}
