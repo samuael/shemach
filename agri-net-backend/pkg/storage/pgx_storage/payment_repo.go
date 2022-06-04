@@ -177,9 +177,7 @@ func (repo *PaymentRepo) DeleteAnInvoiceByID(ctx context.Context, invoiceID stri
 
 // SendAuthHTTPRequest
 func (repo *PaymentRepo) SendAuthHTTPRequest(ctx context.Context, path, method string, input interface{}, response interface{}, authenticated bool) (int, error) {
-
 	var payload *strings.Reader
-
 	if input != nil {
 		payload = strings.NewReader(string(func() []byte {
 			if bytes, er := json.Marshal(input); er != nil {
@@ -193,7 +191,6 @@ func (repo *PaymentRepo) SendAuthHTTPRequest(ctx context.Context, path, method s
 	}
 	var res *http.Response
 	var err error
-	println("The method is : ", method)
 	req, err := http.NewRequest(method, repo.PaymentURL+path, payload)
 	if err != nil {
 		return 0, err
@@ -207,10 +204,8 @@ func (repo *PaymentRepo) SendAuthHTTPRequest(ctx context.Context, path, method s
 		return res.StatusCode, err
 	}
 	defer res.Body.Close()
-	println(res.StatusCode, res.Request.URL.Path)
 	var body []byte
 	body, err = ioutil.ReadAll(res.Body)
-	println(string(body))
 	if err != nil {
 		return res.StatusCode, err
 	}
@@ -385,6 +380,7 @@ func (repo *PaymentRepo) GetTransferPayments(ctx context.Context) ([]*model.Hell
 	return response, nil
 }
 
+// CreateTransactionPayment
 func (repo *PaymentRepo) CreateTransactionPayment(ctx context.Context, tp *model.TransactionPayment) (int, error) {
 	status := 0
 	er := repo.DB.QueryRow(ctx, `select * from reigisterNewTransactionPayment( 
@@ -406,6 +402,7 @@ func (repo *PaymentRepo) CreateTransactionPayment(ctx context.Context, tp *model
 	return status, er
 }
 
+// GetTransactionPaymentByTransactionID
 func (repo *PaymentRepo) GetTransactionPaymentByTransactionID(ctx context.Context, transactionID uint64) (*model.TransactionPayment, error) {
 	t := &model.TransactionPayment{}
 	er := repo.DB.QueryRow(ctx, `select transaction_payment_info_id
@@ -439,6 +436,7 @@ func (repo *PaymentRepo) GetTransactionPaymentByTransactionID(ctx context.Contex
 	return t, nil
 }
 
+// UpdateTransactionPaymentStateByTransactionID
 func (repo *PaymentRepo) UpdateTransactionPaymentStateByTransactionID(ctx context.Context, transactionID uint, state uint) error {
 	status := 0
 	er := repo.DB.QueryRow(ctx, "select * from updateTransactionPaymentState($1,$2)", state, transactionID).
@@ -449,6 +447,7 @@ func (repo *PaymentRepo) UpdateTransactionPaymentStateByTransactionID(ctx contex
 	return er
 }
 
+// GetPendingPayment
 func (repo *PaymentRepo) GetPendingPayment(ctx context.Context) ([]*model.TransactionPayment, error) {
 	payments := []*model.TransactionPayment{}
 	rows, er := repo.DB.Query(ctx, `select transaction_payment_info_id
@@ -488,4 +487,19 @@ func (repo *PaymentRepo) GetPendingPayment(ctx context.Context) ([]*model.Transa
 		payments = append(payments, p)
 	}
 	return payments, nil
+}
+
+// DeletePaymentByTransactionID
+func (repo *PaymentRepo) DeletePaymentByTransactionID(ctx context.Context, transactionID uint64) error {
+	uc, er := repo.DB.Exec(ctx, "delete from transaction_payment_info where transaction_id=$1", transactionID)
+	if uc.RowsAffected() == 0 {
+		return errors.New("no row was affected")
+	}
+	return er
+}
+
+// UpdatePaymentState
+func (repo *PaymentRepo) UpdatePaymentState(ctx context.Context, state uint8, transactionid uint64) error {
+	er := repo.DB.QueryRow(ctx, "update transaction set state=$1 where transaction_id=$2 returning transaction_id", state, transactionid).Scan(&transactionid)
+	return er
 }

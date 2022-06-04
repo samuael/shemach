@@ -248,16 +248,23 @@ create table transaction_payment_info (
     guarantee_completed boolean default false
 );
 
--- create trigger 
+create table contract(
+    contract_id serial primary key,
+    transaction_id integer references transaction(transaction_id),
+    secret_string char(5) not null,
+    state smallint default 18
+);
 
+create or replace function updateTransactionPaymentInformationTime() returns trigger as 
+$$
+    declare 
 
--- create or replace function updateTransactionUpdatedTime() returns trigger as 
--- $$
---     declare 
---     begin
-        
---     end;
--- $$ language plpgsql; 
--- CREATE TRIGGER changeTransactionPaymentUpdatedAt 
--- AFTER UPDATE ON tempo_subscriber FOR EACH 
--- ROW EXECUTE PROCEDURE updateTransactionUpdatedTime();
+    begin
+        update transaction set state=17  where transaction_id=OLD.transaction_id;
+        RETURN OLD;
+    end;
+$$ language plpgsql; 
+
+CREATE TRIGGER updateTrasactionPaymentStatus 
+AFTER DELETE ON transaction_payment_info FOR EACH 
+ROW EXECUTE PROCEDURE updateTransactionPaymentInformationTime();

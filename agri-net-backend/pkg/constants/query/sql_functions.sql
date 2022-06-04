@@ -1039,9 +1039,6 @@ $$
     end;
 $$ language plpgsql;
 
-
-
-
 create or replace function reigisterNewTransactionPayment( 
     itr_id  integer,
     iseller_id integer,
@@ -1069,11 +1066,11 @@ create or replace function reigisterNewTransactionPayment(
             seller_store_ref,
             created_at,
             kebd_amount,
-            guarantee_amount into dtransaction from transaction where id=itr_id;
+            guarantee_amount into dtransaction from transaction where transaction_id=itr_id;
             if not found then
                 return -1;
             end if;
-        if dtransaction.state <=11 or dtransaction.state == 13 then
+        if not (dtransaction.state <=11 or dtransaction.state = 13) then
             return -2;
         end if;
 
@@ -1085,9 +1082,7 @@ create or replace function reigisterNewTransactionPayment(
             buyer_id,
             buyer_invoice_id,
             kebd_amount,
-            guarantee_amount,
-            kebd_completed,
-            guarantee_completed
+            guarantee_amount
         )
         values(
             itr_id,
@@ -1122,5 +1117,26 @@ create or replace function reigisterNewTransactionPayment(
             return 0;
         end if;
         return paymentid;
+    end;
+ $$ language plpgsql;
+
+
+ 
+
+ create or replace function createContract( trid integer, secretval char(5))  returns integer as 
+ $$
+    declare
+        contid integer;
+    begin
+        insert into contract(transaction_id,secret_string,state) values(trid,secretval,18) returning contract_id into contid;
+        if not found then
+            return -1;
+        end if;
+        update transaction set state = 18 where transaction_id=trid returning transaction_id into trid;
+        if not found then
+            rollback; 
+            return -2;
+        end if;
+        return contid;
     end;
  $$ language plpgsql;

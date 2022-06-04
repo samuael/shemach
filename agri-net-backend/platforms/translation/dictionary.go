@@ -72,11 +72,13 @@ var DICTIONARY = map[string]map[string]string{
 
 func TranslateIt(sentence string) string {
 	str := sentence
-	// sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["amh"])
-	var er error
-	sentence, er = translateText("am", str)
-	if er != nil {
-		sentence = ""
+	sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["amh"])
+	if sentence == "" {
+		var er error
+		sentence, er = translateText("am", str)
+		if er != nil {
+			sentence = ""
+		}
 	}
 	return sentence
 }

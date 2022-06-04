@@ -12,6 +12,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/contract"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/crop"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/dictionary"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
@@ -58,25 +59,28 @@ func main() {
 	rules := middleware.NewRules(authenticator)
 
 	credentials := &model.Credentials{
-		Principal:   "1946543",
-		Credentials: "Samuel13",
-		System:      "lucy",
+		Principal:   os.Getenv(""),
+		Credentials: os.Getenv(""),
+		System:      os.Getenv(""),
 	}
 	paymentrepo := pgx_storage.NewPaymentRepo(conn, credentials)
 	paymentservice := payment.NewPaymentService(paymentrepo)
-	if er := paymentservice.Authenticate(context.Background()); er != nil {
+	if er := paymentservice.Authenticate(context.Background()); er != nil || paymentservice == nil {
 		os.Exit(1)
 	}
+	userrepo := pgx_storage.NewUserRepo(conn)
+	userservice := user.NewUserService(userrepo)
 
-	tpacroutine := service.NewTPACRoutine(paymentservice)
+	contractrepo := pgx_storage.NewContractRepo(conn)
+	contractservice := contract.NewContractService(contractrepo)
+
+	tpacroutine := service.NewTPACRoutine(paymentservice, userservice, contractservice)
 	go tpacroutine.Run()
 
 	subscriberRepo := pgx_storage.NewSubscriberRepo(conn)
 	subscriberService := subscriber.NewSubscriberService(subscriberRepo)
 	superadminrepo := pgx_storage.NewSuperadminRepo(conn)
 	superadminservice := superadmin.NewSuperadminService(superadminrepo)
-	userrepo := pgx_storage.NewUserRepo(conn)
-	userservice := user.NewUserService(userrepo)
 
 	otpService := service.NewOtpService(subscriberService, userservice)
 
@@ -129,9 +133,9 @@ func main() {
 		agentservice, resourceservice)
 
 	transactionrepo := pgx_storage.NewTransactionRepo(conn)
-	transactionservice := transaction.NewTransactionService(transactionrepo)
+	transactionservice := transaction.NewTransactionService(transactionrepo, paymentrepo, contractrepo)
 	transactionhandler :=
-		rest.NewTransactionHandler(transactionservice, cropservice,
+		rest.NewTransactionHandler(transactionservice, userservice, cropservice,
 			merchantservice, storeservice, paymentservice)
 
 	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)

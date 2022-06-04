@@ -5,6 +5,8 @@ import (
 
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/contract"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 )
 
 type ITransactionService interface {
@@ -29,12 +31,20 @@ type ITransactionService interface {
 }
 
 type TransactionService struct {
-	Repo ITransactionRepo
+	Repo         ITransactionRepo
+	PaymentRepo  payment.IPaymentRepository
+	ContractRepo contract.IContractRepo
 }
 
-func NewTransactionService(repo ITransactionRepo) ITransactionService {
+func NewTransactionService(
+	repo ITransactionRepo,
+	payRepo payment.IPaymentRepository,
+	contractRepo contract.IContractRepo,
+) ITransactionService {
 	return &TransactionService{
-		Repo: repo,
+		Repo:         repo,
+		PaymentRepo:  payRepo,
+		ContractRepo: contractRepo,
 	}
 }
 
@@ -108,6 +118,15 @@ func (service *TransactionService) GetTransactionNotifications(ctx context.Conte
 			if er != nil {
 				println(er.Error())
 			}
+		case state.TS_PAYMENT_INSTANTIATED, state.TS_SELLER_PAYMENT_COMPLETED,
+			state.TS_BUYER_PAYMENT_COMPLETED, state.TS_ERROR:
+			notif.PaymentNotification, er = service.PaymentRepo.GetTransactionPaymentByTransactionID(ctx, uint64(transactions[x].ID))
+			if er != nil {
+				println(er.Error())
+			}
+		case state.TS_CONTRACT_CREATED, state.TS_CONTRACT_CREATED_ACTIVATED,
+			state.TS_CONTRACT_FAILED, state.TS_CONTRACT_SUCCEED:
+			notif.ContractNotification, er = service.ContractRepo.GetContractByTransactionID(ctx, uint64(transactions[x].ID))
 		}
 		notifications = append(notifications, notif)
 	}

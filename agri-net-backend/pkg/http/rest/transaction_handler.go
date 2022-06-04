@@ -51,6 +51,7 @@ type TransactionHandler struct {
 
 func NewTransactionHandler(
 	service transaction.ITransactionService,
+	userService user.IUserService,
 	productService crop.ICropService,
 	merchantService merchant.IMerchantService,
 	storeService store.IStoreService,
@@ -58,6 +59,7 @@ func NewTransactionHandler(
 ) ITransactionHandler {
 	return &TransactionHandler{
 		Service:         service,
+		UserService:     userService,
 		ProductService:  productService,
 		MerchantService: merchantService,
 		StoreService:    storeService,
@@ -833,8 +835,8 @@ func (thandler *TransactionHandler) SellerAcceptedTransaction(c *gin.Context) {
 }
 
 func (thandler *TransactionHandler) BuyerAcceptTransaction(c *gin.Context) {
-	ctx := c.Request.Context()
-	session := ctx.Value("session").(*model.Session)
+	session := c.Request.Context().Value("session").(*model.Session)
+	ctx := context.Background()
 	transactionID, er := strconv.Atoi(c.Param("id"))
 	resp := &struct {
 		StatusCode  int                `json:"status_code"`
@@ -883,7 +885,7 @@ func (thandler *TransactionHandler) BuyerAcceptTransaction(c *gin.Context) {
 		c.JSON(resp.StatusCode, resp)
 		return
 	}
-	go thandler.InstantiatePaymentTransaction(ctx, transaction.ID)
+	go thandler.InstantiatePaymentTransaction(ctx, session, transaction.ID)
 	resp.Transaction = transaction
 	resp.Msg = translation.Translate(session.Lang, "transaction accepted")
 	resp.StatusCode = http.StatusOK
@@ -893,23 +895,29 @@ func (thandler *TransactionHandler) BuyerAcceptTransaction(c *gin.Context) {
 }
 
 // InstantiatePaymentTransaction
-func (thandler *TransactionHandler) InstantiatePaymentTransaction(ctx context.Context, transactionID uint) uint8 {
-	session := ctx.Value("session").(*model.Session)
-	ctx, _ = context.WithTimeout(ctx, time.Minute*1)
+func (thandler *TransactionHandler) InstantiatePaymentTransaction(ctx context.Context, session *model.Session, transactionID uint) uint8 {
+	ctx, _ = context.WithDeadline(context.Background(), time.Now().Add(time.Minute*2))
 	transaction, er := thandler.Service.GetTransactionByID(ctx, uint64(transactionID))
-	if er != nil {
-		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+	if er != nil || transaction == nil {
+		println(er.Error())
 		return 0
 	}
 	ctx = context.WithValue(ctx, "user_id", transaction.SellerID)
 	seller, _, status, er := thandler.UserService.GetUserByEmailOrID(ctx)
-	if seller == nil || er != nil || status <= 0 {
+	println(status)
+	if seller == nil || er != nil || status < 0 {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		return 0
 	}
 	ctx = context.WithValue(ctx, "user_id", transaction.RequesterID)
 	buyer, _, status, er := thandler.UserService.GetUserByEmailOrID(ctx)
-	if buyer == nil || er != nil || status <= 0 {
+	if buyer == nil || er != nil || status < 0 {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		return 0
 	}
@@ -934,11 +942,17 @@ func (thandler *TransactionHandler) InstantiatePaymentTransaction(ctx context.Co
 	}
 	sellerInvoiceValidation, er := thandler.PaymentService.ValidateInvoice(ctx, sellerInvoiceRequest)
 	if er != nil || sellerInvoiceValidation == nil {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		return 0
 	}
 	sellerInvoice, er := thandler.PaymentService.SendAnInvoice(ctx, sellerInvoiceRequest)
 	if er != nil || sellerInvoice == nil {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		return 0
 	}
@@ -950,21 +964,32 @@ func (thandler *TransactionHandler) InstantiatePaymentTransaction(ctx context.Co
 	}
 	buyerInvoiceValidation, er := thandler.PaymentService.ValidateInvoice(ctx, buyerInvoiceRequest)
 	if er != nil || buyerInvoiceValidation == nil {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		thandler.PaymentService.DeleteAnInvoiceByID(ctx, sellerInvoice.ID)
 		return 0
 	}
 	buyerInvoice, er := thandler.PaymentService.SendAnInvoice(ctx, buyerInvoiceRequest)
 	if er != nil || buyerInvoice == nil {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		thandler.PaymentService.DeleteAnInvoiceByID(ctx, sellerInvoice.ID)
 		return 0
 	}
-
 	transactionPayment.BuyerInvoiceID = buyerInvoice.ID
 	transactionPayment.SellerInvoiceID = sellerInvoice.ID
+	//
+	thandler.PaymentService.UpdatePaymentState(context.Background(), 10, uint64(transaction.ID))
+	//
 	stCode, er := thandler.PaymentService.CreateTransactionPayment(ctx, transactionPayment)
 	if er != nil || stCode < 0 {
+		if er != nil {
+			println(er.Error())
+		}
 		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
 		thandler.PaymentService.DeleteAnInvoiceByID(ctx, sellerInvoice.ID)
 		thandler.PaymentService.DeleteAnInvoiceByID(ctx, buyerInvoice.ID)
@@ -1007,13 +1032,13 @@ func (thandler *TransactionHandler) ReactivateTransaction(c *gin.Context) {
 		resp.StatusCode = http.StatusUnauthorized
 		resp.Msg = translation.Translate(session.Lang, "can't reactivate a transaction which is not in the error stage")
 	}
-	stcode := thandler.InstantiatePaymentTransaction(ctx, transaction.ID)
+	stcode := thandler.InstantiatePaymentTransaction(ctx, session, transaction.ID)
 	if stcode == 0 {
 		resp.StatusCode = http.StatusInternalServerError
 		resp.Msg = translation.Translate(session.Lang, "failed to perform the refresh")
 	} else {
-		resp.StatusCode = http.StatusInternalServerError
-		resp.Msg = translation.Translate(session.Lang, "failed to perform the refresh")
+		resp.StatusCode = http.StatusOK
+		resp.Msg = translation.Translate(session.Lang, "payment Instance created succesfuly")
 	}
 	c.JSON(resp.StatusCode, resp)
 }
@@ -1034,6 +1059,4 @@ func (thandler *TransactionHandler) GetMyTransactionNotifications(c *gin.Context
 	resp.Msg = translation.Translate(session.Lang, fmt.Sprintf(" found %d notifications ", len(results)))
 	resp.Notifications = results
 	c.JSON(resp.StatusCode, resp)
-	return
-
 }

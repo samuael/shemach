@@ -124,8 +124,7 @@ func (suhandler *UserHandler) Login(c *gin.Context) {
 		if er != nil {
 			log.Println(er.Error())
 		}
-	}
-	if form.MatchesPattern(input.Email, form.EmailRX) && user == nil {
+	} else if form.MatchesPattern(input.Email, form.EmailRX) && user == nil {
 		user, role, status, er = suhandler.Service.GetUserByEmailOrID(ctx)
 	}
 	var failed = false

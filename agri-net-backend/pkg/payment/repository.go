@@ -24,4 +24,7 @@ type IPaymentRepository interface {
 	GetTransactionPaymentByTransactionID(ctx context.Context, transactionID uint64) (*model.TransactionPayment, error)
 	UpdateTransactionPaymentStateByTransactionID(ctx context.Context, transactionID uint, state uint) error
 	GetPendingPayment(ctx context.Context) ([]*model.TransactionPayment, error)
+	DeletePaymentByTransactionID(ctx context.Context, transactionID uint64) error
+	//
+	UpdatePaymentState(ctx context.Context, state uint8, transactionid uint64) error
 }

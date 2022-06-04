@@ -23,6 +23,9 @@ type IPaymentService interface {
 	GetTransactionPaymentByTransactionID(ctx context.Context, transactionID uint64) (*model.TransactionPayment, error)
 	UpdateTransactionPaymentStateByTransactionID(ctx context.Context, transactionID uint, state uint) error
 	GetPendingPayment(ctx context.Context) ([]*model.TransactionPayment, error)
+	DeletePaymentByTransactionID(ctx context.Context, transactionID uint64) error
+	//
+	UpdatePaymentState(ctx context.Context, state uint8, transactionid uint64) error
 }
 type PaymentService struct {
 	Repo IPaymentRepository
@@ -81,4 +84,10 @@ func (ser *PaymentService) UpdateTransactionPaymentStateByTransactionID(ctx cont
 
 func (ser *PaymentService) GetPendingPayment(ctx context.Context) ([]*model.TransactionPayment, error) {
 	return ser.Repo.GetPendingPayment(ctx)
+}
+func (ser *PaymentService) DeletePaymentByTransactionID(ctx context.Context, transactionID uint64) error {
+	return ser.Repo.DeletePaymentByTransactionID(ctx, transactionID)
+}
+func (ser *PaymentService) UpdatePaymentState(ctx context.Context, state uint8, transactionid uint64) error {
+	return ser.Repo.UpdatePaymentState(ctx, state, transactionid)
 }
