@@ -190,6 +190,7 @@ func (phandler *ProductHandler) SubscribeForProduct(c *gin.Context) {
 		return
 	}
 	ctx = context.WithValue(ctx, "subscriber_id", session.ID)
+	println("Subscriber ID :", session.ID)
 	ctx = context.WithValue(ctx, "product_id", uint8(productID))
 	status := phandler.Service.CreateSubscriptions(ctx)
 	if status == -1 {

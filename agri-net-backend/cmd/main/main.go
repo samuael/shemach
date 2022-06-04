@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"html/template"
 	"os"
 	"sync"
@@ -10,6 +11,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/admin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/crop"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/dictionary"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest"
@@ -18,6 +20,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/resource"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
@@ -54,6 +57,20 @@ func main() {
 	authenticator := auth.NewAuthenticator()
 	rules := middleware.NewRules(authenticator)
 
+	credentials := &model.Credentials{
+		Principal:   "1946543",
+		Credentials: "Samuel13",
+		System:      "lucy",
+	}
+	paymentrepo := pgx_storage.NewPaymentRepo(conn, credentials)
+	paymentservice := payment.NewPaymentService(paymentrepo)
+	if er := paymentservice.Authenticate(context.Background()); er != nil {
+		os.Exit(1)
+	}
+
+	tpacroutine := service.NewTPACRoutine(paymentservice)
+	go tpacroutine.Run()
+
 	subscriberRepo := pgx_storage.NewSubscriberRepo(conn)
 	subscriberService := subscriber.NewSubscriberService(subscriberRepo)
 	superadminrepo := pgx_storage.NewSuperadminRepo(conn)
@@ -86,11 +103,11 @@ func main() {
 
 	agentrepo := pgx_storage.NewAgentRepo(conn)
 	agentservice := agent.NewAgentService(agentrepo)
-	agenthandler := rest.NewAgentHandler(agentservice, userservice)
+	agenthandler := rest.NewAgentHandler(agentservice, userservice, paymentservice)
 
 	merchantrepo := pgx_storage.NewMerchantRepo(conn)
 	merchantservice := merchant.NewMerchantService(merchantrepo)
-	merchanthandler := rest.NewMerchantHandler(merchantservice, userservice)
+	merchanthandler := rest.NewMerchantHandler(merchantservice, userservice, paymentservice)
 
 	dictionaryrepo := pgx_storage.NewDictionaryRepo(conn)
 	dictionaryservice := dictionary.NewDictionaryService(dictionaryrepo)
@@ -107,11 +124,15 @@ func main() {
 
 	croprepo := pgx_storage.NewCropRepo(conn)
 	cropservice := crop.NewCropService(croprepo)
-	crophandler := rest.NewCropHandler(cropservice, productservice, storeservice, merchantservice, agentservice, resourceservice)
+	crophandler := rest.NewCropHandler(cropservice, productservice,
+		storeservice, merchantservice,
+		agentservice, resourceservice)
 
 	transactionrepo := pgx_storage.NewTransactionRepo(conn)
 	transactionservice := transaction.NewTransactionService(transactionrepo)
-	transactionhandler := rest.NewTransactionHandler(transactionservice, cropservice, merchantservice, storeservice)
+	transactionhandler :=
+		rest.NewTransactionHandler(transactionservice, cropservice,
+			merchantservice, storeservice, paymentservice)
 
 	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
 

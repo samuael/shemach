@@ -878,10 +878,100 @@ $$
         if not found then
             return -5;
         end if;
-        update transaction set state=4 where transaction_id= trid;
+        update transaction set state=4, kebd_amount=iamount where transaction_id= trid;
         return kebdinfoid;
     end;
 $$ language plpgsql;
+
+
+create or replace function createKebdAmendmentRequest( buyerid integer , iamount decimal, ideadline integer, descs varchar(500), trid integer ) returns integer as 
+$$
+    declare
+        transactioninst transaction;
+        thecxp integer;
+        kebdinfoid integer;
+        kebd kebd_transaction_info;
+    begin
+        select * from transaction into transactioninst where transaction_id= trid;
+        if not found then
+            return -1;
+        end if;
+        if transactioninst.state >= 7 then
+            return -2;
+        end if;
+        if transactioninst.requester_id <> buyerid then
+            return -6;
+        end if;
+        select id into thecxp from merchant where id=buyerid;
+        if not found then
+            return -4;
+        end if;
+        select * into kebd from kebd_transaction_info where transaction_id=trid;
+        if found and kebd.deadline = ideadline and kebd.description=descs 
+        and kebd.kebd_amount=iamount then
+            return -3;
+        elseif found then
+                update kebd_transaction_info set transaction_id=trid,state=5,kebd_amount=iamount,deadline=ideadline,description=descs where kebd_transaction_info_id=kebd.kebd_transaction_info_id returning kebd_transaction_info_id into kebdinfoid;
+                if found then
+                    return kebd.kebd_transaction_info_id;
+                end if;
+        end if;
+        insert into kebd_transaction_info(transaction_id,state,kebd_amount,deadline,description)
+        values( trid,5, iamount,ideadline,descs) returning kebd_transaction_info_id into kebdinfoid;
+        if not found then
+            return -5;
+        end if;
+        update transaction set state=5 where transaction_id= trid;
+        return kebdinfoid;
+    end;
+$$ language plpgsql;
+
+create or replace function ammendKebdRequest( sellerid integer , iamount decimal, ideadline integer, descs varchar(500), trid integer ) returns integer as 
+$$
+    declare
+        transactioninst transaction;
+        thecxp integer;
+        kebdinfoid integer;
+        kebd kebd_transaction_info;
+    begin
+        select * from transaction into transactioninst where transaction_id= trid;
+        if not found then
+            return -1;
+        end if;
+        if transactioninst.state >= 7 then
+            return -2;
+        end if;
+        if transactioninst.seller_id <> sellerid then
+            return -6;
+        end if;
+        select id into thecxp from merchant where id=sellerid;
+        if not found then
+            select id into thecxp from agent where id = sellerid;
+            if not found then
+                return -4;
+            end if;
+        end if;
+        select * into kebd from kebd_transaction_info where transaction_id=trid;
+        if found and kebd.deadline = ideadline and kebd.description=descs 
+        and kebd.kebd_amount=iamount then
+            return -3;
+        elseif found then
+                update kebd_transaction_info set transaction_id=trid,state=6,kebd_amount=iamount,deadline=ideadline,description=descs where kebd_transaction_info_id=kebd.kebd_transaction_info_id returning kebd_transaction_info_id into kebdinfoid;
+                if found then
+                    return kebd.kebd_transaction_info_id;
+                end if;
+        end if;
+        insert into kebd_transaction_info(transaction_id,state,kebd_amount,deadline,description)
+        values( trid,6, iamount,ideadline,descs) returning kebd_transaction_info_id into kebdinfoid;
+        if not found then
+            return -5;
+        end if;
+        update transaction set state=6, kebd_amount=iamount where transaction_id= trid;
+        return kebdinfoid;
+    end;
+$$ language plpgsql;
+
+
 
 create or replace function createNewTrasactionAmendmentRequest( istate integer , trid integer,descs varchar(500) , prices decimal , quant integer) returns integer as 
 $$
@@ -944,7 +1034,93 @@ $$
         if not found then
             return -5;
         end if;
-        update transaction set state=7 where transaction_id= trid;
+        update transaction set state=7,guarantee_amount=iamount where transaction_id= trid;
         return guaranteeinfoid;
     end;
 $$ language plpgsql;
+
+
+
+
+create or replace function reigisterNewTransactionPayment( 
+    itr_id  integer,
+    iseller_id integer,
+    iseller_invoice_id varchar(250),
+    ibuyer_id integer,
+    ibuyer_invoice_id varchar(250),
+    ikebd_amount  decimal,
+    iguarantee_amount decimal
+ ) returns integer as
+ $$
+    declare
+        paymentoid integer;
+        dtransaction transaction;
+    begin
+        select transaction_id,
+            price,
+            quantity,
+            state,
+            deadline,
+            description,
+            crop_id,
+            requester_id,
+            requester_store_ref,
+            seller_id,
+            seller_store_ref,
+            created_at,
+            kebd_amount,
+            guarantee_amount into dtransaction from transaction where id=itr_id;
+            if not found then
+                return -1;
+            end if;
+        if dtransaction.state <=11 or dtransaction.state == 13 then
+            return -2;
+        end if;
+
+        insert into transaction_payment_info(
+            transaction_id,
+            state,
+            seller_id,
+            seller_invoice_id,
+            buyer_id,
+            buyer_invoice_id,
+            kebd_amount,
+            guarantee_amount,
+            kebd_completed,
+            guarantee_completed
+        )
+        values(
+            itr_id,
+            14,
+            iseller_id,
+            iseller_invoice_id,
+            ibuyer_id,
+            ibuyer_invoice_id,
+            ikebd_amount,
+            iguarantee_amount
+        ) returning transaction_payment_info_id into paymentoid;
+        if not found then
+            return -3;
+        end if;
+        update transaction set state=14 where transaction_id=itr_id;
+        return paymentoid;
+    end;
+ $$ language plpgsql;
+
+ create or replace function updateTransactionPaymentState(  trid integer, dstate integer ) returns integer as 
+ $$
+    declare
+        paymentid integer; 
+    begin
+        update transaction_payment_info set state=dstate where transaction_id=trid returning transaction_payment_info_id into paymentid;
+        if not found then
+            rollback;
+        end if;
+        update transaction set state = dstate where transaction_id=trid returning transaction_id into trid;
+        if not found then
+            rollback;
+            return 0;
+        end if;
+        return paymentid;
+    end;
+ $$ language plpgsql;

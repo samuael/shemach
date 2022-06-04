@@ -161,8 +161,26 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                             textAlignVertical: TextAlignVertical.center,
                             textAlign: TextAlign.center,
                             keyboardType: TextInputType.number,
-                            maxLength: 1,
+                            maxLength: 5,
                             controller: controller1,
+                            onChanged: (val) {
+                              setState((){
+                              if (val.length >= 1) {
+                                controller1.text = val[0];
+                                if (val.length >= 2) {
+                                  controller2.text = val[1];
+                                  if (val.length >= 3) {
+                                    controller3.text = val[2];
+                                    if (val.length >= 4) {
+                                      controller4.text = val[3];
+                                      if (val.length >= 5) {
+                                        controller5.text = val[4];
+                                      }
+                                    }
+                                  }
+                                }
+                              }});
+                            },
                             cursorHeight: 25,
                             cursorWidth: 3,
                             maxLengthEnforced: true,
@@ -350,57 +368,54 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                     return;
                   }
                   try {
-                  if (int.parse(controller1.text) >= 0 &&
-                      int.parse(controller2.text) >= 0 &&
-                      int.parse(controller3.text) >= 0 &&
-                      int.parse(controller4.text) >= 0 &&
-                      int.parse(controller5.text) >= 0) {
-                    final String confirmation =
-                        "${int.parse(controller1.text)}${int.parse(controller2.text)}${int.parse(controller3.text)}${int.parse(controller4.text)}${int.parse(controller5.text)}";
-                    final phone = "+251${this.widget.phone}";
-                    setState(() {
-                      onProgress = true;
-                    });
-                    SubscriberAuthenticationRespnse result;
-                    if (widget.islogin) {
-
-                    result = await context
-                        .read<AuthBloc>()
-                        .confirmLogin(
-                            SubscriberConfirmation(phone, confirmation));
-                    } else {
-                      result = await context
-                          .read<AuthBloc>()
-                          .confirmRegistration(
-                              SubscriberConfirmation(phone, confirmation));
-                    }
-                    if (result.statusCode == 200) {
+                    if (int.parse(controller1.text) >= 0 &&
+                        int.parse(controller2.text) >= 0 &&
+                        int.parse(controller3.text) >= 0 &&
+                        int.parse(controller4.text) >= 0 &&
+                        int.parse(controller5.text) >= 0) {
+                      final String confirmation =
+                          "${int.parse(controller1.text)}${int.parse(controller2.text)}${int.parse(controller3.text)}${int.parse(controller4.text)}${int.parse(controller5.text)}";
+                      final phone = "+251${this.widget.phone}";
                       setState(() {
-                        this.message = result.msg;
-                        messageColor = Colors.green;
                         onProgress = true;
                       });
-                      setState(() {
-                        onProgress = false;
-                      });
-                      context.read<AuthBloc>().add(
-                          AuthSubscriberAuthenticatedEvent(
-                              subscriber: result.subscriber!,
-                              token: result.token));
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          HomeScreen.RouteName, (route) => false);
-                      
-                      setState(() {
-                        onProgress = false;
-                      });
-                    } else {
-                      setState(() {
-                        this.message = result.msg;
-                        messageColor = Colors.red;
-                        onProgress = false;
-                      });
+                      SubscriberAuthenticationRespnse result;
+                      if (widget.islogin) {
+                        result = await context.read<AuthBloc>().confirmLogin(
+                            SubscriberConfirmation(phone, confirmation));
+                      } else {
+                        result = await context
+                            .read<AuthBloc>()
+                            .confirmRegistration(
+                                SubscriberConfirmation(phone, confirmation));
+                      }
+                      if (result.statusCode == 200) {
+                        setState(() {
+                          this.message = result.msg;
+                          messageColor = Colors.green;
+                          onProgress = true;
+                        });
+                        setState(() {
+                          onProgress = false;
+                        });
+                        context.read<AuthBloc>().add(
+                            AuthSubscriberAuthenticatedEvent(
+                                subscriber: result.subscriber!,
+                                token: result.token));
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            HomeScreen.RouteName, (route) => false);
+
+                        setState(() {
+                          onProgress = false;
+                        });
+                      } else {
+                        setState(() {
+                          this.message = result.msg;
+                          messageColor = Colors.red;
+                          onProgress = false;
+                        });
+                      }
                     }
-                  }
                   } catch (e, a) {
                     setState(() {
                       onProgress = false;

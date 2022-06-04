@@ -24,6 +24,8 @@ type ITransactionService interface {
 	GetTransactionNotificationByTransactionID(ctx context.Context, trid uint64) (*model.TransactionRequest, error)
 	GetKebdNotificationByTransactionID(ctx context.Context, trid uint64) (*model.KebdAmountRequest, error)
 	GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error)
+	AmendKebdRequest(ctx context.Context, cxpid uint64, input *model.KebdAmountRequest) (int, error)
+	CreateKebdAmendmentRequest(ctx context.Context, merchantid uint64, input *model.KebdAmountRequest) (int, error)
 }
 
 type TransactionService struct {
@@ -120,4 +122,11 @@ func (service *TransactionService) GetKebdNotificationByTransactionID(ctx contex
 }
 func (service *TransactionService) GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error) {
 	return service.Repo.GetGuaranteeNotificationByTransactionID(ctx, trid)
+}
+func (service *TransactionService) AmendKebdRequest(ctx context.Context, cxpid uint64, input *model.KebdAmountRequest) (int, error) {
+	return service.Repo.AmendKebdRequest(ctx, cxpid, input)
+}
+
+func (service *TransactionService) CreateKebdAmendmentRequest(ctx context.Context, merchantid uint64, input *model.KebdAmountRequest) (int, error) {
+	return service.Repo.CreateKebdAmendmentRequest(ctx, merchantid, input)
 }

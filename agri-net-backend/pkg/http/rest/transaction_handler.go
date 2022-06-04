@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,7 +13,9 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/crop"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 
 	"github.com/samuael/agri-net/agri-net-backend/pkg/transaction"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
@@ -26,18 +29,24 @@ type ITransactionHandler interface {
 	AcceptAmendmentRequest(c *gin.Context)
 	PerformAmend(c *gin.Context)
 	RequestKebd(c *gin.Context)
+	RequestKebdRequestAmendment(c *gin.Context)
+	AmendKebdRequest(c *gin.Context)
+	//
 	RequestGuaranteePayment(c *gin.Context)
 	SellerAcceptedTransaction(c *gin.Context)
 	BuyerAcceptTransaction(c *gin.Context)
+	ReactivateTransaction(c *gin.Context)
 	GetMyTransactionNotifications(c *gin.Context)
 }
 
 // TransactionHandler transaction handler instance
 type TransactionHandler struct {
 	Service         transaction.ITransactionService
+	UserService     user.IUserService
 	ProductService  crop.ICropService
 	MerchantService merchant.IMerchantService
 	StoreService    store.IStoreService
+	PaymentService  payment.IPaymentService
 }
 
 func NewTransactionHandler(
@@ -45,12 +54,14 @@ func NewTransactionHandler(
 	productService crop.ICropService,
 	merchantService merchant.IMerchantService,
 	storeService store.IStoreService,
+	paymentService payment.IPaymentService,
 ) ITransactionHandler {
 	return &TransactionHandler{
 		Service:         service,
 		ProductService:  productService,
 		MerchantService: merchantService,
 		StoreService:    storeService,
+		PaymentService:  paymentService,
 	}
 }
 
@@ -497,7 +508,198 @@ func (thandler *TransactionHandler) RequestKebd(c *gin.Context) {
 }
 
 // TODO: TS_KEBD_REQUEST_AMENDMENT_REQUEST_SENT
+func (thandler *TransactionHandler) RequestKebdRequestAmendment(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	input := &model.KebdAmountRequest{}
+	resp := &struct {
+		StatusCode int                      `json:"status_code"`
+		Msg        string                   `json:"msg"`
+		Errors     map[string]string        `json:"errors,omitempty"`
+		Kebd       *model.KebdAmountRequest `json:"kebd_request,omitempty"`
+	}{}
+	jdecode := json.NewDecoder(c.Request.Body)
+	er := jdecode.Decode(input)
+	if er != nil || input.KebdAmount <= 0 || input.Deadline <= 0 || input.TransactionID <= 0 {
+		if er == nil {
+			resp.Errors = map[string]string{}
+		}
+		if input.KebdAmount <= 0 {
+			resp.Errors["kebd_amount"] = translation.Translate(session.Lang, "invalid kedb amount")
+		}
+		if input.Deadline <= 0 {
+			resp.Errors["deadline"] = translation.Translate(session.Lang, "invalid deadline timstamp")
+		}
+		if input.TransactionID <= 0 {
+			resp.Errors["transaction_id"] = translation.Translate(session.Lang, "transaction with this id doesn't exist")
+		}
+		resp.Msg = translation.Translate(session.Lang, "bad request")
+		resp.StatusCode = http.StatusBadRequest
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	deadline := time.Unix(int64(input.Deadline), 0)
+	if !(deadline.After(time.Now().Add(time.Hour * 6))) {
+		resp.Msg = translation.Translate(session.Lang, "deadline has to be at least 6 hours after contract time")
+		resp.StatusCode = http.StatusBadRequest
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	transaction, er := thandler.Service.GetTransactionByID(ctx, input.TransactionID)
+	if er != nil || transaction == nil {
+		resp.Msg = translation.Translate(session.Lang, "transaction with this id doesn't exist")
+		resp.StatusCode = http.StatusNotFound
+		c.JSON(resp.StatusCode, resp)
+		return
+	} else if session.ID != transaction.RequesterID {
+		resp.Msg = translation.Translate(session.Lang, "You are not authorized to perform this action")
+		resp.StatusCode = http.StatusUnauthorized
+		resp.Errors = map[string]string{}
+		c.JSON(resp.StatusCode, resp)
+		return
+	} else if !(transaction.State == state.TS_KEBD_REQUESTED ||
+		transaction.State == state.TS_KEBD_AMENDED ||
+		transaction.State == state.TS_KEBD_REQUEST_AMENDMENT_REQUEST_SENT) {
+		resp.Msg = translation.Translate(session.Lang, "operation is not allowed")
+		resp.Errors["state"] = state.TransactionStateMaps[transaction.State]
+		resp.StatusCode = http.StatusUnauthorized
+		resp.Errors = map[string]string{}
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	input.State = state.TS_KEBD_REQUEST_AMENDMENT_REQUEST_SENT
+	status, er := thandler.Service.CreateKebdAmendmentRequest(ctx, session.ID, input)
+	if er != nil {
+		resp.StatusCode = http.StatusInternalServerError
+		resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later!")
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	if status < 0 {
+		switch status {
+		case -1:
+			resp.Msg = translation.Translate(session.Lang, "transaction not found")
+			resp.StatusCode = http.StatusNotFound
+		case -2:
+			resp.Msg = translation.Translate(session.Lang, "you are not allowed to perform this operation at this stage")
+			resp.StatusCode = http.StatusUnauthorized
+		case -3:
+			resp.Msg = translation.Translate(session.Lang, "kebd with similar information already exist")
+			resp.StatusCode = http.StatusConflict
+		case -4, -6:
+			resp.Msg = translation.Translate(session.Lang, "you are not allowed to perform this action")
+			resp.StatusCode = http.StatusUnauthorized
+		case -5:
+			resp.Msg = translation.Translate(session.Lang, "internal server error")
+			resp.StatusCode = http.StatusInternalServerError
+		}
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	input.ID = uint64(status)
+	input.CreatedAt = uint64(time.Now().Unix())
+	resp.Kebd = input
+	resp.StatusCode = http.StatusOK
+	resp.Msg = translation.Translate(session.Lang, "kebd amendment request is sent succesfully")
+	c.JSON(resp.StatusCode, resp)
+}
+
 // TODO: TS_KEBD_AMENDED
+func (thandler *TransactionHandler) AmendKebdRequest(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	input := &model.KebdAmountRequest{}
+	resp := &struct {
+		StatusCode int                      `json:"status_code"`
+		Msg        string                   `json:"msg"`
+		Errors     map[string]string        `json:"errors,omitempty"`
+		Kebd       *model.KebdAmountRequest `json:"kebd_request,omitempty"`
+	}{}
+	jdecode := json.NewDecoder(c.Request.Body)
+	er := jdecode.Decode(input)
+	if er != nil || input.KebdAmount <= 0 || input.Deadline <= 0 || input.TransactionID <= 0 {
+		if er == nil {
+			resp.Errors = map[string]string{}
+		}
+		if input.KebdAmount <= 0 {
+			resp.Errors["kebd_amount"] = translation.Translate(session.Lang, "invalid kedb amount")
+		}
+		if input.Deadline <= 0 {
+			resp.Errors["deadline"] = translation.Translate(session.Lang, "invalid deadline timstamp")
+		}
+		if input.TransactionID <= 0 {
+			resp.Errors["transaction_id"] = translation.Translate(session.Lang, "transaction with this id doesn't exist")
+		}
+		resp.Msg = translation.Translate(session.Lang, "bad request")
+		resp.StatusCode = http.StatusBadRequest
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	deadline := time.Unix(int64(input.Deadline), 0)
+	if !(deadline.After(time.Now().Add(time.Hour * 6))) {
+		resp.Msg = translation.Translate(session.Lang, "deadline has to be at least 6 hours after contract time")
+		resp.StatusCode = http.StatusBadRequest
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	transaction, er := thandler.Service.GetTransactionByID(ctx, input.TransactionID)
+	if er != nil || transaction == nil {
+		resp.Msg = translation.Translate(session.Lang, "transaction with this id doesn't exist")
+		resp.StatusCode = http.StatusNotFound
+		c.JSON(resp.StatusCode, resp)
+		return
+	} else if session.ID != transaction.SellerID {
+		resp.Msg = translation.Translate(session.Lang, "you are not a seller!\nYou are not authorized to perform this action")
+		resp.StatusCode = http.StatusUnauthorized
+		resp.Errors = map[string]string{}
+		c.JSON(resp.StatusCode, resp)
+		return
+	} else if !(transaction.State == state.TS_KEBD_REQUESTED ||
+		transaction.State == state.TS_KEBD_AMENDED ||
+		transaction.State == state.TS_KEBD_REQUEST_AMENDMENT_REQUEST_SENT) {
+		resp.Msg = translation.Translate(session.Lang, "operation is not allowed")
+		resp.Errors["state"] = state.TransactionStateMaps[transaction.State]
+		resp.StatusCode = http.StatusUnauthorized
+		resp.Errors = map[string]string{}
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	input.State = state.TS_KEBD_AMENDED
+	status, er := thandler.Service.AmendKebdRequest(ctx, session.ID, input)
+	if er != nil {
+		resp.StatusCode = http.StatusInternalServerError
+		resp.Msg = translation.Translate(session.Lang, "internal problem, please try again later!")
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	if status < 0 {
+		switch status {
+		case -1:
+			resp.Msg = translation.Translate(session.Lang, "transaction not found")
+			resp.StatusCode = http.StatusNotFound
+		case -2:
+			resp.Msg = translation.Translate(session.Lang, "you are not allowed to perform this operation at this stage")
+			resp.StatusCode = http.StatusUnauthorized
+		case -3:
+			resp.Msg = translation.Translate(session.Lang, "kebd with similar information already exist")
+			resp.StatusCode = http.StatusConflict
+		case -4, -6:
+			resp.Msg = translation.Translate(session.Lang, "you are not allowed to perform this action")
+			resp.StatusCode = http.StatusUnauthorized
+		case -5:
+			resp.Msg = translation.Translate(session.Lang, "internal server error")
+			resp.StatusCode = http.StatusInternalServerError
+		}
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	input.ID = uint64(status)
+	input.CreatedAt = uint64(time.Now().Unix())
+	resp.Kebd = input
+	resp.StatusCode = http.StatusOK
+	resp.Msg = translation.Translate(session.Lang, "kebd request amended succesfully")
+	c.JSON(resp.StatusCode, resp)
+}
 
 func (thandler *TransactionHandler) RequestGuaranteePayment(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -571,6 +773,9 @@ func (thandler *TransactionHandler) RequestGuaranteePayment(c *gin.Context) {
 	resp.Msg = translation.Translate(session.Lang, "Guarantee Payment Request created succesfuly")
 	c.JSON(resp.StatusCode, resp)
 }
+
+// TS_GUARANTEE_AMOUNT_AMEND_REQUEST_SENT
+// TS_GUARANTEE_AMOUNT_AMENDED
 
 func (thandler *TransactionHandler) SellerAcceptedTransaction(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -678,12 +883,142 @@ func (thandler *TransactionHandler) BuyerAcceptTransaction(c *gin.Context) {
 		c.JSON(resp.StatusCode, resp)
 		return
 	}
+	go thandler.InstantiatePaymentTransaction(ctx, transaction.ID)
 	resp.Transaction = transaction
 	resp.Msg = translation.Translate(session.Lang, "transaction accepted")
 	resp.StatusCode = http.StatusOK
 	c.JSON(resp.StatusCode, resp)
+
+	// here i will instantiate the transaction payment handler instances
 }
 
+// InstantiatePaymentTransaction
+func (thandler *TransactionHandler) InstantiatePaymentTransaction(ctx context.Context, transactionID uint) uint8 {
+	session := ctx.Value("session").(*model.Session)
+	ctx, _ = context.WithTimeout(ctx, time.Minute*1)
+	transaction, er := thandler.Service.GetTransactionByID(ctx, uint64(transactionID))
+	if er != nil {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		return 0
+	}
+	ctx = context.WithValue(ctx, "user_id", transaction.SellerID)
+	seller, _, status, er := thandler.UserService.GetUserByEmailOrID(ctx)
+	if seller == nil || er != nil || status <= 0 {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		return 0
+	}
+	ctx = context.WithValue(ctx, "user_id", transaction.RequesterID)
+	buyer, _, status, er := thandler.UserService.GetUserByEmailOrID(ctx)
+	if buyer == nil || er != nil || status <= 0 {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		return 0
+	}
+	transactionPayment := &model.TransactionPayment{
+		SellerID: seller.ID,
+		BuyerID:  buyer.ID,
+		TransactionState: model.TransactionState{
+			State:         state.TS_PAYMENT_INSTANTIATED,
+			CreatedAt:     uint64(time.Now().Unix()),
+			TransactionID: uint64(transaction.ID),
+		},
+		KebdAmount:      transaction.KebdAmount,
+		GuaranteeAmount: transaction.GuaranteeAmount,
+		KebdCompleted:   false,
+		ServiceFee:      state.ServiceFee,
+	}
+	sellerInvoiceRequest := &model.HellocashInvoiceRequest{
+		Amount:      int(transaction.GuaranteeAmount + transactionPayment.ServiceFee),
+		From:        seller.Phone,
+		Description: translation.Translate(session.Lang, "Please complete the kebd payment to proceed to the Contract"),
+		Currency:    "ETB",
+	}
+	sellerInvoiceValidation, er := thandler.PaymentService.ValidateInvoice(ctx, sellerInvoiceRequest)
+	if er != nil || sellerInvoiceValidation == nil {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		return 0
+	}
+	sellerInvoice, er := thandler.PaymentService.SendAnInvoice(ctx, sellerInvoiceRequest)
+	if er != nil || sellerInvoice == nil {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		return 0
+	}
+	buyerInvoiceRequest := &model.HellocashInvoiceRequest{
+		Amount:      int(transaction.KebdAmount + transactionPayment.ServiceFee),
+		From:        buyer.Phone,
+		Description: translation.Translate(session.Lang, "Please complete the kebd payment to proceed to the Contract"),
+		Currency:    "ETB",
+	}
+	buyerInvoiceValidation, er := thandler.PaymentService.ValidateInvoice(ctx, buyerInvoiceRequest)
+	if er != nil || buyerInvoiceValidation == nil {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		thandler.PaymentService.DeleteAnInvoiceByID(ctx, sellerInvoice.ID)
+		return 0
+	}
+	buyerInvoice, er := thandler.PaymentService.SendAnInvoice(ctx, buyerInvoiceRequest)
+	if er != nil || buyerInvoice == nil {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		thandler.PaymentService.DeleteAnInvoiceByID(ctx, sellerInvoice.ID)
+		return 0
+	}
+
+	transactionPayment.BuyerInvoiceID = buyerInvoice.ID
+	transactionPayment.SellerInvoiceID = sellerInvoice.ID
+	stCode, er := thandler.PaymentService.CreateTransactionPayment(ctx, transactionPayment)
+	if er != nil || stCode < 0 {
+		thandler.PaymentService.UpdateTransactionPaymentStateByTransactionID(ctx, transaction.ID, uint(state.TS_ERROR))
+		thandler.PaymentService.DeleteAnInvoiceByID(ctx, sellerInvoice.ID)
+		thandler.PaymentService.DeleteAnInvoiceByID(ctx, buyerInvoice.ID)
+		return 0
+	}
+	return 1
+}
+
+func (thandler *TransactionHandler) ReactivateTransaction(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	resp := &struct {
+		Msg                 string                    `json:"msg"`
+		StatusCode          int                       `json:"code"`
+		TransactionID       uint64                    `json:"transaction_id"`
+		Transaction         *model.Transaction        `json:"transaction,omitempty"`
+		PaymentNotification *model.TransactionPayment `json:"payment_notification,omitempty"`
+	}{}
+	transactionID, er := strconv.Atoi(c.Param("id"))
+	if er != nil || transactionID <= 0 {
+		resp.StatusCode = http.StatusNotFound
+		resp.Msg = translation.Translate(session.Lang, "no transaction found")
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	transaction, er := thandler.Service.GetTransactionByID(ctx, uint64(transactionID))
+	if er != nil || transaction == nil {
+		resp.StatusCode = http.StatusNotFound
+		resp.Msg = translation.Translate(session.Lang, "can't find transaction with this id")
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	if !(session.ID == transaction.RequesterID || session.ID == transaction.SellerID) {
+		resp.StatusCode = http.StatusUnauthorized
+		resp.Msg = translation.Translate(session.Lang, "you are not authorized to perform this operation")
+		c.JSON(resp.StatusCode, resp)
+		return
+	}
+	if !(transaction.State == state.TS_ERROR) {
+		resp.StatusCode = http.StatusUnauthorized
+		resp.Msg = translation.Translate(session.Lang, "can't reactivate a transaction which is not in the error stage")
+	}
+	stcode := thandler.InstantiatePaymentTransaction(ctx, transaction.ID)
+	if stcode == 0 {
+		resp.StatusCode = http.StatusInternalServerError
+		resp.Msg = translation.Translate(session.Lang, "failed to perform the refresh")
+	} else {
+		resp.StatusCode = http.StatusInternalServerError
+		resp.Msg = translation.Translate(session.Lang, "failed to perform the refresh")
+	}
+	c.JSON(resp.StatusCode, resp)
+}
+
+// GetMyTransactionNotifications
 func (thandler *TransactionHandler) GetMyTransactionNotifications(c *gin.Context) {
 	ctx := c.Request.Context()
 	session := ctx.Value("session").(*model.Session)

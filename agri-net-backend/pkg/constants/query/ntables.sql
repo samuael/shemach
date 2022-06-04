@@ -232,3 +232,32 @@ create table transaction_guarantee_info(
     amount decimal not null,
     created_at integer not null default round( extract(epoch from now()))
 );
+
+create table transaction_payment_info (
+    transaction_payment_info_id serial primary key,
+    transaction_id integer references transaction(transaction_id),
+    state smallint not null,
+    created_at integer not null default round( extract(epoch from now())),
+    seller_id integer not null,
+    seller_invoice_id varchar(250) not null,
+    buyer_id integer not null,
+    buyer_invoice_id varchar(250) not null,
+    kebd_amount decimal default 0.0,
+    guarantee_amount decimal default 0.0,
+    kebd_completed boolean default false,
+    guarantee_completed boolean default false
+);
+
+-- create trigger 
+
+
+-- create or replace function updateTransactionUpdatedTime() returns trigger as 
+-- $$
+--     declare 
+--     begin
+        
+--     end;
+-- $$ language plpgsql; 
+-- CREATE TRIGGER changeTransactionPaymentUpdatedAt 
+-- AFTER UPDATE ON tempo_subscriber FOR EACH 
+-- ROW EXECUTE PROCEDURE updateTransactionUpdatedTime();
