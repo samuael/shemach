@@ -7,7 +7,6 @@ class ProductsList extends StatefulWidget {
   State<ProductsList> createState() {
     return ProductsListState();
   }
-
 }
 
 class ProductsListState extends State<ProductsList> {
