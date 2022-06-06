@@ -123,3 +123,91 @@ func (repo *CropRepo) GetPosts(ctx context.Context, offset, limit uint) ([]*mode
 	}
 	return posts, nil
 }
+
+func (repo *CropRepo) GetAgentPosts(ctx context.Context, userid uint64, offset, limit uint) ([]*model.Crop, error) {
+	posts := []*model.Crop{}
+	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop Where agent_id=$3 LIMIT $1  OFFSET $2", limit, offset, userid)
+	if er != nil {
+		return nil, er
+	}
+
+	for rows.Next() {
+		post := &model.Crop{}
+		newval := &struct {
+			StoreID interface{}
+			AgentID interface{}
+		}{}
+		er := rows.
+			Scan(
+				&(post.ID), &(post.TypeID), &(post.Description), &(post.Negotiable),
+				&(post.RemainingQuantity), &(post.SellingPrice),
+				&(post.AddressRef), &(post.Images), &(post.CreatedAt),
+				&(newval.StoreID), &(newval.AgentID), &(post.StoreOwned), &(post.Closed),
+			)
+		if er != nil {
+			continue
+		}
+		if newval.StoreID != nil {
+			post.StoreID = uint64((newval.StoreID).(int32))
+		}
+		if newval.AgentID != nil {
+			post.AgentID = uint64((newval.AgentID).(int32))
+		}
+		var address model.Address
+		latitude := ""
+		longitude := ""
+		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, post.AddressRef).
+			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+		if ers == nil {
+			address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+			address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+			post.Address = &address
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
+
+func (repo *CropRepo) GetMerchantPosts(ctx context.Context, storeIDS []uint64, offset, limit uint) ([]*model.Crop, error) {
+	posts := []*model.Crop{}
+	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop Where store_id  in $3 LIMIT $1  OFFSET $2", limit, offset, storeIDS)
+	if er != nil {
+		return nil, er
+	}
+
+	for rows.Next() {
+		post := &model.Crop{}
+		newval := &struct {
+			StoreID interface{}
+			AgentID interface{}
+		}{}
+		er := rows.
+			Scan(
+				&(post.ID), &(post.TypeID), &(post.Description), &(post.Negotiable),
+				&(post.RemainingQuantity), &(post.SellingPrice),
+				&(post.AddressRef), &(post.Images), &(post.CreatedAt),
+				&(newval.StoreID), &(newval.AgentID), &(post.StoreOwned), &(post.Closed),
+			)
+		if er != nil {
+			continue
+		}
+		if newval.StoreID != nil {
+			post.StoreID = uint64((newval.StoreID).(int32))
+		}
+		if newval.AgentID != nil {
+			post.AgentID = uint64((newval.AgentID).(int32))
+		}
+		var address model.Address
+		latitude := ""
+		longitude := ""
+		ers := repo.DB.QueryRow(ctx, `select address_id,kebele,woreda,city,region,unique_name,latitude,zone,longitude from address where address_id=$1`, post.AddressRef).
+			Scan(&(address.ID), &(address.Kebele), &(address.Woreda), &(address.City), &(address.Region), &(address.UniqueAddressName), &(latitude), &(address.Zone), &(longitude))
+		if ers == nil {
+			address.Latitude, _ = strconv.ParseFloat(latitude, 64)
+			address.Longitude, _ = strconv.ParseFloat(longitude, 64)
+			post.Address = &address
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
