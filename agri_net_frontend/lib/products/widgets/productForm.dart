@@ -1,14 +1,14 @@
 import '../../libs.dart';
 
-class ProductFormScreen extends StatefulWidget {
+class ProductForm extends StatefulWidget {
   static String RouteName = "products/post";
-  const ProductFormScreen({Key? key}) : super(key: key);
+  const ProductForm({Key? key}) : super(key: key);
 
   @override
-  State<ProductFormScreen> createState() => _ProductFormScreenState();
+  State<ProductForm> createState() => _ProductFormState();
 }
 
-class _ProductFormScreenState extends State<ProductFormScreen> {
+class _ProductFormState extends State<ProductForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

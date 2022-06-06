@@ -89,9 +89,11 @@ func Route(
 
 	// agents related enpoints
 	router.POST("/api/admin/agent/new", rules.Authenticated(), rules.Authorized(), agenthandler.RegisterAgent)
+	router.DELETE("/api/admin/agent/:id", rules.Authenticated(), rules.Authorized(), agenthandler.DeleteAgentByID)
 
 	// merchants related endpoints
 	router.POST("/api/admin/merchant/new", rules.Authenticated(), rules.Authorized(), merchanthandler.RegisterMerchant)
+	router.DELETE("/api/admin/merchant/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.DeleteMerchantByID)
 
 	// CXP(  Commodity exchage participant ) related routes
 	router.POST("/api/cxp/account/confirm", userhandler.ConfirmTempoCXP)
@@ -114,7 +116,10 @@ func Route(
 	// This routes are applicable for only Merchants and Agents
 	router.POST("/api/cxp/post/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
 	router.POST("/api/cxp/post/images/:postid", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+
 	router.GET("/api/posts", rules.Authenticated(), crophandler.Getposts)
+	router.GET("/api/cxp/posts", rules.Authenticated(), crophandler.GetMyPosts)
+
 	router.GET("/api/post/:id", rules.Authenticated(), crophandler.GetPostByID)
 
 	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)

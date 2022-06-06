@@ -24,6 +24,7 @@ type IAgentHandler interface {
 	RegisterAgent(c *gin.Context)
 	// GetAgentByID(c *gin.Context)
 	AgentsSearch(c *gin.Context)
+	DeleteAgentByID(c *gin.Context)
 }
 
 type AgentHandler struct {
@@ -252,5 +253,31 @@ func (ahandler *AgentHandler) AgentsSearch(c *gin.Context) {
 	response.StatusCode = http.StatusOK
 	response.Msg = translation.Translate(session.Lang, "agents found")
 	response.Agents = agents
+	c.JSON(response.StatusCode, response)
+}
+
+func (ahandler *AgentHandler) DeleteAgentByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	response := &struct {
+		StatusCode int    `json:"status_code"`
+		Msg        string `json:"msg"`
+	}{}
+	agentid, er := strconv.Atoi(c.Param("id"))
+	if er != nil || agentid <= 0 {
+		response.Msg = translation.Translate(session.Lang, "invalid agent id")
+		response.StatusCode = http.StatusBadRequest
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	er = ahandler.Service.DeleteAgentByID(ctx, uint64(agentid))
+	if er != nil {
+		response.Msg = translation.Translate(session.Lang, "can't found an agent instance with this id")
+		response.StatusCode = http.StatusNotFound
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	response.Msg = translation.Translate(session.Lang, "agent deleted succesfuly")
+	response.StatusCode = http.StatusOK
 	c.JSON(response.StatusCode, response)
 }

@@ -10,12 +10,13 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  bool productsList = true;
+  PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
-        elevation: 5,
         toolbarHeight: MediaQuery.of(context).size.height / 13,
         leading: IconButton(
             color: Colors.black,
@@ -28,6 +29,7 @@ class _ProductScreenState extends State<ProductScreen> {
           style: TextStyle(
               fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
+        centerTitle: true,
         actions: [
           InkWell(
             child: Container(
@@ -39,38 +41,49 @@ class _ProductScreenState extends State<ProductScreen> {
               ),
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(ProductFormScreen.RouteName);
+              // Navigator.of(context).pushNamed(ProductForm.RouteName);
             },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 10, 20),
-        child: Center(
-          child: BlocBuilder<ProductBloc, ProductState>(
-            builder: (context, state) {
-              if (state is GetProductListState) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (state is ProductListFetchedState) {
-                return _buildProductCard(context, state.products);
-              }
-              if (state is FailedToFechProducts) {
-                return Center(
-                  child: Text("Failed To fech products"),
-                );
-              }
-              if (state is NewProductPostedState) {}
-              if (state is FailedToPostNewProductState) {
-                Navigator.pop(context);
-              }
-              return Container();
-            },
-          ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            productsList = !productsList;
+          });
+          if (productsList) {
+            pageController.nextPage(
+              duration: Duration(
+                milliseconds: 500,
+              ),
+              curve: Curves.ease,
+            );
+          } else {
+            pageController.previousPage(
+              duration: Duration(
+                milliseconds: 500,
+              ),
+              curve: Curves.ease,
+            );
+          }
+        },
+        child: Icon(
+          productsList ? Icons.add : Icons.list,
+          color: Colors.white,
         ),
       ),
+      body: Container(
+          child: PageView(
+              controller: pageController,
+              onPageChanged: (val) {
+                setState(() {
+                  productsList = !productsList;
+                });
+              },
+              children: [
+            ProductsList(),
+            ProductForm(),
+          ])),
     );
   }
 

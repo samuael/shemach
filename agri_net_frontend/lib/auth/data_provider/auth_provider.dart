@@ -3,7 +3,7 @@ import 'dart:convert';
 import "../../libs.dart";
 import 'package:http/http.dart';
 
-// import 'encoding/json';
+
 class AuthProvider {
   static Client client = Client();
 
@@ -64,6 +64,12 @@ class AuthProvider {
   Future<UsersLoginResponse> loginAdmin(String email, String password) async {
     try {
       print("Sending login request with :" + "$email   $password");
+      final input = {
+            "email":  MatchesPattern(email , EmailRegexp ) ? email: "",
+            "phone":  email.startsWith("+251") ? email : "",
+            "password": password,
+          };
+          print(jsonEncode(input));
       var response = await client.post(
         Uri(
           scheme: "http",
@@ -71,12 +77,7 @@ class AuthProvider {
           port: StaticDataStore.PORT,
           path: "/api/login",
         ),
-        body: jsonEncode(
-          {
-            "email": email,
-            "password": password,
-          },
-        ),
+        body: jsonEncode(input),
         headers: {"Content-Type": "application/json"},
       );
 

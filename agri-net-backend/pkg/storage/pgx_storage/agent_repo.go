@@ -175,3 +175,14 @@ func (repo *AgentRepo) SearchAgent(ctx context.Context, phone, name string, crea
 	}
 	return agents, nil
 }
+
+//
+func (repo *AgentRepo) DeleteAgentByID(ctx context.Context, agentid uint64) error {
+	uc, er := repo.DB.Exec(ctx, "delete from agent where id=$1", agentid)
+	if er != nil {
+		return nil
+	} else if uc.RowsAffected() == 0 {
+		return errors.New("no record was deleted")
+	}
+	return nil
+}
