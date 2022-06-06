@@ -1,3 +1,5 @@
+import 'package:mobile/libs.dart';
+
 class ProductType {
   int id;
   String name;
@@ -37,6 +39,14 @@ class ProductType {
       return ProductType.fromJson(a as Map<String, dynamic>);
     }).toList();
   }
+
+  ProductUnit getProductUnit() {
+      final punit = getProductunitByID(this.unitid);
+      if (punit==null){
+        return ProductUnit(category:"unknown",id:0, short:"unk", long : "unknown");
+      }
+      return punit;
+  }
   
 }
 
@@ -51,6 +61,8 @@ class ProductUnit {
     required this.short,
     required this.long,
   });
+
+
 }
 
 final productUnits = [

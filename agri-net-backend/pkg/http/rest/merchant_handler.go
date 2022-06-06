@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
@@ -26,16 +28,20 @@ type IMerchantHandler interface {
 }
 
 type MerchantHandler struct {
-	Service     merchant.IMerchantService
-	UserService user.IUserService
+	Service        merchant.IMerchantService
+	UserService    user.IUserService
+	PaymentService payment.IPaymentService
 }
 
 func NewMerchantHandler(
 	service merchant.IMerchantService,
-	userser user.IUserService) IMerchantHandler {
+	userser user.IUserService,
+	paymentservice payment.IPaymentService,
+) IMerchantHandler {
 	return &MerchantHandler{
-		Service:     service,
-		UserService: userser,
+		Service:        service,
+		UserService:    userser,
+		PaymentService: paymentservice,
 	}
 }
 
@@ -109,6 +115,25 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			c.JSON(resp.StatusCode, resp)
 			return
 		}
+		// chech payment for the
+		_, er := mhandler.PaymentService.ValidateInvoice(ctx, &model.HellocashInvoiceRequest{
+			Amount:      50,
+			Description: "Please complete this payment to continue to the transaction!",
+			From:        input.Phone,
+			Currency:    "ETB",
+		})
+		if er != nil && !strings.Contains(er.Error(), "undefined account") {
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Msg = translation.Translate(input.Lang, "internal problem, please try again later!")
+			c.JSON(resp.StatusCode, resp)
+			return
+		} else if er != nil && strings.Contains(er.Error(), "undefined account") {
+			resp.StatusCode = http.StatusExpectationFailed
+			resp.Msg = translation.Translate(input.Lang, "there is no valid account with this phone number")
+			c.JSON(resp.StatusCode, resp)
+			return
+		}
+		ctx, _ = context.WithTimeout(ctx, time.Second*15)
 		tempo := &model.TempoCXP{
 			CreatedAt: uint64(time.Now().Unix()),
 			Phone:     input.Phone,
@@ -123,7 +148,7 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			Remark:     translation.Translate(session.Lang, `This is your confirmation and temporary password code`),
 		}
 		// mhandler.OtpService <- otpResponse
-		er := mhandler.UserService.RegisterTempoCXP(ctx, tempo)
+		er = mhandler.UserService.RegisterTempoCXP(ctx, tempo)
 		if er != nil {
 			if strings.Contains(er.Error(), "duplicate key value violates unique constraint") {
 				println(er.Error())
@@ -161,8 +186,11 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			merchant.Address = &model.Address{}
 		}
 		status, _ := mhandler.Service.RegisterMerchant(ctx, merchant)
+		if er != nil {
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Msg = translation.TranslateIt(er.Error())
+		}
 		if status == -1 {
-			// unauthorized
 			resp.StatusCode = http.StatusUnauthorized
 			resp.Msg = translation.TranslateIt("you are not authorized to create this merchant instance")
 		} else if status == -2 {

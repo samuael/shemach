@@ -136,6 +136,17 @@ func (repo *TransactionRepo) CreateKebdRequest(ctx context.Context, cxpid uint64
 	return state, er
 }
 
+func (repo *TransactionRepo) CreateKebdAmendmentRequest(ctx context.Context, merchantid uint64, input *model.KebdAmountRequest) (int, error) {
+	var state int
+	er := repo.DB.QueryRow(ctx, "select * from createKebdAmendmentRequest( $1, $2,$3,$4,$5)", merchantid, input.KebdAmount, input.Deadline, input.Description, input.TransactionID).Scan(&state)
+	return state, er
+}
+func (repo *TransactionRepo) AmendKebdRequest(ctx context.Context, cxpid uint64, input *model.KebdAmountRequest) (int, error) {
+	var state int
+	er := repo.DB.QueryRow(ctx, "select * from ammendKebdRequest( $1, $2,$3,$4,$5)", cxpid, input.KebdAmount, input.Deadline, input.Description, input.TransactionID).Scan(&state)
+	return state, er
+}
+
 func (repo *TransactionRepo) CreateGuaranteeRequest(ctx context.Context, cxpid uint64, input *model.GuaranteeAmountRequest) (int, error) {
 	var state int
 	er := repo.DB.QueryRow(ctx, "select * from createGuaranteeRequest($1,$2, $3,$4)", cxpid, input.Amount, input.Description, input.TransactionID).Scan(&state)

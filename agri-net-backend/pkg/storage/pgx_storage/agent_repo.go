@@ -40,7 +40,7 @@ func (repo *AgentRepo) RegisterAgent(ctx context.Context, agent *model.Agent) (i
 			return -4, er
 		}
 		log.Println(er.Error())
-		return agentID /*addressID, */, er
+		return agentID, er
 	}
 	agent.FieldAddress.ID = uint(addressID)
 	era := repo.DB.QueryRow(ctx, "select address_id from admin where id=$1", agent.ID).Scan(&addressID)

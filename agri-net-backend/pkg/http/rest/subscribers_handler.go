@@ -138,6 +138,7 @@ func (shan *SubscriberHandler) RegisterSubscriber(c *gin.Context) {
 		SenderName: translation.Translate(tempo.Lang, os.Getenv("SYSTEM_NAME")),
 		Remark:     translation.Translate(tempo.Lang, "This is your confirmation code from Agri-Info systems"),
 	}
+	println(string(helper.MarshalThis(otpCode)))
 	otpResponse, err := telda_sms.SendOtp(otpCode)
 	if err != nil || otpResponse.MsgShortMessage != "Success" {
 		if err != nil {
@@ -260,17 +261,18 @@ func (shan *SubscriberHandler) SubscriberLoginWithPhone(c *gin.Context) {
 		SenderName: translation.Translate(input.Lang, os.Getenv("SYSTEM_NAME")),
 		Remark:     translation.Translate(input.Lang, "This is your login confirmation code from Agri-Info systems"),
 	}
-	// otpResponse, err := telda_sms.SendOtp(otpCode)
-	// if err != nil || otpResponse.MsgShortMessage != "Success" {
-	// 	if err != nil {
-	// 		println(err.Error())
-	// 	}
-	// 	res.Msg = translation.Translate(tempo.Lang, "internal problem, please try again")
-	// 	res.StatusCode = http.StatusInternalServerError
-	// 	res.OTP = nil
-	// 	c.JSON(res.StatusCode, res)
-	// 	return
-	// }
+	println(string(helper.MarshalThis(otpCode)))
+	otpResponse, err := telda_sms.SendOtp(otpCode)
+	if err != nil || otpResponse.MsgShortMessage != "Success" {
+		if err != nil {
+			println(err.Error())
+		}
+		res.Msg = translation.Translate(input.Lang, "internal problem, please try again")
+		res.StatusCode = http.StatusInternalServerError
+		res.OTP = nil
+		c.JSON(res.StatusCode, res)
+		return
+	}
 	// println(otpResponse)
 	ctx = context.WithValue(ctx, "login_tempo_subscriber", tempo)
 	status, er := shan.Service.RegisterTempoLoginSubcriber(ctx)

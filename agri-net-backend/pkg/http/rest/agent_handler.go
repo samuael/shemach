@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/agent"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
@@ -25,16 +27,20 @@ type IAgentHandler interface {
 }
 
 type AgentHandler struct {
-	Service     agent.IAgentService
-	UserService user.IUserService
+	Service        agent.IAgentService
+	UserService    user.IUserService
+	PaymentService payment.IPaymentService
 }
 
 func NewAgentHandler(
 	service agent.IAgentService,
-	userser user.IUserService) IAgentHandler {
+	userser user.IUserService,
+	paymentservice payment.IPaymentService,
+) IAgentHandler {
 	return &AgentHandler{
-		Service:     service,
-		UserService: userser,
+		Service:        service,
+		UserService:    userser,
+		PaymentService: paymentservice,
 	}
 }
 
@@ -108,6 +114,26 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			c.JSON(resp.StatusCode, resp)
 			return
 		}
+
+		// chech payment for the
+		_, er := ahandler.PaymentService.ValidateInvoice(ctx, &model.HellocashInvoiceRequest{
+			Amount:      50,
+			Description: "Please complete this payment to continue to the transaction!",
+			From:        input.Phone,
+			Currency:    "ETB",
+		})
+		if er != nil && !strings.Contains(er.Error(), "undefined account") {
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Msg = translation.Translate(input.Lang, "internal problem, please try again later!")
+			c.JSON(resp.StatusCode, resp)
+			return
+		} else if er != nil && strings.Contains(er.Error(), "undefined account") {
+			resp.StatusCode = http.StatusExpectationFailed
+			resp.Msg = translation.Translate(input.Lang, "there is no valid account with this phone number")
+			c.JSON(resp.StatusCode, resp)
+			return
+		}
+		ctx, _ = context.WithTimeout(ctx, time.Second*15)
 		tempo := &model.TempoCXP{
 			CreatedAt: uint64(time.Now().Unix()),
 			Phone:     input.Phone,
@@ -122,7 +148,7 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 			Remark:     translation.Translate(session.Lang, `This is your confirmation and temporary password code`),
 		}
 		// ahandler.OtpService <- otpResponse
-		er := ahandler.UserService.RegisterTempoCXP(ctx, tempo)
+		er = ahandler.UserService.RegisterTempoCXP(ctx, tempo)
 		if er != nil {
 			if strings.Contains(er.Error(), "duplicate key value violates unique constraint") {
 				resp.Msg = translation.Translate(session.Lang, "Agent with this information already registered")
@@ -156,9 +182,13 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		if agent.FieldAddress == nil {
 			agent.FieldAddress = &model.Address{}
 		}
-		status, _ := ahandler.Service.RegisterAgent(ctx, agent)
+		status, er := ahandler.Service.RegisterAgent(ctx, agent)
+		if er != nil {
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Msg = translation.TranslateIt(er.Error())
+		}
+
 		if status == -1 {
-			// unauthorized
 			resp.StatusCode = http.StatusUnauthorized
 			resp.Msg = translation.TranslateIt("you are not authorized to create this agent instance")
 		} else if status == -2 {
@@ -183,7 +213,6 @@ func (ahandler *AgentHandler) RegisterAgent(c *gin.Context) {
 		resp.Msg = translation.TranslateIt("bad request body for agent creation")
 		resp.StatusCode = http.StatusBadRequest
 		c.JSON(resp.StatusCode, resp)
-		return
 	}
 }
 

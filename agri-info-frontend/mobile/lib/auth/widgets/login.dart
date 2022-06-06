@@ -134,6 +134,12 @@ class _LoginWidgetState extends State<LoginWidget> {
                     logging = false;
                   });
                 }
+              }else {
+                setState(() {
+                    this.message = translate(lang, "please provide valid phone number");
+                    this.messageColor = Colors.red;
+                    logging = false;
+                  });
               }
             },
             icon: Icon(Icons.login),
@@ -173,12 +179,23 @@ class _LoginWidgetState extends State<LoginWidget> {
           },
           child: Container(
             padding: EdgeInsets.all(10),
-            child: Text(
-              "Registration",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  translate( lang , "Registration"),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                    
+                  ),
+                  
+                ),
+                Icon(
+                  Icons.arrow_right,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ],
             ),
           ),
         )

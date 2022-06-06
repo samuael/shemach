@@ -1,6 +1,13 @@
 package translation
 
-import "strings"
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"cloud.google.com/go/translate"
+	"golang.org/x/text/language"
+)
 
 var LANGUAGES = []string{"amh", "oro", "tig"}
 
@@ -17,7 +24,7 @@ var DICTIONARY = map[string]map[string]string{
 		"tig": "ይህ የአግሪ-ኢንፎ የማረጋገጫ ቁጥርዎ ነው።",
 	},
 	"you will recieve a message": {
-		"amh": "you will recieve a message",
+		"amh": "",
 		"tig": "you will recieve a message",
 		"oro": "you will recieve a message",
 	},
@@ -67,7 +74,11 @@ func TranslateIt(sentence string) string {
 	str := sentence
 	sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["amh"])
 	if sentence == "" {
-		return str
+		var er error
+		sentence, er = translateText("am", str)
+		if er != nil {
+			sentence = ""
+		}
 	}
 	return sentence
 }
@@ -80,7 +91,13 @@ func Translate(lang string, sentence string) string {
 		return sentence
 	case "amh", "am", "amharic", "amhara":
 		sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["amh"])
-
+		if sentence == "" {
+			var er error
+			sentence, er = translateText("am", str)
+			if er != nil {
+				sentence = ""
+			}
+		}
 	case "oro", "or", "oromifa", "oromo":
 		sentence = strings.ToTitle((DICTIONARY[strings.ToLower(sentence)])["oro"])
 		return sentence
@@ -92,4 +109,30 @@ func Translate(lang string, sentence string) string {
 		return str
 	}
 	return sentence
+}
+
+// translateText
+func translateText(targetLanguage, text string) (string, error) {
+	// text := "The Go Gopher is cute"
+	ctx := context.Background()
+
+	lang, err := language.Parse(targetLanguage)
+	if err != nil {
+		return "", fmt.Errorf("language.Parse: %v", err)
+	}
+
+	client, err := translate.NewClient(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer client.Close()
+
+	resp, err := client.Translate(ctx, []string{text}, lang, nil)
+	if err != nil {
+		return "", fmt.Errorf("Translate: %v", err)
+	}
+	if len(resp) == 0 {
+		return "", fmt.Errorf("Translate returned empty response to text: %s", text)
+	}
+	return resp[0].Text, nil
 }

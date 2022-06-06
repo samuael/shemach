@@ -15,7 +15,7 @@ import (
 
 func SendOtp(otp *model.TeldaOTP) (*model.TeldaOTPResponse, error) {
 	url := "https://api.telda.com.et/api/write/SendOTP"
-	method := "POST"
+	method := http.MethodPost
 
 	payload := strings.NewReader(string(func() []byte {
 		if bytes, er := json.Marshal(otp); er != nil {

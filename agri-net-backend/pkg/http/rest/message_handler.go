@@ -10,6 +10,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/subscriber"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
@@ -42,11 +43,11 @@ func (mhan *MessageHandler) GetRecentMessages(c *gin.Context) {
 	if era != nil {
 		unix = 0
 	}
-	offset, erb := strconv.Atoi(c.Query("unix"))
+	offset, erb := strconv.Atoi(c.Query("offset"))
 	if erb != nil {
 		offset = 0
 	}
-	limit, erc := strconv.Atoi(c.Query("unix"))
+	limit, erc := strconv.Atoi(c.Query("limit"))
 	if erc != nil {
 		limit = offset + 5
 	}
@@ -79,6 +80,7 @@ func (mhan *MessageHandler) GetRecentMessages(c *gin.Context) {
 		return
 	}
 	res.Messages = messages
+	println(helper.MarshalThis(messages))
 	res.StatusCode = http.StatusOK
 	c.JSON(res.StatusCode, res)
 }

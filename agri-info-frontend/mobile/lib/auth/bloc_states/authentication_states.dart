@@ -10,10 +10,10 @@ class AuthRegistrationOnProgressState extends AuthState{
   AuthRegistrationOnProgressState({required this.fullname, required this.phone , required this.unixTime});
 }
 
-class AuthAutenticatedState{
-  Subscriber subscriber;
-  AuthAutenticatedState(this.subscriber);
-}
+// class AuthAutenticatedState{
+//   Subscriber subscriber;
+//   AuthAutenticatedState(this.subscriber);
+// }
 
 class AuthOnConfirmationState {}
 

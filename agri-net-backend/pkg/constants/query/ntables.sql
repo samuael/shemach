@@ -232,3 +232,39 @@ create table transaction_guarantee_info(
     amount decimal not null,
     created_at integer not null default round( extract(epoch from now()))
 );
+
+create table transaction_payment_info (
+    transaction_payment_info_id serial primary key,
+    transaction_id integer references transaction(transaction_id),
+    state smallint not null,
+    created_at integer not null default round( extract(epoch from now())),
+    seller_id integer not null,
+    seller_invoice_id varchar(250) not null,
+    buyer_id integer not null,
+    buyer_invoice_id varchar(250) not null,
+    kebd_amount decimal default 0.0,
+    guarantee_amount decimal default 0.0,
+    kebd_completed boolean default false,
+    guarantee_completed boolean default false
+);
+
+create table contract(
+    contract_id serial primary key,
+    transaction_id integer references transaction(transaction_id),
+    secret_string char(5) not null,
+    state smallint default 18
+);
+
+create or replace function updateTransactionPaymentInformationTime() returns trigger as 
+$$
+    declare 
+
+    begin
+        update transaction set state=17  where transaction_id=OLD.transaction_id;
+        RETURN OLD;
+    end;
+$$ language plpgsql; 
+
+CREATE TRIGGER updateTrasactionPaymentStatus 
+AFTER DELETE ON transaction_payment_info FOR EACH 
+ROW EXECUTE PROCEDURE updateTransactionPaymentInformationTime();

@@ -98,7 +98,8 @@ class NavigationDrawer extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).pushNamed(SubScreen1.RouteName);
+                          context.read<IndexBloc>().add(3);
+                          Navigator.of(context).pop();
                         },
                         child: Container(
                             padding: EdgeInsets.symmetric(
@@ -125,6 +126,13 @@ class NavigationDrawer extends StatelessWidget {
                             )),
                       ),
                       Container(
+                        color: Colors.black54,
+                        child: SizedBox(
+                          height: 1,
+                          width: 200,
+                        ),
+                      ),
+                      Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                         child: Row(
@@ -144,6 +152,13 @@ class NavigationDrawer extends StatelessWidget {
                               ),
                             )
                           ],
+                        ),
+                      ),
+                      Container(
+                        color: Colors.black54,
+                        child: SizedBox(
+                          height: 1,
+                          width: 200,
                         ),
                       ),
                     ],
