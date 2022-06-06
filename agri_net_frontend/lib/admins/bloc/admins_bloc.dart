@@ -134,4 +134,22 @@ class AdminsBloc extends Bloc<AdminsEvent, AdminsState>
     final state = FailedToCreateNewAgentState();
     return state;
   }
+
+  Future<AdminsState> createNewStore(CreateNewStoreEvent newStoreEvent) async {
+    final newStoreResponse = await adminsRepo.createMerchantStore(
+        newStoreEvent.ownerID,
+        newStoreEvent.addressId,
+        newStoreEvent.activeProducts,
+        newStoreEvent.storeName,
+        newStoreEvent.activeContracts,
+        newStoreEvent.createdAt,
+        newStoreEvent.createdBy);
+    if (newStoreResponse.newStore != null) {
+      this.mapEventToState(
+          NewStoreCreatedEvent(newStore: newStoreResponse.newStore!));
+      return NewStoreCreatedState(store: newStoreResponse.newStore!);
+    }
+    this.mapEventToState(FailedToCreateNewStore(msg: newStoreResponse.msg));
+    return FailedToCreateStoreState(msg: newStoreResponse.msg);
+  }
 }

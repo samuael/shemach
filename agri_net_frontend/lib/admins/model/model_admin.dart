@@ -14,7 +14,7 @@ class Admin extends User {
             email: json["email"] ?? '',
             phone: json["phone"] ?? '',
             lang: json["lang"] ?? 'amh',
-            imgurl: json["imgUrl"] ?? "");
+            imgurl: json["imgurl"] ?? "");
 
   factory Admin.fromJson(json) {
     final admin = Admin(

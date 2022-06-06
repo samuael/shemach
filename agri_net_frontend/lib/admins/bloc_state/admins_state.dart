@@ -74,3 +74,13 @@ class NewAgentCreatedState extends AdminsState {
 }
 
 class FailedToCreateNewAgentState extends AdminsState {}
+
+class NewStoreCreatedState extends AdminsState {
+  Store store;
+  NewStoreCreatedState({required this.store});
+}
+
+class FailedToCreateStoreState extends AdminsState {
+  String msg;
+  FailedToCreateStoreState({required this.msg});
+}

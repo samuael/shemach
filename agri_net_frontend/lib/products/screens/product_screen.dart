@@ -142,17 +142,17 @@ class _ProductScreenState extends State<ProductScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Unix id : " + p[index].unitId.toString(),
+                            "Unix id : " + p[index].unit_id.toString(),
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            "Product Type : " + p[index].productName,
+                            "Product Type : " + p[index].name,
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            "Location :         " + p[index].productionArea,
+                            "Location :         " + p[index].production_area,
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),

@@ -141,3 +141,32 @@ class CreatNewAgentEvent extends AdminsEvent {
       required this.latitude,
       required this.longitude});
 }
+
+class CreateNewStoreEvent extends AdminsEvent {
+  int ownerID;
+  int addressId;
+  int activeProducts;
+  String storeName;
+  int activeContracts;
+  DateTime createdAt;
+  int createdBy;
+
+  CreateNewStoreEvent(
+      {required this.ownerID,
+      required this.addressId,
+      required this.activeProducts,
+      required this.activeContracts,
+      required this.createdAt,
+      required this.createdBy,
+      required this.storeName});
+}
+
+class NewStoreCreatedEvent extends AdminsEvent {
+  Store newStore;
+  NewStoreCreatedEvent({required this.newStore});
+}
+
+class FailedToCreateNewStore extends AdminsEvent {
+  String msg;
+  FailedToCreateNewStore({required this.msg});
+}

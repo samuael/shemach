@@ -1,9 +1,8 @@
-
 class Product {
   int pid;
-  String productName;
-  String productionArea;
-  int unitId;
+  String name;
+  String production_area;
+  int unit_id;
   double currentPrice;
   int createdBy;
   DateTime createdAt;
@@ -11,9 +10,9 @@ class Product {
 
   Product(
       {required this.pid,
-      required this.productName,
-      required this.productionArea,
-      required this.unitId,
+      required this.name,
+      required this.production_area,
+      required this.unit_id,
       required this.currentPrice,
       required this.createdBy,
       required this.createdAt,
@@ -22,9 +21,9 @@ class Product {
   factory Product.fromJson(json) {
     return Product(
         pid: int.parse("${json['id']}"),
-        productName: json["name"],
-        productionArea: json["production_area"],
-        unitId: json["unit_id"],
+        name: json["name"],
+        production_area: json["production_area"],
+        unit_id: json["unit_id"],
         currentPrice: json["current_price"],
         createdBy: json["created_by"],
         createdAt: json["created_at"],

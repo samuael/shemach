@@ -277,4 +277,38 @@ class UserProvider {
           statusCode: respo.statusCode, msg: jsonDecode(respo.body)["msg"]);
     }
   }
+
+  Future<NewStoreResponse> createMerchantStore(
+    int ownerID,
+    int addressId,
+    int activeProducts,
+    String storeName,
+    int activeContracts,
+    DateTime createdAt,
+    int createdBy,
+  ) async {
+    var response = await client.post(
+        Uri(
+            host: StaticDataStore.HOST,
+            port: StaticDataStore.PORT,
+            path: "/api/admin/store/new"),
+        body: {
+          {
+            "name": storeName,
+            "owner_id": ownerID,
+            "address": {"latitude": 4534533.534, "longitude": 53534599.454}
+          }
+        });
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var newStore = jsonDecode(response.body);
+      var theStore = newStore["store"];
+      return NewStoreResponse(
+          statusCode: response.statusCode,
+          msg: newStore["msg"],
+          newStore: new Store.fromJson(theStore));
+    }
+    return NewStoreResponse(
+        statusCode: response.statusCode, msg: jsonDecode(response.body)["msg"]);
+  }
 }
