@@ -5,3 +5,4 @@ export 'bloc/bloc.dart';
 export 'bloc_event/event.dart';
 export 'screens/product_screen.dart';
 export 'bloc_state/state.dart';
+export "widgets/widgets.dart";

@@ -11,6 +11,7 @@ type IAgentService interface {
 	GetAgentByID(ctx context.Context, id int) (*model.Agent, error)
 	GetAgentsAddress(ctx context.Context, agent_id int) (*model.Address, error)
 	SearchAgents(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Agent, error)
+	DeleteAgentByID(ctx context.Context, agentid uint64) error
 }
 
 type AgentService struct {
@@ -39,4 +40,8 @@ func (service *AgentService) GetAgentsAddress(ctx context.Context, agent_id int)
 // SearchAgent
 func (service *AgentService) SearchAgents(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Agent, error) {
 	return service.Repo.SearchAgent(ctx, phone, name, createdBy, offset, limit)
+}
+
+func (service *AgentService) DeleteAgentByID(ctx context.Context, agentid uint64) error {
+	return service.Repo.DeleteAgentByID(ctx, agentid)
 }

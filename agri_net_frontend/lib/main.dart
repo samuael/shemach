@@ -4,10 +4,6 @@ import 'libs.dart';
 
 void main() {
   runApp(MultiBlocProvider(providers: [
-    // BlocProvider<AuthBloc>(
-    //     create: (context) => AuthBloc(
-    //           repo: AuthRepo(provider: AuthProvider()),
-    //         )),
     BlocProvider<UserBloc>(
       create: (context) => UserBloc(repo: UserRepo(provider: AuthProvider())),
     ),
@@ -37,8 +33,7 @@ class MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
         title: 'Agri-Net',
         theme: ThemeData(
-          primaryColor: Colors.green, //  MaterialColor(primary, swatch),
-          canvasColor: Colors.white,
+          primaryColor: Color.fromARGB(255, 11, 100, 14), //  MaterialColor(primary, swatch),
         ),
         initialRoute: AuthScreen.RouteName,
         onGenerateRoute: (setting) {

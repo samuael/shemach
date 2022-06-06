@@ -11,4 +11,5 @@ type IAgentRepo interface {
 	GetAgentByID(ctx context.Context, id int) (*model.Agent, error)
 	GetAgentsAddress(ctx context.Context, agent_id int) (*model.Address, error)
 	SearchAgent(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Agent, error)
+	DeleteAgentByID(ctx context.Context, agentid uint64) error
 }

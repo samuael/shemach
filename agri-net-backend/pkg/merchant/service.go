@@ -12,6 +12,7 @@ type IMerchantService interface {
 	CreateSubscriptions(ctx context.Context, productid uint8, merchantid uint64) (status int)
 	UnsubscribeProduct(ctx context.Context, productid uint8, merchantid uint64) (status int)
 	SearchMerchants(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Merchant, error)
+	DeleteMerchantByID(ctx context.Context, merchantid uint64) error
 }
 
 type MerchantService struct {
@@ -40,4 +41,8 @@ func (service *MerchantService) UnsubscribeProduct(ctx context.Context, producti
 
 func (service *MerchantService) SearchMerchants(ctx context.Context, phone, name string, createdBy uint64, offset, limit uint) ([]*model.Merchant, error) {
 	return service.Repo.SearchMerchants(ctx, phone, name, createdBy, offset, limit)
+}
+
+func (service *MerchantService) DeleteMerchantByID(ctx context.Context, merchantid uint64) error {
+	return service.Repo.DeleteMerchantByID(ctx, merchantid)
 }

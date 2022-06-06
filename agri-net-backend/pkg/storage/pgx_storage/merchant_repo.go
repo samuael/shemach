@@ -168,3 +168,13 @@ func (repo *MerchantRepo) SearchMerchants(ctx context.Context, phone, name strin
 	}
 	return merchants, nil
 }
+
+func (repo *MerchantRepo) DeleteMerchantByID(ctx context.Context, merchantid uint64) error {
+	uc, er := repo.DB.Exec(ctx, "delete from merchant where id=$1", merchantid)
+	if er != nil {
+		return nil
+	} else if uc.RowsAffected() == 0 {
+		return errors.New("no record was deleted")
+	}
+	return nil
+}

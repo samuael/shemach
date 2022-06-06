@@ -91,7 +91,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             cursorColor: Theme.of(context).primaryColorLight,
             controller: emailController,
             decoration: InputDecoration(
-              labelText: "Email",
+              labelText: "Email or Phone",
               fillColor: Colors.lightBlue,
               hoverColor: Colors.lightBlue,
               suffixIcon: Icon(Icons.mail_outline),
@@ -138,49 +138,54 @@ class _LoginWidgetState extends State<LoginWidget> {
           ),
         ),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
           child: Stack(children: [
             ElevatedButton.icon(
               style: ButtonStyle(
                 animationDuration: Duration(seconds: 1),
+                // foregroundColor : Theme.of(context).primaryColor,
                 padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(
-                    vertical: StaticDataStore.DType == DeviceType.Tablet ||
-                            StaticDataStore.DType == DeviceType.Phone
-                        ? 10
-                        : 20,
                     horizontal: 40,
                   ),
                 ),
               ),
               onPressed: () async {
                 // checking the validity of input values
-                if (emailController.text == "" &&
+                if ((MatchesPattern(emailController.text, EmailRegexp) ||
+                        MatchesPattern(emailController.text, PhoneRegexp)) &&
                     passwordController.text == "") {
                   context.read<UserBloc>().add(UserLoginNotSuccesfulEvent(
-                      "please fill your email and password"));
+                      "please fill your email/phone and password"));
                   return;
                 } else if (emailController.text == "") {
                   context.read<UserBloc>().add(UserLoginNotSuccesfulEvent(
-                      "please fill the email entry"));
+                      "please fill the email/phone entry"));
                   return;
                 } else if (passwordController.text == "") {
                   context.read<UserBloc>().add(
                       UserLoginNotSuccesfulEvent("Please fill the password"));
                   return;
-                } else if (!StaticDataStore.isEmail(emailController.text)) {
-                  context.read<UserBloc>().add(
-                      UserLoginNotSuccesfulEvent("Invalid email address "));
+                } else if (!(StaticDataStore.isEmail(emailController.text) ||
+                    MatchesPattern(emailController.text, PhoneRegexp))) {
+                  context.read<UserBloc>().add(UserLoginNotSuccesfulEvent(
+                      "Invalid email/phone address"));
                   return;
                 }
-
                 if (emailController.text != "" &&
                     passwordController.text != "") {
                   // Either the email controller or the password controller are empty string.
                   context.read<UserBloc>().add(UserLoginInProgressEvent());
-                  final userSate = await context.read<UserBloc>().login(
-                      UserLoginEvent(
-                          emailController.text, passwordController.text));
+                  String dtext = emailController.text;
+                  if (MatchesPattern(emailController.text, PhoneRegexp) &&
+                      (emailController.text.trim()[0] == "0")) {
+                    dtext = emailController.text.substring(1);
+                    dtext = "+251"+ dtext;
+                  } else {
+                    emailController.text = passwordController.text;
+                  }
+                  final userSate = await context
+                      .read<UserBloc>()
+                      .login(UserLoginEvent(dtext, passwordController.text));
                   if (userSate is Authenticated) {
                     context
                         .read<UserBloc>()
@@ -206,21 +211,21 @@ class _LoginWidgetState extends State<LoginWidget> {
             // !(context.watch<AuthBloc>().state is AuthAdminLoginOnProgress)
           ]),
         ),
-        GestureDetector(
-          onTap: () {
-            widget.forgotFunction();
-          },
-          child: Container(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              "forgot password ",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-        )
+        // GestureDetector(
+        //   onTap: () {
+        //     widget.forgotFunction();
+        //   },
+        //   child: Container(
+        //     padding: EdgeInsets.all(10),
+        //     child: Text(
+        //       "forgot password ",
+        //       style: TextStyle(
+        //         fontWeight: FontWeight.bold,
+        //         color: Theme.of(context).primaryColor,
+        //       ),
+        //     ),
+        //   ),
+        // )
       ],
     );
   }

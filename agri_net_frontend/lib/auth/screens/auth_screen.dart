@@ -130,7 +130,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ),
                             top: 0,
-                            left: MediaQuery.of(context).size.width * 0.4 - 10,
+                            left: MediaQuery.of(context).size.width * 0.35 - 10,
                           ),
                         ],
                       ),

@@ -89,9 +89,11 @@ func Route(
 
 	// agents related enpoints
 	router.POST("/api/admin/agent/new", rules.Authenticated(), rules.Authorized(), agenthandler.RegisterAgent)
+	router.DELETE("/api/admin/agent/:id", rules.Authenticated(), rules.Authorized(), agenthandler.DeleteAgentByID)
 
 	// merchants related endpoints
 	router.POST("/api/admin/merchant/new", rules.Authenticated(), rules.Authorized(), merchanthandler.RegisterMerchant)
+	router.DELETE("/api/admin/merchant/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.DeleteMerchantByID)
 
 	// CXP(  Commodity exchage participant ) related routes
 	router.POST("/api/cxp/account/confirm", userhandler.ConfirmTempoCXP)

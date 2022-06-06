@@ -25,6 +25,7 @@ type IMerchantHandler interface {
 	SubscribeForProduct(c *gin.Context)
 	UnsubscriberForProduct(c *gin.Context)
 	MerchantsSearch(c *gin.Context)
+	DeleteMerchantByID(c *gin.Context)
 }
 
 type MerchantHandler struct {
@@ -319,14 +320,43 @@ func (mhandler *MerchantHandler) MerchantsSearch(c *gin.Context) {
 		limit = offset + 10
 	}
 	merchants, er := mhandler.Service.SearchMerchants(ctx, phone, name, uint64(createdBy), uint(offset), uint(limit))
-	if er != nil {
+	if er != nil && strings.Contains(er.Error(), "no record was deleted") {
 		response.StatusCode = http.StatusNotFound
 		response.Msg = translation.Translate(session.Lang, "mercahts not found ")
+	} else if er != nil {
+		response.StatusCode = http.StatusInternalServerError
+		response.Msg = translation.Translate(session.Lang, "can't delete the merchant instance")
+	} else {
+		response.StatusCode = http.StatusOK
+		response.Msg = translation.Translate(session.Lang, "merchants found")
+		response.Merchants = merchants
+	}
+	c.JSON(response.StatusCode, response)
+}
+
+func (mhandler *MerchantHandler) DeleteMerchantByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	response := &struct {
+		StatusCode int    `json:"status_code"`
+		Msg        string `json:"msg"`
+	}{}
+	merchantid, er := strconv.Atoi(c.Param("id"))
+	if er != nil || merchantid <= 0 {
+		response.Msg = translation.Translate(session.Lang, "invalid merchant id")
+		response.StatusCode = http.StatusBadRequest
 		c.JSON(response.StatusCode, response)
 		return
 	}
+	er = mhandler.Service.DeleteMerchantByID(ctx, uint64(merchantid))
+	if er != nil {
+		response.Msg = translation.Translate(session.Lang, "can't found a merchant instance with this id")
+		response.StatusCode = http.StatusNotFound
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	response.Msg = translation.Translate(session.Lang, "merchant deleted succesfuly")
 	response.StatusCode = http.StatusOK
-	response.Msg = translation.Translate(session.Lang, "merchants found")
-	response.Merchants = merchants
 	c.JSON(response.StatusCode, response)
+	return
 }
