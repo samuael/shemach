@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:http/http.dart';
 
@@ -37,8 +36,8 @@ class ProductProvider {
     }
   }
 
-  Future<ProductResponse> createProduct(int unit_id, String productName,
-      String production_area, double current_price) async {
+  Future<ProductResponse> createProduct(int unitId, String productName,
+      String productionArea, double currentPrice) async {
     final header = {"Authorization": "Bearer${StaticDataStore.USER_TOKEN}"};
     try {
       var res = await client.post(
@@ -49,10 +48,10 @@ class ProductProvider {
             path: "/api/superadmin/product/new",
           ),
           body: {
-            "unit_id": unit_id,
+            "unit_id": unitId,
             "name": productName,
-            "production_area": production_area,
-            "current_price": current_price
+            "production_area": productionArea,
+            "current_price": currentPrice
           },
           headers: header);
 
@@ -68,7 +67,7 @@ class ProductProvider {
         return ProductResponse(
             statusCode: res.statusCode, msg: "${body["msg"]}");
       }
-    } catch (e, a) {
+    } catch (e) {
       return ProductResponse(
           statusCode: 999, msg: "Sorry something went wrong");
     }

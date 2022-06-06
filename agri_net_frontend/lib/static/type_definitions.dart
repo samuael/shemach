@@ -1,5 +1,4 @@
 import 'package:agri_net_frontend/libs.dart';
-import "package:flutter/material.dart";
 
 enum AdminActionType {
   registration,
@@ -44,7 +43,7 @@ class NavigationModel {
   IconData icon;
   String? path;
 
-  NavigationModel(this.title, this.icon, {this.path}) {}
+  NavigationModel(this.title, this.icon, {this.path});
 }
 
 List<NavigationModel> superAdminSideBarItems = [
@@ -63,14 +62,15 @@ List<NavigationModel> adminSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
   NavigationModel("Merchants", Icons.store,
       path: RegisteredMerchantsScreen.RouteName),
-  NavigationModel("Agents", Icons.person),
+  NavigationModel("Agents", Icons.person,
+      path: RegisteredAgentsScreen.RouteName),
   NavigationModel("Search", Icons.search),
   NavigationModel(
     "Notifications",
     Icons.notifications,
   ),
   NavigationModel("Sttings", Icons.settings),
-  NavigationModel("Log Out", Icons.logout),
+  NavigationModel("Log Out", Icons.logout, path: AuthScreen.RouteName),
 ];
 
 List<NavigationModel> merchantSideBarItems = [
@@ -84,7 +84,7 @@ List<NavigationModel> merchantSideBarItems = [
   NavigationModel("Search", Icons.search),
   NavigationModel("Notifications", Icons.notifications),
   NavigationModel("Sttings", Icons.settings),
-  NavigationModel("Log Out", Icons.logout),
+  NavigationModel("Log Out", Icons.logout, path: AuthScreen.RouteName),
 ];
 
 List<NavigationModel> agentSideBarItems = [
@@ -97,5 +97,5 @@ List<NavigationModel> agentSideBarItems = [
   NavigationModel("Search", Icons.search),
   NavigationModel("Notifications", Icons.notifications),
   NavigationModel("Sttings", Icons.settings),
-  NavigationModel("Log Out", Icons.logout),
+  NavigationModel("Log Out", Icons.logout, path: AuthScreen.RouteName),
 ];

@@ -1,5 +1,3 @@
-import 'package:agri_net_frontend/home/screens/screens.dart';
-
 import "../../libs.dart";
 
 class LoginWidget extends StatefulWidget {
@@ -43,9 +41,9 @@ class _LoginWidgetState extends State<LoginWidget> {
           ),
         ),
         Container(
-          child: BlocBuilder<AuthBloc, AuthBlocState>(
+          child: BlocBuilder<UserBloc, UserState>(
             builder: (contexts, state) {
-              if (state is AuthAdminLoggedIn) {
+              if (state is Authenticated) {
                 return Text(
                   " succesfuly logged in ",
                   style: TextStyle(
@@ -55,7 +53,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     // fontSize: 18
                   ),
                 );
-              } else if (state is AuthAdminLoginNotSuccesful) {
+              } else if (state is NotAuthenticated) {
                 return Text(
                   " ${state.Msg} ",
                   style: TextStyle(
@@ -65,7 +63,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     // fontSize: 18,
                   ),
                 );
-              } else if (state is AuthAdminLoginOnProgress) {
+              } else if (state is UserLoginOnProgressState) {
                 return Container(
                   width: 20,
                   height: 20,
@@ -159,64 +157,41 @@ class _LoginWidgetState extends State<LoginWidget> {
                 // checking the validity of input values
                 if (emailController.text == "" &&
                     passwordController.text == "") {
-                  context.read<AuthBloc>().add(AuthAdminLoginNotSuccesfulEvent(
+                  context.read<UserBloc>().add(UserLoginNotSuccesfulEvent(
                       "please fill your email and password"));
                   return;
                 } else if (emailController.text == "") {
-                  context.read<AuthBloc>().add(AuthAdminLoginNotSuccesfulEvent(
+                  context.read<UserBloc>().add(UserLoginNotSuccesfulEvent(
                       "please fill the email entry"));
                   return;
                 } else if (passwordController.text == "") {
-                  context.read<AuthBloc>().add(AuthAdminLoginNotSuccesfulEvent(
-                      "Please fill the password"));
+                  context.read<UserBloc>().add(
+                      UserLoginNotSuccesfulEvent("Please fill the password"));
                   return;
                 } else if (!StaticDataStore.isEmail(emailController.text)) {
-                  context.read<AuthBloc>().add(AuthAdminLoginNotSuccesfulEvent(
-                      "Invalid email address "));
+                  context.read<UserBloc>().add(
+                      UserLoginNotSuccesfulEvent("Invalid email address "));
                   return;
                 }
 
                 if (emailController.text != "" &&
                     passwordController.text != "") {
                   // Either the email controller or the password controller are empty string.
-                  context.read<AuthBloc>().add(AdminLoginInProgressEvent());
-                  final userSate = await context.read<AuthBloc>().login(
-                      AuthLoginEvent(
+                  context.read<UserBloc>().add(UserLoginInProgressEvent());
+                  final userSate = await context.read<UserBloc>().login(
+                      UserLoginEvent(
                           emailController.text, passwordController.text));
-                  if (userSate is AuthAdminLoggedIn) {
-                    context.read<AuthBloc>().add(
-                        AuthAdminLoggedInEvent(userSate.user, userSate.role));
+                  if (userSate is Authenticated) {
                     context
                         .read<UserBloc>()
-                        .add(UserLoggedInEvent(user: userSate.user));
+                        .add(UserLoggedInEvent(userSate.user, userSate.role));
                     Navigator.of(context).pushNamed(HomeScreen.RouteName);
-
-                    // } else {
-                    //   Navigator.pushNamed(context, AuthScreen.RouteName);
-                    // }
-
-                    // context.read<UserBloc>().add(UserLoggedInEvent(
-                    //     user: userSate.user, role: userSate.role));
-
-                    // if (userSate.role == ROLE_SUPERADMIN) {
-                    //   context.read<UserBloc>().add(SuperAdminLoggedInEvent());
-                    // }
-                    // if (userSate.role == ROLE_AGENT) {
-                    //   context.read<UserBloc>().add(AgentLoggedInEvent());
-                    // }
-                    // if (userSate.role == ROLE_MERCHANT) {
-                    //   context.read<UserBloc>().add(MerchantLoggedInEvent());
-                    // }
-                    // if (userSate.role == ROLE_ADMIN) {
-                    //   context.read<UserBloc>().add(AdminLoggedInEvent());
-                    // }
-
-                  } else if (userSate is AuthAdminLoginNotSuccesful) {
+                  } else if (userSate is NotAuthenticated) {
                     context
-                        .read<AuthBloc>()
-                        .add(AuthAdminLoginNotSuccesfulEvent(userSate.Msg));
-                  } else if (userSate is AuthAdminLoginOnProgress) {
-                    context.read<AuthBloc>().add(AdminLoginInProgressEvent());
+                        .read<UserBloc>()
+                        .add(UserLoginNotSuccesfulEvent(userSate.Msg));
+                  } else if (userSate is UserLoginOnProgressState) {
+                    context.read<UserBloc>().add(UserLoginInProgressEvent());
                   }
                 }
               },

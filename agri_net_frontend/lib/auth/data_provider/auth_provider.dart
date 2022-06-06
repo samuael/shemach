@@ -32,7 +32,7 @@ class AuthProvider {
       } else {
         return null;
       }
-    } catch (e, a) {
+    } catch (e) {
       return null;
     }
   }
@@ -88,12 +88,43 @@ class AuthProvider {
         StaticDataStore.HEADERS = response.headers;
         StaticDataStore.ROLE = body["role"];
         StaticDataStore.USER_TOKEN = body["token"];
-        // Token = body["token"];
-        return UsersLoginResponse(
-            statusCode: response.statusCode,
-            msg: "${body["msg"]}",
-            user: User.fromJson(body["user"] as Map<String, dynamic>),
-            role: "${body["role"]}");
+        if (StaticDataStore.ROLE == ROLE_ADMIN) {
+          print("AMIN ADMIN ADMIN ADMIN");
+          return UsersLoginResponse(
+              statusCode: response.statusCode,
+              msg: body["msg"],
+              user: Admin.fromJson(body["user"]),
+              role: body["role"]);
+        }
+        if (StaticDataStore.ROLE == ROLE_MERCHANT) {
+          print("Merchant");
+          return UsersLoginResponse(
+              statusCode: response.statusCode,
+              msg: body["msg"],
+              user: Merchant.fromJson(body["user"]),
+              role: body["role"]);
+        }
+        if (StaticDataStore.ROLE == ROLE_AGENT) {
+          print("AGNET AGENTTTTTTTTTTTTTTTTTTT");
+          return UsersLoginResponse(
+              statusCode: response.statusCode,
+              msg: body["msg"],
+              user: Agent.fromJson(body["User"]),
+              role: body["role"]);
+        }
+        if (StaticDataStore.ROLE == ROLE_SUPERADMIN) {
+          print("SuperAdminnnnnnnnnn");
+          return UsersLoginResponse(
+              statusCode: response.statusCode,
+              msg: "${body["msg"]}",
+              user: User.fromJson(body["user"] as Map<String, dynamic>),
+              role: "${body["role"]}");
+        } else {
+          return UsersLoginResponse(
+            statusCode: 500,
+            msg: "Something went wrong",
+          );
+        }
       } else if (response.statusCode == 401 ||
           response.statusCode == 500 ||
           response.statusCode == 404) {
@@ -104,11 +135,11 @@ class AuthProvider {
         );
       } else {
         return UsersLoginResponse(
-          statusCode: response.statusCode,
+          statusCode: 999,
           msg: STATUS_CODES[999]!,
         );
       }
-    } catch (e, a) {
+    } catch (e) {
       return UsersLoginResponse(
         statusCode: 999,
         msg: STATUS_CODES[999]!,
@@ -133,7 +164,7 @@ class AuthProvider {
         return MessageOnly("Internal Problem", false);
       }
       return MessageOnly("Sorry,problem happened, try again", false);
-    } catch (e, a) {
+    } catch (e) {
       return MessageOnly(
           "can't found the server \nplease check your internet connection",
           false);

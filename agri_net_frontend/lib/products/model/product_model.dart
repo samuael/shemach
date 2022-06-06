@@ -1,4 +1,3 @@
-import '../../libs.dart';
 
 class Product {
   int pid;

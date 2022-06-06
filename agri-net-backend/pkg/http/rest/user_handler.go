@@ -282,11 +282,13 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 	session := ctx.Value("session").(*model.Session)
 	erro = c.Request.ParseMultipartForm(99999999999)
 	if erro != nil {
+		println(erro.Error())
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	image, header, erro := c.Request.FormFile("image")
 	if erro != nil {
+		println(erro.Error())
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
@@ -300,6 +302,8 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 			newImage, erro = os.Create(os.Getenv("ASSETS_DIRECTORY") + "/" + newName)
 		}
 		if erro != nil {
+		println(erro.Error())
+
 			c.JSON(http.StatusInternalServerError, gin.H{})
 			return
 		}
@@ -308,6 +312,8 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 		oldImage = uhandler.Service.GetImageUrl(ctx)
 		_, er := io.Copy(newImage, image)
 		if er != nil {
+		println(er.Error())
+
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -328,6 +334,9 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 			er = os.Remove(os.Getenv("ASSETS_DIRECTORY") + newName)
 		} else {
 			er = os.Remove(os.Getenv("ASSETS_DIRECTORY") + "/" + newName)
+		}
+		if er != nil{
+			println(er.Error())
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{})
 	} else {
