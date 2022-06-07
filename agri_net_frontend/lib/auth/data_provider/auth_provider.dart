@@ -65,7 +65,7 @@ class AuthProvider {
     try {
       print("Sending login request with :" + "$email   $password");
       final input = {
-            "email":  MatchesPattern(email , EmailRegexp ) ? email: "",
+            "email":  StaticDataStore.isEmail(email) ? email: "",
             "phone":  email.startsWith("+251") ? email : "",
             "password": password,
           };

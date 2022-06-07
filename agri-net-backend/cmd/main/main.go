@@ -59,13 +59,14 @@ func main() {
 	rules := middleware.NewRules(authenticator)
 
 	credentials := &model.Credentials{
-		Principal:   os.Getenv(""),
-		Credentials: os.Getenv(""),
-		System:      os.Getenv(""),
+		Principal:   os.Getenv("PAYMENT_PRINCIPAL"),
+		Credentials: os.Getenv("PAYMENT_CREDENTIALS"),
+		System:      os.Getenv("PAYMENT_SYSTEM"),
 	}
 	paymentrepo := pgx_storage.NewPaymentRepo(conn, credentials)
 	paymentservice := payment.NewPaymentService(paymentrepo)
 	if er := paymentservice.Authenticate(context.Background()); er != nil || paymentservice == nil {
+		println(er.Error())
 		os.Exit(1)
 	}
 	userrepo := pgx_storage.NewUserRepo(conn)

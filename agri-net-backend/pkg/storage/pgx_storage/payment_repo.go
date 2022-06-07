@@ -90,6 +90,7 @@ func (repo *PaymentRepo) Authenticate(ctx context.Context) error {
 		return err
 	}
 	response := &AuthenticationReponse{}
+	println(string(body))
 	decoder := json.NewDecoder(bytes.NewReader(body))
 	err = decoder.Decode(response)
 	repo.AuthToken = response.Token

@@ -142,7 +142,6 @@ class _LoginWidgetState extends State<LoginWidget> {
             ElevatedButton.icon(
               style: ButtonStyle(
                 animationDuration: Duration(seconds: 1),
-                // foregroundColor : Theme.of(context).primaryColor,
                 padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(
                     horizontal: 40,
@@ -151,7 +150,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
               onPressed: () async {
                 // checking the validity of input values
-                if ((MatchesPattern(emailController.text, EmailRegexp) ||
+                if ((StaticDataStore.isEmail(emailController.text) ||
                         MatchesPattern(emailController.text, PhoneRegexp)) &&
                     passwordController.text == "") {
                   context.read<UserBloc>().add(UserLoginNotSuccesfulEvent(
@@ -180,8 +179,6 @@ class _LoginWidgetState extends State<LoginWidget> {
                       (emailController.text.trim()[0] == "0")) {
                     dtext = emailController.text.substring(1);
                     dtext = "+251"+ dtext;
-                  } else {
-                    emailController.text = passwordController.text;
                   }
                   final userSate = await context
                       .read<UserBloc>()
