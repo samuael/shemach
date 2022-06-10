@@ -13,7 +13,7 @@ class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
   void initState() {
     super.initState();
     print("Init state");
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
       if ((_userBloc.state is Authenticated)) {
         print("SchedulerBinding state");

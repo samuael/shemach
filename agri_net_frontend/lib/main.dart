@@ -1,5 +1,3 @@
-import 'package:agri_net_frontend/admins/widgets/register_admin_form.dart';
-
 import 'libs.dart';
 
 void main() {

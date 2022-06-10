@@ -103,17 +103,4 @@ class AdminsRepo {
       longitude,
     );
   }
-
-  Future<NewStoreResponse> createMerchantStore(
-    int ownerID,
-    int addressId,
-    int activeProducts,
-    String storeName,
-    int activeContracts,
-    DateTime createdAt,
-    int createdBy,
-  ) async {
-    return await adminsProvider.createMerchantStore(ownerID, addressId,
-        activeProducts, storeName, activeContracts, createdAt, createdBy);
-  }
 }

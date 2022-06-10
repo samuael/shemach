@@ -43,51 +43,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           }),
           child: BlocBuilder<ProfileBLoc, ProfileState>(
             builder: ((context, state) => Scaffold(
-                  // appBar: AppBar(
-                  //     backgroundColor: Theme.of(context).canvasColor,
-                  //     elevation: 5,
-                  //     toolbarHeight: MediaQuery.of(context).size.height / 13,
-                  //     leading: IconButton(
-                  //         color: Colors.black,
-                  //         onPressed: () {
-                  //           Navigator.pop(context);
-                  //         },
-                  //         icon: BackButton()),
-                  //     title: Text(
-                  //       "Profile",
-                  //       style: TextStyle(
-                  //           fontSize: 18,
-                  //           fontWeight: FontWeight.bold,
-                  //           color: Colors.black),
-                  //     ),
-                  //     actions: [
-                  //       (requestedUser.id == loggedInUser.id)
-                  //           ? Row(
-                  //               children: [
-                  //                 Padding(
-                  //                   padding:
-                  //                       const EdgeInsets.fromLTRB(0, 0, 20, 0),
-                  //                   child: InkWell(
-                  //                     onTap: () {
-                  //                       Navigator.push(
-                  //                           context,
-                  //                           new MaterialPageRoute(
-                  //                               builder: (context) =>
-                  //                                   new EditImagePage()));
-                  //                     },
-                  //                     child: Text(
-                  //                       "Edit",
-                  //                       style: TextStyle(
-                  //                           fontSize: 20,
-                  //                           fontWeight: FontWeight.bold,
-                  //                           color: Colors.black),
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             )
-                  //           : Container()
-                  //     ]),
                   body: SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -118,10 +73,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       (widget.requestedUser as Admin).address,
                                       context)
                                   : (widget.requestedUser is Merchant)
-                                      ? adress(
-                                          (widget.requestedUser as Merchant)
-                                              .address,
-                                          context)
+                                      ? Expanded(
+                                          child: Column(children: [
+                                            myStores(
+                                                widget.requestedUser
+                                                    as Merchant,
+                                                context),
+                                            adress(
+                                                (widget.requestedUser
+                                                        as Merchant)
+                                                    .address,
+                                                context),
+                                          ]),
+                                        )
                                       : (widget.requestedUser is Agent)
                                           ? adress(
                                               (widget.requestedUser as Agent)
@@ -137,6 +101,53 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 )),
           ),
         ));
+  }
+
+  Widget myStores(Merchant merchant, context) {
+    final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
+    User loggedInUser = (_userBloc.state as Authenticated).user;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Stores :",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text(merchant.storeCount.toString(),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        Container(
+            width: MediaQuery.of(context).size.width / 4 - 19,
+            child: Center(
+                child: Row(
+              children: [
+                (widget.requestedUser.id != loggedInUser.id &&
+                        loggedInUser is Admin)
+                    ? ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new MerchantStoreForm(
+                                        owner: widget.requestedUser,
+                                      )));
+                        },
+                        child: Text("New",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                      )
+                    : Container(),
+              ],
+            )))
+      ],
+    );
   }
 
   Widget adress(Address address, BuildContext context) {

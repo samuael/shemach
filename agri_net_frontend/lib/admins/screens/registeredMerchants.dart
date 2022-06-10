@@ -161,15 +161,6 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
                         Text("Stores",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  new MaterialPageRoute(
-                                      builder: (context) =>
-                                          new MerchantStoreForm()));
-                            },
-                            icon: Icon(Icons.add))
                       ],
                     ),
                   ),
@@ -252,13 +243,13 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
                               width: MediaQuery.of(context).size.width / 4 - 19,
                               child: Center(
                                   child: Text(merchants[counter]
-                                      .postsCounte
+                                      .storeCount
                                       .toString()))),
                           Container(
                               width: MediaQuery.of(context).size.width / 4 - 19,
                               child: Center(
                                   child: Text(merchants[counter]
-                                      .storeCount
+                                      .postsCounte
                                       .toString()))),
                           Container(
                             width: MediaQuery.of(context).size.width / 4 - 19,
