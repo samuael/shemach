@@ -12,9 +12,9 @@ void main() {
         ..add(GetAllAdminsEvent());
     }),
     BlocProvider(create: (context) {
-      return ProductBloc(
-        repo: ProductRepo(provider: ProductProvider()),
-      )..add(GetProductListEvent());
+      return ProductTypeBloc(
+        ProductTypesRepository(ProductTypesProvider()),
+      );
     }),
   ], child: MyHomePage()));
 }
@@ -33,7 +33,7 @@ class MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
         title: 'Agri-Net',
         theme: ThemeData(
-          primaryColor: Color.fromARGB(255, 11, 100, 14), //  MaterialColor(primary, swatch),
+          primaryColor: Colors.green, //  MaterialColor(primary, swatch),
         ),
         initialRoute: AuthScreen.RouteName,
         onGenerateRoute: (setting) {

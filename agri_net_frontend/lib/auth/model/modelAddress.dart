@@ -52,4 +52,30 @@ class Address {
         Woreda: json["woreda"] ?? '',
         Zone: json["zone"] ?? '');
   }
+
+  factory Address.zeroAddress() {
+    return Address(
+        ID: 0,
+        Kebele: '-',
+        City: 'Unknown',
+        Latitude: 0.0,
+        Longitude: 0.0,
+        Region: 'Unknown',
+        UniqueAddressName: 'Unknown',
+        Woreda: 'Unknown',
+        Zone: 'Unknown');
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.ID;
+    data['kebele'] = this.Kebele;
+    data['woreda'] = this.Woreda;
+    data['city'] = this.City;
+    data['region'] = this.Region;
+    data['zone'] = this.Zone;
+    data['latitude'] = this.Latitude;
+    data['longitude'] = this.Longitude;
+    return data;
+  }
 }

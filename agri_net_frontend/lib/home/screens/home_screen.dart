@@ -6,6 +6,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productTypeProvider = BlocProvider.of<ProductTypeBloc>(context);
+    if (productTypeProvider.state is ProductTypeInit) {
+      productTypeProvider.add(ProductTypesLoadEvent());
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
