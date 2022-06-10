@@ -1,20 +1,22 @@
+import '../../libs.dart';
+
 class Store {
   int storeID;
   int ownerID;
-  int addressId;
-  int activeProducts;
+  Address address;
+  int? activeProducts;
   String storeName;
-  int activeContracts;
+  int? activeContracts;
   DateTime createdAt;
   int createdBy;
 
   Store(
       {required this.storeID,
       required this.ownerID,
-      required this.activeProducts,
+      this.activeProducts,
       required this.storeName,
-      required this.activeContracts,
-      required this.addressId,
+      this.activeContracts,
+      required this.address,
       required this.createdAt,
       required this.createdBy});
 
@@ -25,7 +27,7 @@ class Store {
         activeProducts: json["active_products"],
         storeName: json["store_name"],
         activeContracts: json["active_contracts"],
-        addressId: json["address_id"],
+        address: Address.fromJson(json["address"]),
         createdAt: json["created_at"],
         createdBy: json["created_by"]);
   }
