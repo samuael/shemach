@@ -14,6 +14,13 @@ void main() {
         ProductTypesRepository(ProductTypesProvider()),
       );
     }),
+    BlocProvider(create: (context) {
+      return MyProductsBloc(
+        ProductsRepo(
+          ProductProvider(),
+        ),
+      );
+    }),
   ], child: MyHomePage()));
 }
 
@@ -70,6 +77,18 @@ class MyHomePageState extends State<MyHomePage> {
               return UserProfileScreen(
                 requestedUser: args,
               );
+            });
+          } else if (route == ProductTypeSelectionScreen.RouteName) {
+            final arguments = setting.arguments as Map<String, dynamic>;
+            ProductTypeState state = (arguments["state"]) as ProductTypeState;
+            List<ProductType> products =
+                arguments["products"] as List<ProductType>;
+            Function callBack = (arguments["callback"] as Function);
+            String text = (arguments["text"] as String);
+
+            return MaterialPageRoute(builder: (context) {
+              return ProductTypeSelectionScreen(
+                  state, products, callBack, text);
             });
           }
         });

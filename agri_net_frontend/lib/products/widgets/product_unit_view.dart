@@ -5,6 +5,7 @@ class ProductTypeItemSmallView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Container(
       color : Theme.of(context).primaryColor, 
       width : 40, height:40, 

@@ -39,7 +39,7 @@ class ProductPost {
       address: json['address'] != null
           ? new Address.fromJson(json['address'])
           : Address.zeroAddress(),
-      images: json['images'],
+      images: json['images']??[],
       createdAt: json['created_at'],
       storeId: json['store_id'],
       agentId: json['agent_id'],

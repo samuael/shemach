@@ -7,6 +7,7 @@ class ProductTypeBloc extends Bloc<ProductTypeEvent, ProductTypeState> {
     on<ProductTypesLoadEvent>((event, emit) async {
       final response = await this.repository.loadProducts();
       if (response.statusCode == 200) {
+        // print("Products Loaded : ${response.products.length}");
         emit(ProductTypeLoadSuccess(response.products));
       } else if (response.statusCode == 1000) {
         emit(this.state);
