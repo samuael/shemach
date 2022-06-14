@@ -10,7 +10,7 @@ class ProductProvider {
       Map<String, String> headers = {
         "authorization": StaticDataStore.HEADERS["authorization"]!
       };
-    
+
       var response = await client.post(
         Uri(
           host: StaticDataStore.HOST,
@@ -22,7 +22,7 @@ class ProductProvider {
         body: jsonEncode(input.toJson()),
       );
       print(response.body);
-      final body = jsonDecode(response.body)??{} as Map<String, dynamic>;
+      final body = jsonDecode(response.body) ?? {} as Map<String, dynamic>;
       print(body);
       return ProductPostResponse.fromJson(body);
     } catch (e, a) {
@@ -30,5 +30,37 @@ class ProductProvider {
       return ProductPostResponse(
           statusCode: 999, msg: "Connection issue!!!", crop: null);
     }
+  }
+
+  Future<ProductsResponse> loadMyProductPosts() async {
+    // try {
+      final Map<String, String> headers = {
+        "authorization": StaticDataStore.HEADERS["authorization"]!
+      };
+      var response = await client.get(
+          Uri(
+            scheme: "http",
+            host: StaticDataStore.HOST,
+            port: StaticDataStore.PORT,
+            path: "/api/cxp/posts",
+          ),
+          headers: headers);
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode >= 100 && response.statusCode < 500) {
+        final bosy = jsonDecode(response.body);
+        print(bosy);
+        return ProductsResponse.fromJson(bosy);
+      } else {
+        return ProductsResponse(
+            statusCode: response.statusCode,
+            msg: STATUS_CODES[response.statusCode] ?? "",
+            posts: []);
+      }
+    // } catch (e, a) {
+    //   print(e.toString());
+    //   return ProductsResponse(
+    //       statusCode: 999, msg: "connection issue!", posts: []);
+    // }
   }
 }

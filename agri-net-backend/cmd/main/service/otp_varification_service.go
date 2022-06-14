@@ -35,7 +35,7 @@ func NewOtpService(subscriberService subscriber.ISubscriberService,
 }
 
 func (otpSer *OtpService) Run() {
-	ticker := time.NewTicker(time.Second * 2)
+	ticker := time.NewTicker(time.Second * 30)
 
 	agentConfirmationTicker := time.NewTicker(time.Hour * 1)
 

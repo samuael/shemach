@@ -3,7 +3,6 @@ import 'dart:convert';
 import "../../libs.dart";
 import 'package:http/http.dart';
 
-
 class AuthProvider {
   static Client client = Client();
 
@@ -65,11 +64,11 @@ class AuthProvider {
     try {
       print("Sending login request with :" + "$email   $password");
       final input = {
-            "email":  StaticDataStore.isEmail(email) ? email: "",
-            "phone":  email.startsWith("+251") ? email : "",
-            "password": password,
-          };
-          print(jsonEncode(input));
+        "email": StaticDataStore.isEmail(email) ? email : "",
+        "phone": email.startsWith("+251") ? email : "",
+        "password": password,
+      };
+      print(jsonEncode(input));
       var response = await client.post(
         Uri(
           scheme: "http",
@@ -80,18 +79,11 @@ class AuthProvider {
         body: jsonEncode(input),
         headers: {"Content-Type": "application/json"},
       );
-
       if (response.statusCode == 200) {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
-
         StaticDataStore.HEADERS = response.headers;
         StaticDataStore.ROLE = body["role"];
         StaticDataStore.USER_TOKEN = body["token"];
-        // print("\n\n\n\n\n\n\n\n\n");
-        // print(body);
-        // print(StaticDataStore.USER_TOKEN);
-        // print(body["token"]);
-        // print("\n\n\n\n\n\n\n\n\n");
         if (StaticDataStore.ROLE == ROLE_ADMIN) {
           return UsersLoginResponse(
               statusCode: response.statusCode,
@@ -131,7 +123,8 @@ class AuthProvider {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
         return UsersLoginResponse(
           statusCode: response.statusCode,
-          msg: "${body["message"]}",
+          msg:
+              "${(response.statusCode == 404) ? "invalid email/phone or password" : STATUS_CODES[response.statusCode] ?? "?"}",
         );
       } else {
         return UsersLoginResponse(

@@ -433,7 +433,7 @@ class _ProductFormState extends State<ProductForm> {
                               vertical: 10,
                             ),
                             child: Text(
-                              "Post",
+                              translate(lang, "Post"),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,

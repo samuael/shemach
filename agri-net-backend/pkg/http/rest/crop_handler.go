@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -347,9 +348,9 @@ func (chandler *CropHandler) GetMyPosts(c *gin.Context) {
 	ctx := c.Request.Context()
 	session := ctx.Value("session").(*model.Session)
 	res := &struct {
-		Msg        string        `json:"msg,omitempty"`
+		Msg        string        `json:"msg"`
 		StatusCode int           `json:"status_code"`
-		Posts      []*model.Crop `json:"posts,omitempty"`
+		Posts      []*model.Crop `json:"posts"`
 	}{}
 	offset, er := strconv.Atoi(c.Query("offset"))
 	if er != nil {
@@ -360,8 +361,10 @@ func (chandler *CropHandler) GetMyPosts(c *gin.Context) {
 		limit = offset + 10
 	}
 	var posts []*model.Crop
-	if session.Role == state.AGENT {
-		stores, er := chandler.StoreService.GetMerchantStores(ctx, session.ID)
+	var stores []*model.Store
+
+	if session.Role == state.MERCHANT {
+		stores, er = chandler.StoreService.GetMerchantStores(ctx, session.ID)
 		if er != nil {
 			res.StatusCode = http.StatusNotFound
 			res.Msg = translation.TranslateIt("posts not found")
@@ -373,12 +376,25 @@ func (chandler *CropHandler) GetMyPosts(c *gin.Context) {
 			storeIDS = append(storeIDS, stores[x].ID)
 		}
 		posts, er = chandler.Service.GetMerchantPosts(ctx, storeIDS, uint(offset), uint(limit))
+		if er != nil {
+			println("The Error ", er.Error())
+			if strings.Contains(er.Error(), "too many connection") {
+				res.StatusCode = http.StatusInternalServerError
+				res.Msg = translation.Translate(session.Lang, "internal connection problem")
+			} else {
+				res.StatusCode = http.StatusNotFound
+				res.Msg = translation.Translate(session.Lang, "no products found")
+			}
+			c.JSON(res.StatusCode, res)
+			return
+		}
 	} else {
 		posts, er = chandler.Service.GetAgentPosts(ctx, session.ID, uint(offset), uint(limit))
 	}
 	if er != nil {
+		println(er.Error())
 		res.StatusCode = http.StatusNotFound
-		res.Msg = translation.TranslateIt("posts not found")
+		res.Msg = translation.Translate(session.Lang, "posts not found")
 		c.JSON(res.StatusCode, res)
 		return
 	}

@@ -59,8 +59,12 @@ class ProductsResponse {
   factory ProductsResponse.fromJson(Map<String, dynamic> json) {
     return ProductsResponse(
       statusCode: json["status_code"] ?? 999,
-      msg: json["msg"] ?? 'internal problem',
-      posts: json["posts"] ?? [],
+      msg: json["msg"] ?? STATUS_CODES[json["status_code"] ?? 999] ?? "",
+      posts: json["posts"] == null
+          ? []
+          : (json["posts"] as List<dynamic>).map<ProductPost>((e) {
+              return ProductPost.fromJson(e as Map<String, dynamic>);
+            }).toList(),
     );
   }
 }

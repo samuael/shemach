@@ -11,6 +11,7 @@ class UserBloc extends Bloc<UserEvent, UserState> implements Cubit<UserState> {
     } else if (event is UserInitEvent) {
       yield (UserStateInit());
     } else if (event is UserLoggedInEvent) {
+      StaticDataStore.ID = event.state.id;
       yield Authenticated(user: event.state, role: event.role);
     } else if (event is UserLoginNotSuccesfulEvent) {
       yield NotAuthenticated(event.Msg);

@@ -170,7 +170,17 @@ func (repo *CropRepo) GetAgentPosts(ctx context.Context, userid uint64, offset, 
 
 func (repo *CropRepo) GetMerchantPosts(ctx context.Context, storeIDS []uint64, offset, limit uint) ([]*model.Crop, error) {
 	posts := []*model.Crop{}
-	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop Where store_id  in $3 LIMIT $1  OFFSET $2", limit, offset, storeIDS)
+	storeIdsString := ""
+	for x := range storeIDS {
+		if storeIDS[x] > 0 {
+			if x == 0 {
+				storeIdsString += "store_id=" + strconv.Itoa(int(storeIDS[x]))
+			} else {
+				storeIdsString += " or " + "store_id=" + strconv.Itoa(int(storeIDS[x]))
+			}
+		}
+	}
+	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop Where "+storeIdsString+" LIMIT "+strconv.Itoa(int(limit))+"  OFFSET "+strconv.Itoa(int(offset)))
 	if er != nil {
 		return nil, er
 	}

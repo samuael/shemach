@@ -11,9 +11,12 @@ class HomeScreen extends StatelessWidget {
       productTypeProvider.add(ProductTypesLoadEvent());
     }
 
-    final myProductsBlocProvider = BlocProvider.of<MyProductsBloc>(context);
-    if (myProductsBlocProvider.state is MyProductInit){
-      myProductsBlocProvider.add(LoadMyProductsEvent());
+    if (StaticDataStore == ROLE_AGENT ||
+        StaticDataStore.ROLE == ROLE_MERCHANT) {
+      final myProductsBlocProvider = BlocProvider.of<MyProductsBloc>(context);
+      if (myProductsBlocProvider.state is MyProductInit) {
+        myProductsBlocProvider.add(LoadMyProductsEvent());
+      }
     }
     return Scaffold(
       appBar: AppBar(

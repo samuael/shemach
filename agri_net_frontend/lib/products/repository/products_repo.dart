@@ -9,4 +9,8 @@ class ProductsRepo {
     return this.provider.createProductPost(input);
   }
 
+  Future<ProductsResponse> loadMyProductPosts() async {
+    return this.provider.loadMyProductPosts();
+  }
+
 }
