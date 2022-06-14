@@ -44,9 +44,19 @@
     margin-right: 0.3rem;
   }
 
-  #navitem .fa-bullhorn {
+  #navitem .fa-message {
     /* margin-left: 0.8rem; */
     margin-right: 0.5rem;
+  }
+
+  #navitem .logout{
+    margin-left: 33rem;
+  }
+
+  #navitem .logout:hover{
+    /* background-color: rgb(247, 7, 7); */
+    color: #00FF00;
+    
   }
 
   #navitem .nav-menu {

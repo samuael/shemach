@@ -1,29 +1,10 @@
-import 'package:agri_net_frontend/products/products.dart';
+import "../../libs.dart";
 
-class ProductState {}
+class ProductState{}
 
-class GetProductListInItState extends ProductState {}
-
-class GetProductListState extends ProductState {}
-
-class ProductListFetchedState extends ProductState {
-  List<Product> products;
-  ProductListFetchedState(this.products);
+class MyProductsLoadSuccess extends ProductState{
+  List<ProductPost> posts;
+  MyProductsLoadSuccess(this.posts);
 }
-
-class FailedToFechProducts extends ProductState {
-  String msg;
-  FailedToFechProducts({required this.msg});
-}
-
-class PostNewProductState extends ProductState {}
-
-class NewProductPostedState extends ProductState {
-  Product product;
-  NewProductPostedState(this.product);
-}
-
-class FailedToPostNewProductState extends ProductState {
-  String msg;
-  FailedToPostNewProductState({required this.msg});
-}
+class MyProductsLoadFailed extends ProductState{}
+class MyProductInit extends ProductState{}

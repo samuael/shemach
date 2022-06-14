@@ -1,0 +1,96 @@
+{
+    "status_code": 200,
+    "products": [
+        {
+            "id": 5,
+            "name": "Ater",
+            "production_area": "Bale",
+            "unit_id": 2,
+            "current_price": 6000,
+            "created_by": 2,
+            "created_at": 1652508263,
+            "last_update_time": 1652882529
+        },
+        {
+            "id": 6,
+            "name": "Baela",
+            "production_area": "Bale",
+            "unit_id": 5,
+            "current_price": 2000,
+            "created_by": 2,
+            "created_at": 1652508302,
+            "last_update_time": 1653232051
+        },
+        {
+            "id": 7,
+            "name": "Bekolo",
+            "production_area": "Goje",
+            "unit_id": 7,
+            "current_price": 500,
+            "created_by": 2,
+            "created_at": 1652510225,
+            "last_update_time": 1653232087
+        },
+        {
+            "id": 13,
+            "name": "Bean",
+            "production_area": "Basic",
+            "unit_id": 1,
+            "current_price": 200,
+            "created_by": 2,
+            "created_at": 1653232431,
+            "last_update_time": 1653232431
+        },
+        {
+            "id": 8,
+            "name": "Bekolo",
+            "production_area": "Gg",
+            "unit_id": 7,
+            "current_price": 50,
+            "created_by": 2,
+            "created_at": 1652602408,
+            "last_update_time": 1653232558
+        },
+        {
+            "id": 3,
+            "name": "Mashila ",
+            "production_area": "Wolega",
+            "unit_id": 2,
+            "current_price": 440,
+            "created_by": 2,
+            "created_at": 1652448225,
+            "last_update_time": 1653232573
+        },
+        {
+            "id": 2,
+            "name": "Teff Aja",
+            "production_area": "Gojam",
+            "unit_id": 1,
+            "current_price": 1023,
+            "created_by": 2,
+            "created_at": 1650009962,
+            "last_update_time": 1653505199
+        },
+        {
+            "id": 4,
+            "name": "Berbere",
+            "production_area": "Goojam",
+            "unit_id": 1,
+            "current_price": 50000,
+            "created_by": 2,
+            "created_at": 1652508219,
+            "last_update_time": 1653566586
+        },
+        {
+            "id": 1,
+            "name": "Tef",
+            "production_area": "Gojam",
+            "unit_id": 2,
+            "current_price": 120,
+            "created_by": 1,
+            "created_at": 1650002018,
+            "last_update_time": 1653566907
+        }
+    ],
+    "msg": "product found"
+}

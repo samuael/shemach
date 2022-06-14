@@ -1,0 +1,24 @@
+[
+    {
+        "id": 2,
+        "firstname": "Samuael",
+        "lastname": "Adnew",
+        "phone": "+251912131415",
+        "email": "samuaeladadnew@outlook.com",
+        "imgurl": "images/profile/NpKUf.jpg",
+        "created_at": 1650279386,
+        "lang": "amh",
+        "broadcasted_messages": 0,
+        "Createdby": 0
+    },
+    {
+        "id": 25,
+        "firstname": "Fantahun",
+        "lastname": "Fekadu",
+        "email": "fantahunfekadu1@gmail.com",
+        "created_at": 1653028585,
+        "lang": "amh",
+        "broadcasted_messages": 0,
+        "Createdby": 0
+    }
+]

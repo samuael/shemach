@@ -13,6 +13,7 @@ class Products extends Component {
     this.setActiveProduct = this.setActiveProduct.bind(this);
     this.removeAllProducts = this.removeAllProducts.bind(this);
     this.searchProduct = this.searchProduct.bind(this);
+    this.renderUnitId = this.renderUnitId.bind(this);
    // this.tokenValue = this.props.location.state;
    
     this.state = {
@@ -60,9 +61,19 @@ class Products extends Component {
     console.log(this.props.location)
     console.log(this.props.location.state);
     console.log(this.state.tokenValue);
-   // const dt = this.props.location.state;
+     var dt = this.props.location.state;
+     var tokenn = window.token;
 
-    this.retrieveProducts();
+     this.retrieveProducts();
+
+
+    //  if(!tokenn){
+    //   this.props.history.push('/')
+    //  }else{
+    //   this.retrieveProducts();
+    //  }
+
+   
   }
 
   onChangesearchProduct(e) {
@@ -71,6 +82,7 @@ class Products extends Component {
     this.setState({
       searchProduct: searchProduct
     });
+
   }
 
   retrieveProducts() {
@@ -116,6 +128,48 @@ class Products extends Component {
       });
   }
 
+
+renderUnitId(id) {
+  switch (id) {
+    case 1:
+      return "Kg"
+    case 2:
+      return "g"
+    case 3:
+      return "Kun"
+    case 4:
+      return "Ton"
+    case 5:
+      return "L"
+    case 6:
+      return "M3"
+    case 7:
+      return "Gal"
+    case 8:
+      return "SIT"
+    case 9:
+      return "DZ"
+    case 10:
+      return "HDZ"
+    case 11:
+      return "ODZ"
+    case 12:
+      return "SM"
+    case 13:
+      return "LG"
+    case 14:
+      return "MD"
+    case 15:
+      return "KM"
+    case 16:
+      return "Cm"
+    case 17:
+      return "Mile"
+    default:
+      return "Kun"
+  }
+}
+
   searchProduct() {
     this.setState({
       currentProduct: null,
@@ -142,180 +196,189 @@ class Products extends Component {
     console.log(prodduct);
     console.log(res_data);
     console.log(this.state)
+
     return (
       <div id="productsmain">
-      <div className="list row">
-        <div className="col-md-8">
-          <div className="input-group mb-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by product name"
-              value={searchProduct}
-              onChange={this.onChangesearchProduct}
-            />
-            <div className="input-group-append">
-              <button
-                className="btn btn-outline-secondary searchbuttom"
-                type="button"
-                onClick={this.searchProduct}
-              >
-                Search
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-6">
-          <h4>Product List</h4>
-
-          {/* <ul className="list-group">
-            {products &&
-              products.map((product, index) => (
-                <div className="list-group-comp">                
-                    <li
-                    className={
-                      "list-group-item " +
-                      (index === currentIndex ? "active" : "")
-                    }
-                    onClick={() => this.setActiveProduct(product, index)}
-                    key={index}
+          <div className="list row">
+              <div className="col-md-8">
+              <div className="input-group mb-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search by product name"
+                  value={searchProduct}
+                  onChange={this.onChangesearchProduct}
+                  data-cy="searchprod"
+                />
+                <div className="input-group-append">
+                  <button
+                    className="btn btn-outline-secondary searchbuttom"
+                    type="button"
+                    onClick={this.searchProduct}
+                    data-cy = "onclicksearch"
                   >
-                    {product.title}
-                  </li>
+                    Search
+                  </button>
                 </div>
+              </div>
+            </div>
+             
+          </div>
+              <div className="row">
+                <div className="col-sm-8 productlist">
+                  <h4>Product List</h4>
 
-              ))}
-          </ul> */}
-               <ul className="list-group">
-            { 
-              res_data.products.map((product, index) => (
-                <div className={
-                  "list-group-item " +
-                  (index === currentIndex ? "active" : "")
-                }
-                onClick={() => this.setActiveProduct(product, index)}
-                key={index}
-                >                
-                    <div className="Name">
-                      
-                    Name :{product.name}
+                  {/* <ul className="list-group">
+                    {products &&
+                      products.map((product, index) => (
+                        <div className="list-group-comp">                
+                            <li
+                            className={
+                              "list-group-item " +
+                              (index === currentIndex ? "active" : "")
+                            }
+                            onClick={() => this.setActiveProduct(product, index)}
+                            key={index}
+                          >
+                            {product.title}
+                          </li>
+                        </div>
+
+                      ))}
+                  </ul> */}
+                      <ul className="list-group lstofitems">
+                    { 
+                      res_data.products.map((product, index) => (
+                        <li className={
+                          "list-group-item " +
+                          (index === currentIndex ? "active" : "")
+                        }
+                        onClick={() => this.setActiveProduct(product, index)}
+                        key={index}
+                        >                
+                            <div className="Name">
+                              
+                            Crop :{product.name}
+                            </div>
+                          
+                          <p className="Time">Price :{product.current_price}</p>
+                          <p className="Time">Before {product.created_at} minutes</p>
+                        </li>
+
+                      ))
+
+                    //  data = Array.from(products.data);
+                    
+                    //  res_data.products.map((product, index) => (
+                    //     <li
+                    //       className={
+                    //         "list-group-item " +
+                    //         (index === currentIndex ? "active" : "")
+                    //       }
+                    //       onClick={() => this.setActiveProduct(product, index)}
+                    //       key={index}
+                    //     >
+                    //       {product.name}
+                    //     </li>
+                    //   ))
+
+
+                      }
+                    </ul>
+
+                  {/* <button
+                    className="m-3 btn btn-sm btn-danger"
+                    onClick={this.removeAllProducts}
+                  >
+                    Remove All
+                  </button> */}
+                </div>
+                <div className="col-sm-4 description ">
+                  {currentProduct ? (
+                    <div>
+                      <h4>Product</h4>
+                      <div>
+                        <label>
+                          <strong>Name:</strong>
+                        </label>{" "}
+                        {currentProduct.name}
+                      </div>
+                      <div>
+                        <label>
+                          <strong>Prod Area:</strong>
+                        </label>{" "}
+                        {currentProduct.production_area}
+                      </div>
+                      <div>
+                        <label>
+                          <strong>Unit ID :</strong>
+                        </label>{" "}
+                        {this.renderUnitId(currentProduct.unit_id)}
+                      </div>
+                    
+                      <div>
+                        <label>
+                          <strong>Curr Price:</strong>
+                        </label>{" "}
+                        {currentProduct.current_price}
+                      </div>
+                      <div>
+                        <label>
+                          <strong>Created By : </strong>
+                        </label>{" "}
+                        {currentProduct.created_by}
+                      </div>
+
+                      <div>
+                        <label>
+                          <strong>Created At : </strong>
+                        </label>{" "}
+                        {currentProduct.created_at}
+                      </div>
+
+                      <div>
+                        <label>
+                          <strong>Last Update Time : </strong>
+                        </label>{" "}
+                        {currentProduct.last_update_time}
+                      </div>
+
+                      {/* <div>
+                        <label>
+                          <strong>Status:</strong>
+                        </label>{" "}
+                        {currentProduct.published ? "Published" : "Pending"}
+                      </div> */}
+
+                      {/* <Link
+                        to={"/info/product/" + currentProduct.id}
+                        state={this.state.tokenValue}
+                        className="badge badge-warning"
+                      >
+                        Edit
+                      </Link> */}
+                        <Link
+                        to={"/info/product/" + currentProduct.id}
+                        // state={this.state.tokenValue}
+                      //   to={{
+                      //     pathname: "/info/product/" + currentProduct.id,
+                      //     state: this.state.tokenValue
+                      // }}
+                        className="editbutton badge badge-warning"
+                        data-cy="editpricebutton"
+                      >
+                        Edit
+                      </Link>
                     </div>
-                  <p className="Time">Price :{product.current_price}</p>
-                  <p className="Time">Before {product.created_at} minutes</p>
+                  ) : (
+                    <div className="clickon">
+                      <br />
+                      <p>Please click on a Product...</p>
+                    </div>
+                  )}
                 </div>
-
-              ))
-
-            //  data = Array.from(products.data);
-             
-            //  res_data.products.map((product, index) => (
-            //     <li
-            //       className={
-            //         "list-group-item " +
-            //         (index === currentIndex ? "active" : "")
-            //       }
-            //       onClick={() => this.setActiveProduct(product, index)}
-            //       key={index}
-            //     >
-            //       {product.name}
-            //     </li>
-            //   ))
-
-
-              }
-            </ul>
-
-          {/* <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllProducts}
-          >
-            Remove All
-          </button> */}
-        </div>
-        <div className="col-md-6 description">
-          {currentProduct ? (
-            <div>
-              <h4>Product</h4>
-              <div>
-                <label>
-                  <strong>Name:</strong>
-                </label>{" "}
-                {currentProduct.name}
               </div>
-              <div>
-                <label>
-                  <strong>Prod Area:</strong>
-                </label>{" "}
-                {currentProduct.production_area}
-              </div>
-              <div>
-                <label>
-                  <strong>Unit ID :</strong>
-                </label>{" "}
-                {currentProduct.unit_id}
-              </div>
-             
-              <div>
-                <label>
-                  <strong>Curr Price:</strong>
-                </label>{" "}
-                {currentProduct.current_price}
-              </div>
-              <div>
-                <label>
-                  <strong>Created By : </strong>
-                </label>{" "}
-                {currentProduct.created_by}
-              </div>
-
-              <div>
-                <label>
-                  <strong>Created At : </strong>
-                </label>{" "}
-                {currentProduct.created_at}
-              </div>
-
-              <div>
-                <label>
-                  <strong>Last Update Time : </strong>
-                </label>{" "}
-                {currentProduct.last_update_time}
-              </div>
-
-              {/* <div>
-                <label>
-                  <strong>Status:</strong>
-                </label>{" "}
-                {currentProduct.published ? "Published" : "Pending"}
-              </div> */}
-
-              {/* <Link
-                to={"/info/product/" + currentProduct.id}
-                state={this.state.tokenValue}
-                className="badge badge-warning"
-              >
-                Edit
-              </Link> */}
-                <Link
-                to={"/info/product/" + currentProduct.id}
-                // state={this.state.tokenValue}
-              //   to={{
-              //     pathname: "/info/product/" + currentProduct.id,
-              //     state: this.state.tokenValue
-              // }}
-                className="badge badge-warning"
-              >
-                Edit
-              </Link>
-            </div>
-          ) : (
-            <div className="clickon">
-              <br />
-              <p>Please click on a Product...</p>
-            </div>
-          )}
-        </div>
-      </div>
+          
       </div>
     );
   }

@@ -54,21 +54,27 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ),
                 );
               } else if (state is NotAuthenticated) {
-                return Text(
-                  " ${state.Msg} ",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Elegant TypeWriter",
-                    // fontSize: 18,
+                return  Container(
+                  // width: 40,
+                  height: 40,
+                  child: Text(
+                    " ${state.Msg} ",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Elegant TypeWriter",
+                      // fontSize: 18,
+                    ),
                   ),
                 );
               } else if (state is UserLoginOnProgressState) {
                 return Container(
-                  width: 20,
-                  height: 20,
+                  width: 40,
+                  height: 40,
                   child: CircularProgressIndicator(
-                      color: Theme.of(context).primaryColor),
+                    color: Theme.of(context).primaryColor,
+                    strokeWidth: 3,
+                  ),
                 );
               }
               return Text(
@@ -141,6 +147,7 @@ class _LoginWidgetState extends State<LoginWidget> {
           child: Stack(children: [
             ElevatedButton.icon(
               style: ButtonStyle(
+                // backgroundColor: Theme.of(context).primaryColor,
                 animationDuration: Duration(seconds: 1),
                 padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(
@@ -178,7 +185,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   if (MatchesPattern(emailController.text, PhoneRegexp) &&
                       (emailController.text.trim()[0] == "0")) {
                     dtext = emailController.text.substring(1);
-                    dtext = "+251"+ dtext;
+                    dtext = "+251" + dtext;
                   }
                   final userSate = await context
                       .read<UserBloc>()

@@ -46,7 +46,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.white,
+                      // color: Colors.white,
+                      color: Colors.lightGreen,
+
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(
                             bottomRight: Radius.elliptical(300, 100)),

@@ -1,5 +1,3 @@
-import 'package:agri_net_frontend/admins/widgets/register_admin_form.dart';
-
 import 'libs.dart';
 
 void main() {
@@ -12,12 +10,16 @@ void main() {
         ..add(GetAllAdminsEvent());
     }),
     BlocProvider(create: (context) {
-      return StoreBloc(storeRepo: StoreRepo(storeProvider: StoreProvider()));
+      return ProductTypeBloc(
+        ProductTypesRepository(ProductTypesProvider()),
+      );
     }),
     BlocProvider(create: (context) {
-      return ProductBloc(
-        repo: ProductRepo(provider: ProductProvider()),
-      )..add(GetProductListEvent());
+      return MyProductsBloc(
+        ProductsRepo(
+          ProductProvider(),
+        ),
+      );
     }),
   ], child: MyHomePage()));
 }
@@ -36,8 +38,7 @@ class MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
         title: 'Agri-Net',
         theme: ThemeData(
-          primaryColor: Color.fromARGB(
-              255, 11, 100, 14), //  MaterialColor(primary, swatch),
+          primaryColor: Colors.green, //  MaterialColor(primary, swatch),
         ),
         initialRoute: AuthScreen.RouteName,
         onGenerateRoute: (setting) {
@@ -76,6 +77,18 @@ class MyHomePageState extends State<MyHomePage> {
               return UserProfileScreen(
                 requestedUser: args,
               );
+            });
+          } else if (route == ProductTypeSelectionScreen.RouteName) {
+            final arguments = setting.arguments as Map<String, dynamic>;
+            ProductTypeState state = (arguments["state"]) as ProductTypeState;
+            List<ProductType> products =
+                arguments["products"] as List<ProductType>;
+            Function callBack = (arguments["callback"] as Function);
+            String text = (arguments["text"] as String);
+
+            return MaterialPageRoute(builder: (context) {
+              return ProductTypeSelectionScreen(
+                  state, products, callBack, text);
             });
           }
         });

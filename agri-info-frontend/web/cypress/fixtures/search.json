@@ -1,0 +1,22 @@
+[
+    {
+        "id": 7,
+        "name": "Bekolo",
+        "production_area": "Goje",
+        "unit_id": 7,
+        "current_price": 500,
+        "created_by": 2,
+        "created_at": 1652510225,
+        "last_update_time": 1653232087
+    },
+    {
+        "id": 4,
+        "name": "Berbere",
+        "production_area": "Goojam",
+        "unit_id": 1,
+        "current_price": 50000,
+        "created_by": 2,
+        "created_at": 1652508219,
+        "last_update_time": 1653566586
+    }
+]

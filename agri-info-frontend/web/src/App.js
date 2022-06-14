@@ -12,10 +12,11 @@ import SuperControlAdmins from './components/pages/SuperControlAdmins';
 import SuperAdminAddPr from './components/imports/SuperAdminAddPr';
 import SuperAdminRegAdmin from './components/imports/SuperAdminRegisterAdmin';
 import Broadreceive from './components/pages/BroadcastRec';
-import BroadCreate from './components/pages/BroadcastCreate';
-import SuperProductEdit from './components/imports/SuperProductEdit'
-import SuperEditAdmin from './components/imports/SuperEditAdmin'
+// import BroadCreate from './components/pages/BroadcastCreate';
+// import SuperProductEdit from './components/imports/SuperProductEdit'
+// import SuperEditAdmin from './components/imports/SuperEditAdmin'
 import SuperAdminDictionary from './components//pages/SuperAdminDictionary'
+import SuperEditDictionary  from './components/imports/SuperAdminDictionaryEdit'
 // import ProductComponent '/components/imports/ProductComponent';
 
 function App() {
@@ -30,14 +31,14 @@ function App() {
         <Route path='/super-admin/products' component={SuperProducts} />
         {/* <Route path='/products' exact component={Products} /> */}
         <Route path='/super-admin/broadcast/received' exact component={Broadreceive} />
-        <Route path='/super-admin/broadcast/create' exact component={BroadCreate} />
+        {/* <Route path='/super-admin/broadcast/create' exact component={BroadCreate} /> */}
+        {/* <Route path="/super/products/:id" component={SuperProductEdit} /> */}
+        {/* <Route path='/super-admin/admins/:id' component={SuperEditAdmin} /> */}
         <Route path="/info/product/:id" component={ProductComponent} />
-        <Route path="/super/products/:id" component={SuperProductEdit} />
         <Route path='/super-admin/add-product' component={SuperAdminAddPr} />
         <Route path='/super-admin/reg-admin' component={SuperAdminRegAdmin} />
         <Route path='/super-admin/control-admins' component={SuperControlAdmins} />
-        <Route path='/super-admin/admins/:id' component={SuperEditAdmin} />
-       
+        <Route path='/super-admin/edit-dict/:id' component={SuperEditDictionary} />
         <Route path='/super-admin/dic' component={SuperAdminDictionary} />
       </Switch>
     </Router>

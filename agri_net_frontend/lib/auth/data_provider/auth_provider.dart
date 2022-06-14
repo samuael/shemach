@@ -81,16 +81,18 @@ class AuthProvider {
         headers: {"Content-Type": "application/json"},
       );
 
-      print(
-          "You have the following response body ${response.body} and response status ${response.statusCode} DD:");
       if (response.statusCode == 200) {
         var body = jsonDecode(response.body) as Map<String, dynamic>;
 
         StaticDataStore.HEADERS = response.headers;
         StaticDataStore.ROLE = body["role"];
         StaticDataStore.USER_TOKEN = body["token"];
+        // print("\n\n\n\n\n\n\n\n\n");
+        // print(body);
+        // print(StaticDataStore.USER_TOKEN);
+        // print(body["token"]);
+        // print("\n\n\n\n\n\n\n\n\n");
         if (StaticDataStore.ROLE == ROLE_ADMIN) {
-          print("AMIN ADMIN ADMIN ADMIN");
           return UsersLoginResponse(
               statusCode: response.statusCode,
               msg: body["msg"],
@@ -98,7 +100,6 @@ class AuthProvider {
               role: body["role"]);
         }
         if (StaticDataStore.ROLE == ROLE_MERCHANT) {
-          print("Merchant");
           return UsersLoginResponse(
               statusCode: response.statusCode,
               msg: body["msg"],
@@ -106,7 +107,6 @@ class AuthProvider {
               role: body["role"]);
         }
         if (StaticDataStore.ROLE == ROLE_AGENT) {
-          print("AGNET AGENTTTTTTTTTTTTTTTTTTT");
           return UsersLoginResponse(
               statusCode: response.statusCode,
               msg: body["msg"],
@@ -114,7 +114,6 @@ class AuthProvider {
               role: body["role"]);
         }
         if (StaticDataStore.ROLE == ROLE_SUPERADMIN) {
-          print("SuperAdminnnnnnnnnn");
           return UsersLoginResponse(
               statusCode: response.statusCode,
               msg: "${body["msg"]}",
