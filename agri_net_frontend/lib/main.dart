@@ -1,3 +1,5 @@
+import 'package:path/path.dart';
+
 import 'libs.dart';
 
 void main() {
@@ -14,6 +16,11 @@ void main() {
         ProductTypesRepository(ProductTypesProvider()),
       );
     }),
+    BlocProvider(
+      create: (context) {
+        return StoreBloc(storeRepo: StoreRepo(storeProvider: StoreProvider()));
+      },
+    ),
     BlocProvider(create: (context) {
       return MyProductsBloc(
         ProductsRepo(
