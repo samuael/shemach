@@ -13,6 +13,7 @@ class ProductsSuper extends Component {
     this.setActiveProduct = this.setActiveProduct.bind(this);
     this.removeAllProducts = this.removeAllProducts.bind(this);
     this.searchProduct = this.searchProduct.bind(this);
+    this.renderUnitId = this.renderUnitId.bind(this);
 
     this.state = {
       tokenValue: this.props.location.state,
@@ -57,7 +58,14 @@ class ProductsSuper extends Component {
   componentDidMount() {
     console.log(this.props.location.state);
     console.log(this.state.tokenValue);
+    var tokenn = window.token;
     this.retrieveProducts();
+
+    //  if(!tokenn){
+    //   this.props.history.push('/')
+    //  }else{
+    //   this.retrieveProducts();
+    //  }
   }
 
   onChangesearchProduct(e) {
@@ -107,6 +115,47 @@ class ProductsSuper extends Component {
       });
   }
 
+renderUnitId(id) {
+    switch (id) {
+      case 1:
+        return "Kg"
+      case 2:
+        return "g"
+      case 3:
+        return "Kun"
+      case 4:
+        return "Ton"
+      case 5:
+        return "L"
+      case 6:
+        return "M3"
+      case 7:
+        return "Gal"
+      case 8:
+        return "SIT"
+      case 9:
+        return "DZ"
+      case 10:
+        return "HDZ"
+      case 11:
+        return "ODZ"
+      case 12:
+        return "SM"
+      case 13:
+        return "LG"
+      case 14:
+        return "MD"
+      case 15:
+        return "KM"
+      case 16:
+        return "Cm"
+      case 17:
+        return "Mile"
+      default:
+        return "Kun"
+    }
+}
+
   searchProduct() {
     this.setState({
       currentProduct: null,
@@ -130,6 +179,7 @@ class ProductsSuper extends Component {
 
   render() {
     const { searchProduct, res_data, currentProduct, currentIndex } = this.state;
+    console.log(currentProduct);
     console.log(res_data);
     return (
     <div id="productsuper">
@@ -165,11 +215,15 @@ class ProductsSuper extends Component {
                     state: this.state.tokenValue
                 }}
               >
-                    <i className="fa-solid fa-plus"></i>Add Product
+                    <i data-cy="superaddpro" className="fa-solid fa-plus"></i>Add Product
               </Link>
               </button>
           </div>
-        <div className="col-md-6">
+       
+        </div>
+    
+      <div className="row">
+        <div className="col-md-9">
           <h4>Product List</h4>
 
           <ul className="list-group">
@@ -184,23 +238,23 @@ class ProductsSuper extends Component {
                 >                
                     <div className="Name">
                       
-                    Product type :{product.name}
+                    Crop Name :{product.name}
                     </div>
                   <p className="Place">Price :{product.current_price}</p>
-                  <p className="Price"> Before :{product.created_at}</p>
+                  <p className="Price"> Before :{product.created_at} min</p>
                 </div>
 
               ))}
           </ul>
 
           <button
-            className="m-3 btn btn-sm btn-danger"
+            className="mt-4 btn btn-sm btn-danger removebutton"
             onClick={this.removeAllProducts}
           >
             Remove All
           </button>
         </div>
-        <div className="col-md-6 description">
+        <div className="col-md-3 description">
           {currentProduct ? (
             <div>
               <h4>Product</h4>
@@ -226,7 +280,7 @@ class ProductsSuper extends Component {
                 <label>
                   <strong>Unit ID:</strong>
                 </label>{" "}
-                {currentProduct.unit_id}
+                {this.renderUnitId(currentProduct.unit_id)}
               </div>
               <div>
                 <label>

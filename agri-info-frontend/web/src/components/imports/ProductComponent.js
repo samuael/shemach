@@ -161,7 +161,7 @@ export default class ProductComponent extends Component {
                 <nav class="navbar navbar-expand-lg">
                 <div class="container">
                 {/* <Link to='/' className='navbar-logoo'><i class="fa-solid fa-list"></i>  Agri-Net <i class="fa-solid fa-building-wheat"></i> </Link> */}
-                <Link class="navbar-brand text-white" to='/products'><i class="fa-solid fa-angles-left"></i> Products </Link>
+                <Link class="returnback navbar-brand text-white" to='/products'><i class="fa-solid fa-angles-left"></i> Products </Link>
                 {/* <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nvbCollapse" aria-controls="nvbCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button> */}
@@ -255,6 +255,7 @@ export default class ProductComponent extends Component {
                   className="form-control"
                   id="currentprice"
                   value={this.state.currentProduct.current_price}
+                  data-cy="currentproprice"
                  onChange={this.onChangeCurrPrice}
                 />
               </div>
@@ -294,8 +295,8 @@ export default class ProductComponent extends Component {
 
             <button
               type="submit"
-              className="badge badge-success btn btn-primary"
-            
+              className="updatebutton badge badge-success btn btn-primary"
+              data-cy="updatepricebutton"
               onClick={this.updateProduct}
             >
               Update

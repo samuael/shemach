@@ -1,0 +1,17 @@
+{
+    "msg": "authenticated",
+    "errors": {},
+    "status_code": 200,
+    "user": {
+        "id": 25,
+        "firstname": "Fantahun",
+        "lastname": "Fekadu",
+        "email": "fantahunfekadu1@gmail.com",
+        "created_at": 1653028585,
+        "lang": "",
+        "broadcasted_messages": 0,
+        "Createdby": 0
+    },
+    "role": "infoadmin",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTQwNTU1NjEsIklEIjoyNSwiRmlyc3RuYW1lIjoiIiwiTGFzdG5hbWUiOiIiLCJFbWFpbCI6ImZhbnRhaHVuZmVrYWR1MUBnbWFpbC5jb20iLCJSb2xlIjoiaW5mb2FkbWluIiwiTGFuZyI6ImFtaCJ9.cZaiDV1cx6EuIJcLJsTEHlj0rG5K53IsMGZ575c1gfo"
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               

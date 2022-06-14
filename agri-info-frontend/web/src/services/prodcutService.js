@@ -108,13 +108,64 @@ class prodcutService {
 
  // Superadmin SearchWord
   superSearchWord(data, token) {
-    return http.get("/dictionary/translate", data, {
+    return http.post("/dictionary/translate", data, {
       headers: {
         "Authorization"  : "Bearer "+ token ,
       }
     }
     );
   }
+
+   // Superadmin ListRecent
+   superListRecent(token) {
+    return http.get(`/dictionaries?offset=0&limit=9`, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+  }
+
+   // Superadmin getDict
+   getdict(id, token) {
+    return http.get(`/superadmin/dictionary?id=${id}`, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+  }
+
+   // Superadmin updatedict
+   updatedict(data, token) {
+    return http.put("/superadmin/dictionary",data, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+  }
+
+     // Superadmin deletewprd
+    //  deleteDictWord(data, token) {
+    //   return http.delete(`/superadmin/dictionary?id=${data.id}`,data, {
+    //     headers: {
+    //       "Authorization"  : "Bearer "+ token ,
+    //     }
+    //   }
+    //   );
+    // }
+
+    deleteDictWord(id, token) {
+      return http.delete(`/superadmin/dictionary?id=${id}`, {
+        headers: {
+          "Authorization"  : "Bearer "+ token ,
+        }
+      }
+      );
+    }
+
+
 
     //Superadmin SearchWord
     // superSearchWord(data) {
@@ -124,7 +175,7 @@ class prodcutService {
 
 
   deleteInfoAdmin(id, token) {
-    return http.delete(`/superadmin/admin?id=${id}`, {
+    return http.delete(`/superadmin/infoadmin?id=${id}`, {
       headers: {
         "Authorization"  : "Bearer "+ token ,
       }

@@ -1,0 +1,6 @@
+{
+    "baseUrl": "http://localhost:3000",
+    "watchForFileChanges": false,
+    "pageLoadTimeout": 20000,
+    "defaultCommandTimeout": 20000
+}

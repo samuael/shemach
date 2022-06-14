@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cypress/instrument-cra": "^1.4.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -15,12 +16,17 @@
     "react-redux": "^7.2.7",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
+    "react-use-websocket": "^3.0.0",
+    "react-websocket": "^2.1.0",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.3",
+    "websocket": "^1.0.34",
+    "ws": "^8.5.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts -r @cypress/instrument-cra start",
+    "cypress:open": "cypress open",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -41,6 +47,11 @@
     ]
   },
   "devDependencies": {
-    "cors": "^2.8.5"
+    "@cypress/code-coverage": "^3.10.0",
+    "babel-plugin-istanbul": "^6.1.1",
+    "cors": "^2.8.5",
+    "cypress": "^9.5.1",
+    "istanbul-lib-coverage": "^3.2.0",
+    "nyc": "^15.1.0"
   }
 }
