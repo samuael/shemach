@@ -1,4 +1,4 @@
-import "../../libs.dart";
+import '../../libs.dart';
 
 class ProductTypeSelectionScreen extends StatefulWidget {
   static const String RouteName = "/product_type_selection_screen";
