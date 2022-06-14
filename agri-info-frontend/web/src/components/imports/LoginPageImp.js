@@ -118,13 +118,8 @@ class LoginPageImp extends Component {
   onHandleSubmit(event) {
     event.preventDefault();
     var data = {
-    //   firstname: this.state.firstname,
-    //   lastname: this.state.lastname,
       email: this.state.email,
       password: this.state.password
-      // measurement:this.state.measurement,
-      // prevprice: this.state.prevprice,
-      // currentprice: this.state.currentprice
     };
 
     console.log(data);
@@ -132,7 +127,9 @@ class LoginPageImp extends Component {
 
     UserService.userlogin(data)
       .then(response => {
+        console.log(response.data);
        // this.props.history.push('/products')
+       if (response.data.status_code === 200){
         this.setState({
           // id: response.data.id,
           // firstname: response.data.firstname,
@@ -143,15 +140,15 @@ class LoginPageImp extends Component {
           errors: response.data.errors,
           status_code: response.data.status_code,
           user: {
-            id: response.data.id,
-            firstname: response.data.firstname,
-            lastname: response.data.lastname,
-            email: response.data.email,
-            created_at: response.data.created_at,
-            lang: response.data.lang,
-            password: response.data.password,
-            broadcasted_messages: response.data.broadcasted_messages,
-            Createdby: response.data.created_at
+            id: response.data.user.id,
+            firstname: response.data.user.firstname,
+            lastname: response.data.user.lastname,
+            email: response.data.user.email,
+            created_at: response.data.user.created_at,
+            lang: response.data.user.lang,
+            password: response.data.user.password,
+            broadcasted_messages: response.data.user.broadcasted_messages,
+            Createdby: response.data.user.created_at
           },
           role: response.data.role,
           token: response.data.token
@@ -163,10 +160,14 @@ class LoginPageImp extends Component {
         //   submitted: true
         });
 
-        const data = this.state;
+        var data = this.state;
+        console.log(this.state.user);
         console.log(data);
         console.log(data.token);
         window.token = data.token;
+        window.id = data.user.id;
+        console.log(data.user.id);
+        console.log(window.id);
 
        // this.props.history.push('/products')
         if (response.data.role === "infoadmin"){
@@ -193,9 +194,24 @@ class LoginPageImp extends Component {
         console.log(response.data);
         console.log(this.state);
         console.log(this.state.token);
+
+      }else {
+        this.setState({
+          msg: response.data.msg,
+          errors: response.data.errors,
+          status_code: response.data.status_code
+        })
+        console.log(response.data);
+        console.log(this.state);
+      }
       })
       .catch(e => {
+        this.setState({
+          msg:e.msg,
+          // errors: e.errors
+        })
         console.log(e);
+        console.log(this.state)
       });
   }
 
@@ -225,6 +241,7 @@ class LoginPageImp extends Component {
   }
 
   render() {
+  var  {msg} = this.state;
   console.log(this.state);
    console.log(this.state.msg)
     return (
@@ -255,22 +272,27 @@ class LoginPageImp extends Component {
                                         {/* <form> */}
                                         <form method="POST" onSubmit={this.onHandleSubmit}>
                                             <div className="form-group form-box">
-                                                <input type="text" id="email" onChange={this.onChangeEmail} className="input-text" placeholder="Email Address" />
+                                                <input type="text" id="email" onChange={this.onChangeEmail} className="input-text" placeholder="Email Address" data-cy="email" />
                                                 <i className="icon email"></i>
                                             </div>
 
                                             <div className="form-group form-box">
-                                                <input type="text" id="password" onChange={this.onChangePassword} className="input-text" placeholder="Password" />
+                                                <input type="text" id="password" onChange={this.onChangePassword} className="input-text" placeholder="Password" data-cy="password"/>
                                                 <i className="icon lock"></i>
                                             </div>
 
                                             {/* {
                                                 errorMessage && <ErrorAlter errorMessage={errorMessage} clearError={() => setError(undefined) }></ErrorAlter>
                                             } */}
-                                             <p>{this.state.msg}</p>
+                                             <h1>{this.state.msg}</h1>
 
                                             <div className="form-group">
-                                            <button className="btn primary-btn">Login</button>
+                                            <button 
+                                            className="loginbutton btn primary-btn" 
+                                            data-cy="submit"
+                                            >
+                                              Login
+                                            </button>
 
                                            
 

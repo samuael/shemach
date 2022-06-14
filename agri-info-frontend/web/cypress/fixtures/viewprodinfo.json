@@ -1,0 +1,26 @@
+{
+    "status_code": 200,
+    "products": [
+        {
+            "id": 5,
+            "name": "Ater",
+            "production_area": "Bale",
+            "unit_id": 2,
+            "current_price": 6000,
+            "created_by": 2,
+            "created_at": 1652508263,
+            "last_update_time": 1652882529
+        },
+        {
+            "id": 6,
+            "name": "Baela",
+            "production_area": "Bale",
+            "unit_id": 5,
+            "current_price": 2000,
+            "created_by": 2,
+            "created_at": 1652508302,
+            "last_update_time": 1653232051
+        }
+    ],
+    "msg": "product found"
+}

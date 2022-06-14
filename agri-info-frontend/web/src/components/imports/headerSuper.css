@@ -49,6 +49,9 @@
     margin-right: 0.5rem;
   }
 
+  #navitemsuper .logout{
+    margin-left: 25rem;
+  }
   #navitemsuper .nav-menu {
     display: grid;
     /* grid-template-columns: repeat(5, auto);

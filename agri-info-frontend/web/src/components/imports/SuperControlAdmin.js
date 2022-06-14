@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import adminService from '../../services/prodcutService'
+import { withRouter } from 'react-router-dom'
 import { Link } from "react-router-dom";
 import './superControlAdmin.css'
 import photo from '../../assets/18.jpg'; 
 
 
-export default class SuperControlAdmin extends Component {
+class SuperControlAdmin extends Component {
   constructor(props) {
     super(props);
     this.onChangeSearchAdmin = this.onChangeSearchAdmin.bind(this);
@@ -19,7 +20,9 @@ export default class SuperControlAdmin extends Component {
     this.state = {
      
         admins: [],
-      prodducts: [
+        msg: "",
+        status_code: 0,
+        prodducts: [
     //     {
     //     id: 1,
     //     title: 'admin 1',
@@ -127,8 +130,13 @@ export default class SuperControlAdmin extends Component {
     console.log(token); 
     adminService.deleteInfoAdmin(this.state.currentAdmin.id, token)
       .then(response => {
+        this.setState({
+          msg: response.data.msg
+        });
+      //  console.log(response.data);
         console.log(response.data);
-        this.props.history.push('/super-admin/control-admins')
+        console.log(this.props.history);
+        this.props.history.push('/super-admin/reg-admin')
       })
       .catch(e => {
         console.log(e);
@@ -136,7 +144,7 @@ export default class SuperControlAdmin extends Component {
   }
 
   render() {
-    const { searchAdmin, admins, currentAdmin, currentIndex } = this.state;
+    const { msg, admins, currentAdmin, currentIndex } = this.state;
     console.log(admins);
  //  console.log(res_data);
 
@@ -166,9 +174,13 @@ export default class SuperControlAdmin extends Component {
         </div> 
         <div className="col-md-2">
               <button className="btn btn-primary add-button">
-              <Link  className="linkadd" to="/super-admin/reg-admin"><i class="fa-solid fa-plus"></i>Register Admin</Link>
+              <Link  data-cy="regadminbtn" className="linkadd" to="/super-admin/reg-admin"><i class="fa-solid fa-plus"></i>Register Admin</Link>
               </button>
           </div>
+      
+        </div>
+        <div className="row">
+
         <div className="col-md-6 adminlistcontainer">
           <h4>Admin List</h4>
 
@@ -184,7 +196,8 @@ export default class SuperControlAdmin extends Component {
                 >    
                 <div className="row eachadmins mt-4"> 
                     <div className="col-sm-4">
-                        <img src={admin.imgurl} alt="photo" className="adminimg"></img>
+                    <img src={photo} alt="photo" className="adminimg"></img>
+                        {/* <img src={admin.imgurl} alt="photo" className="adminimg"></img> */}
                     </div>   
 
                     <div className="col-sm-7">
@@ -195,11 +208,9 @@ export default class SuperControlAdmin extends Component {
                     <p className="Price">Email :{admin.email}</p>
                     </div> 
 
-                    <div className="col-sm-1">
+                    {/* <div className="col-sm-1">
                     <button  className="deleteadmin" onClick={this.deleteAdmin}><i class="fa-solid fa-trash-can"></i></button>
-
-
-                    </div>        
+                    </div>         */}
                         
                  </div>
              </div> 
@@ -220,7 +231,8 @@ export default class SuperControlAdmin extends Component {
               <h4>Admin</h4>
               <div className="row">
                 <div className="col-sm-6">
-                            <img src={admins.imgurl} alt="photo" className="adminimglarge"></img>
+                <img src={photo} alt="photo" className="adminimglarge"></img>
+                            {/* <img src={admins.imgurl} alt="photo" className="adminimglarge"></img> */}
                 </div> 
              <div className="col-sm-6">
                 <div>
@@ -299,6 +311,7 @@ export default class SuperControlAdmin extends Component {
             </button>
 
               </div>
+              
             </div>
           ) : (
             <div className="clickon">
@@ -312,5 +325,7 @@ export default class SuperControlAdmin extends Component {
     );
   }
 }
+
+export default withRouter(SuperControlAdmin)
 
 

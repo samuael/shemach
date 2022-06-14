@@ -313,28 +313,9 @@ export default class SuperAdminAddPr extends Component {
   }
 
   newProduct() {
-    // this.state = {
-    // //  response_data: {
-    //     msg: "",
-    //     product: {
-    //       id: null,
-    //       name: "",
-    //       production_area: "",
-    //       unit_id: 0,
-    //       current_price: 0,
-    //       created_by:0,
-    //       created_at: 0,
-    //       last_update_time: 0
-    //     },
-    //     status_code: 0,
-    // //  }
-    //     submitted: false
-    // };
 
 
-    this.state = {
-      //    tkValue: this.props.location.state,
-        //  response_data: {
+    this.setState({
             msg: "",
             product: {
               id: null,
@@ -349,7 +330,7 @@ export default class SuperAdminAddPr extends Component {
             status_code: 0,
         //  },
           submitted: false
-        };
+        });
   }
 
   render() {
@@ -361,10 +342,10 @@ export default class SuperAdminAddPr extends Component {
          <header id="navitem">
                 <nav class="navbar navbar-expand-lg">
                 <div class="container">
-                <Link class="navbar-brand text-white" to='/super-admin/products'><i class="fa-solid fa-angles-left"></i> Home </Link>
+                <Link data-cy="returnback" class="navbar-brand text-white" to='/super-admin/products'><i class="fa-solid fa-angles-left"></i> Home </Link>
                 <div class="collapse navbar-collapse" id="nvbCollapse">
                     <ul class="navbar-nav ml-auto nav-menu">
-                        <p class="nav-item pl-1 nav-link"> Super Admin Page To Add New Product</p>
+                        <p data-cy="supernav" class="nav-item pl-1 nav-link"> Super Admin Page To Add New Product</p>
                     </ul>
                 </div>
                 </div>
@@ -391,12 +372,13 @@ export default class SuperAdminAddPr extends Component {
                 value={this.state.name}
                 onChange={this.onChangeProdName}
                 name="title"
+                data-cy="prodname"
               />
             </div>
 
             <div className="form-group">
               <label htmlFor="unitId">Unit ID</label>
-              <select name="unitId" id="unitId" required className="form-control" value={this.state.unit_id} onChange={this.onChangeProdUnitId} type="number">
+              <select data-cy="produnit" name="unitId" id="unitId" required className="form-control" value={this.state.unit_id} onChange={this.onChangeProdUnitId} type="number">
                   <optgroup label="Mass">
                   <option value="" selected disabled hidden>Choose here</option>
                       <option value="1">Kg</option>
@@ -450,6 +432,7 @@ export default class SuperAdminAddPr extends Component {
                 value={this.state.production_area}
                 onChange={this.onChangeProdArea}
                 name="prodarea"
+                data-cy="prodarea"
               />
             </div>
 
@@ -475,11 +458,12 @@ export default class SuperAdminAddPr extends Component {
                 value={this.state.current_price}
                 onChange={this.onChangeCurrPrice}
                 name="currprice"
+                data-cy="prodprice"
               />
             </div>
 
 
-            <button onClick={this.saveProduct} className="btn btn-success">
+            <button  data-cy="submitprod" onClick={this.saveProduct} className="btn btn-success">
               Submit
             </button>
           </div>

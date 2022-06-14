@@ -2,6 +2,11 @@ import 'package:agri_net_frontend/libs.dart';
 
 class StoreEvent {}
 
+class MyStoresEvent extends StoreEvent {
+  int ownerId;
+  MyStoresEvent({required this.ownerId});
+}
+
 class CreateNewStoreEvent extends StoreEvent {
   int ownerID;
   String storeName;

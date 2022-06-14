@@ -187,7 +187,7 @@ class SuperAdminRegisterAdmin extends Component {
                 <Link class="navbar-brand text-white" to='/super-admin/control-admins'><i class="fa-solid fa-angles-left"></i> Home </Link>
                 <div class="collapse navbar-collapse" id="nvbCollapse">
                     <ul class="navbar-nav ml-auto nav-menu">
-                        <p class="nav-item pl-1 nav-link"> Super Admin Page To Register New Admin</p>
+                        <p data-cy="superadminheader" class="nav-item pl-1 nav-link"> Super Admin Page To Register New Admin</p>
                     </ul>
                 </div>
                 </div>
@@ -214,6 +214,7 @@ class SuperAdminRegisterAdmin extends Component {
                 value={this.state.firstname}
                 onChange={this.onChangeFirstName}
                 name="firstname"
+                data-cy ="firstname"
               />
             </div>
 
@@ -227,6 +228,7 @@ class SuperAdminRegisterAdmin extends Component {
                 value={this.state.lastname}
                 onChange={this.onChangeLastName}
                 name="lastname"
+                data-cy="lastname"
               />
             </div>
 {/* 
@@ -253,6 +255,7 @@ class SuperAdminRegisterAdmin extends Component {
                 value={this.state.measurement}
                 onChange={this.onChangeEmail}
                 name="measurement"
+                data-cy="email"
               />
             </div>
             {/* <div className="form-group">
@@ -269,7 +272,7 @@ class SuperAdminRegisterAdmin extends Component {
             </div> */}
 
 
-            <button onClick={this.saveAdmin} className="btn btn-success">
+            <button data-cy="reginfo" onClick={this.saveAdmin} className="btn btn-success">
               Register
             </button>
 

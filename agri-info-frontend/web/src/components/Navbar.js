@@ -33,7 +33,7 @@ function Navbar() {
       <nav className='navbar'>
         <Link to='/' className='navbar-logo' onClick={closeMobileMenu}>
           Agri-Net 
-          <i class="fa-solid fa-building-wheat"></i>
+          <i className="fa-solid fa-building-wheat"></i>
         </Link>
         <div className='menu-icon' onClick={handleClick}>
           <i className={click ? 'fas fa-times' : 'fas fa-bars'} />

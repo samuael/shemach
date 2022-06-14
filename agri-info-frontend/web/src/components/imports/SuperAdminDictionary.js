@@ -13,15 +13,17 @@ class SuperAdminDictionary extends Component {
   //  this.onChangeProdName = this.onChangeProdName.bind(this);
     this.onChangeLanguage = this.onChangeLanguage.bind(this);
     this.onChangeText = this.onChangeText.bind(this);
-   // this.onChangeMeasurement = this.onChangeMeasurement.bind(this);
+    this.refreshList = this.refreshList.bind(this);
+    this.setActiveWord = this.setActiveWord.bind(this);
     this.onChangeTranslation = this.onChangeTranslation.bind(this);
     this.saveDictionary = this.saveDictionary.bind(this);
    this.onChangeSearchWord = this.onChangeSearchWord.bind(this);
-  //  this.response_data = this.response_data.bind(this);
+    this.retrieverecentDicts = this.retrieverecentDicts.bind(this);
+    this.deleteWord = this.deleteWord.bind(this);
      this.searchWord = this.searchWord.bind(this);
 
     this.state = {
-    //   tkValue: this.props.location.state,
+    //  tkValue: this.props.location.state,
     //  response_data: {
         msg: "",
         status_code: 0,
@@ -33,6 +35,7 @@ class SuperAdminDictionary extends Component {
         },
         
     //  },
+        dictionaries: [],
         submitted: false,
         currentWord: null,
         currentIndex: -1,
@@ -46,6 +49,13 @@ class SuperAdminDictionary extends Component {
 //       name: e.target.value
 //       });
 //   }
+
+componentDidMount() {
+  console.log(this.props)
+  this.retrieverecentDicts();
+}
+
+
 
 onChangeSearchWord(e) {
   // const searchWord = e.target.value;
@@ -82,9 +92,39 @@ onChangeSearchWord(e) {
         translation: e.target.value
       });
   }
+
+  refreshList() {
+    this.retrieverecentDicts();
+    this.setState({
+      currentWord: null,
+      currentIndex: -1
+    });
+  }
+
+  setActiveWord(Word, index) {
+    this.setState({
+      currentWord: Word,
+      currentIndex: index
+    });
+  }
   
 
- 
+  retrieverecentDicts() {
+    var token = window.token
+    console.log(token)
+    DictionaryDataService.superListRecent(token)
+      .then(response => {
+        this.setState({
+          msg: response.data.msg,
+          status_code: response.data.status_code,
+          dictionaries: response.data.dictionaries,
+        });
+        console.log(response.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
 
 
   saveDictionary(event) {
@@ -120,15 +160,15 @@ onChangeSearchWord(e) {
             text: response.data.dictionary.text,
             translation: response.data.dictionary.translation
           },
-          // product: {
-          //   id: response.data.product.id,
-          //   name: response.data.product.name,
-          //   production_area: response.data.product.production_area,
-          //   unit_id: response.data.product.unit_id,
-          //   current_price: response.data.product.current_price,
-          //   created_by:response.data.product.current_price,
-          //   created_at: response.data.product.created_at,
-          //   last_update_time: response.data.product.last_update_time
+          // word: {
+          //   id: response.data.word.id,
+          //   name: response.data.word.name,
+          //   Wordion_area: response.data.word.Wordion_area,
+          //   unit_id: response.data.word.unit_id,
+          //   current_price: response.data.word.current_price,
+          //   created_by:response.data.word.current_price,
+          //   created_at: response.data.word.created_at,
+          //   last_update_time: response.data.word.last_update_time
           // },
           
        // }
@@ -142,6 +182,8 @@ onChangeSearchWord(e) {
         console.log(e);
       });
   }
+
+  
 
   searchWord() {
     this.setState({
@@ -162,15 +204,32 @@ onChangeSearchWord(e) {
     DictionaryDataService.superSearchWord(data, token)
       .then(response => {
         console.log(response.data)
-        // this.setState({
-        //   status_code: response.data.status_code,
-        //   dictionary: {
-        //     id: response.data.dictionary.id,
-        //     lang: response.data.dictionary.lang,
-        //     text: response.data.dictionary.text,
-        //     translation: response.data.dictionary.translation
+        this.setState({
+          status_code: response.data.status_code,
+          dictionary: {
+            id: response.data.dictionary.id,
+            lang: response.data.dictionary.lang,
+            text: response.data.dictionary.text,
+            translation: response.data.dictionary.translation
+          },
+         // dictionaries: Object.keys(response.data.dictionary)
+          
+         
+        });
+
+        // var dictionaries = [];
+        // for (var key in this.state.dictionary){
+        //   if(this.state.dictionary.hasOwnProperty(key)){
+        //     var item = this.state.dictionary[key];
+        //     this.dictionaries.push({
+        //       id: item.id,
+        //       lang: item.lang,
+        //       text: item.text,
+        //       translation: item.translation
+        //     });
         //   }
-        // });
+        // }
+        // console.log(this.dictionaries);
         console.log(response.data);
       })
       .catch(e => {
@@ -179,31 +238,38 @@ onChangeSearchWord(e) {
   }
 
 
+  deleteWord() {  
+    
+    var data = {
+      id : this.state.currentWord.id,
+      lang: this.state.currentWord.lang,
+      text: this.state.currentWord.text,
+      translation: this.state.currentWord.translation
+    }
 
-//   newDictionary() {
-//     this.state = {
-//     //  response_data: {
-//         msg: "",
-//         product: {
-//           id: null,
-//           name: "",
-//           production_area: "",
-//           unit_id: 0,
-//           current_price: 0,
-//           created_by:0,
-//           created_at: 0,
-//           last_update_time: 0
-//         },
-//         status_code: 0,
-//     //  }
-//         submitted: false
-//     };
-//   }
+    console.log(data);
+    console.log(data.id);
+    var token  = window.token
+    console.log(token); 
+    console.log(this.state.currentWord.id);
+
+    DictionaryDataService.deleteDictWord(this.state.currentWord.id, token)
+      .then(response => {
+        console.log(response.data);
+        this.searchWord()
+       // this.props.history.push('/super-admin/control-admins')
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
 
   render() {
-  //  const {product} = this.state;
-  //  console.log(product);
-//console.log(response_data.product);
+   const { dictionaries, dictionary, currentIndex, currentWord} = this.state;
+   console.log(dictionaries);
+   console.log(currentWord);
+   console.log(dictionary);
+//console.log(response_data.word);
 //const { searchWord } = this.state;
     return (
 
@@ -220,7 +286,7 @@ onChangeSearchWord(e) {
                             <div className="col-sm-5 mt-4">
                                 <div className="form-group">
                                     <label htmlFor="lang">Choose a Language :</label>
-                                    <select name="lang" id="lang" required  value={this.state.lang} onChange={this.onChangeLanguage} type="text">
+                                    <select data-cy="selectlang" name="lang" id="lang" required  value={this.state.lang} onChange={this.onChangeLanguage} type="text">
                                             <option value="DEFAULT" >Select Language</option>
                                             <option value="amh">Amharic</option>
                                             <option value="oro">Oromic</option>
@@ -266,6 +332,7 @@ onChangeSearchWord(e) {
                                         required
                                         value={this.state.text}
                                         onChange={this.onChangeText}
+                                        data-cy = "inputkey"
                                         />
                                     </div>
                             </div>
@@ -280,12 +347,13 @@ onChangeSearchWord(e) {
                                     required
                                     value={this.state.translation}
                                     onChange={this.onChangeTranslation}
+                                    data-cy = "inputvalue"
                                     />
                                 </div>
                             </div>
 
                             <div className="col-sm-2 mt-4 addbutton">
-                                <button className="btn btn-primary" type="submit" onClick={this.saveDictionary} >Add</button>
+                                <button data-cy="addictbtn" className="btn btn-primary" type="submit" onClick={this.saveDictionary} >Add</button>
                             </div>
 
                             <div className="col-sm-2 mt-4">
@@ -299,47 +367,111 @@ onChangeSearchWord(e) {
                     <div className="row mt-4 ml-5">
                     <div className="col-md-8 col-md-offset-2 main">
                       <h3 className="page-header">Recent Searches</h3>
-
-                      <div className="table">
-                        <table className="table table-striped">
-                          <thead>
-                            <tr>
-                              <th>Language</th>
-                              <th>Key(Eng)</th>
-                              <th>Value</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                          <td>Faniman</td>
-                              <td>Daniman</td>
-                              <td>English</td>
-                              <td><a href="dictionary?id={{Lang.ID}}">edit</a> -  <a href="/dictionary?id={{.ID}}">delete</a></td>
-                            {/* {{range .AllBooks}}
-                            <tr>
-                              <td>{{.ID}}</td>
-                              <td>{{.Name}}</td>
-                              <td>{{.Author}}</td>
-                              <td>{{.Pages}}</td>
-                              <td>{{.PublicationDateStr}}</td>
-                              <td><a href="book.html?id={{Lang.ID}}">edit</a> -  <a href="/delete?id={{.ID}}">delete</a></td>
-                            </tr>
-                            {{end}} */}
-                            {/* <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td><a href="book.html" class="btn btn-primary">New book</a></td>
-                            </tr> */}
-                          </tbody>
-                        </table>
-                      </div>
                     </div>
                 </div>
 
-              </div>
+                <div className="row">
+                    <div className="col-sm-10">
+                    <div>
+                        <table className="table table-striped table-bordered table-primary table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Language</th>
+                            <th scope="col">Key(Eng)</th>
+                            <th scope="col">Value</th>
+                            {/* <th scope="col">Action</th> */}
+                          </tr>
+                        </thead>
+                        </table>
+                  </div>
+
+                  <div className="diclist">
+                  <ul className="list-group">
+            {
+              dictionaries.map((word, index) => (
+                <div className={
+                  "list-group-item " +
+                  (index === currentIndex ? "active" : "")
+                }
+                onClick={() => this.setActiveWord(word, index)}
+                key={index}
+                >                
+                    <div className="row listofdicts">
+                    <p className="col-sm-5">{word.lang}</p>
+                              <p className="col-sm-4 listd">{word.text}</p>
+                              <p className="col-sm-3 listd">{word.translation}</p>
+                              {/* <p className="col-sm-3 listd">
+                              <Link
+                                to={"/super-admin/edit-dict/" }
+                                  className=""
+                                >
+                                  Edit
+                                </Link>   --- 
+
+                                <button
+                                    className="btn-danger"
+                                    onClick={this.deleteWord}
+                                  >
+                                    Delete
+                                </button>
+
+
+                              </p> */}
+                    </div>
+                
+                </div>
+
+              ))}
+          </ul>
+          </div>
+                  </div>
+
+                  
+
+                  <div className="col-sm-2 editing">
+                    {currentWord ? (
+                      <div className="row ">
+                          <div className="col-sm-1 alignbuttons">
+                            <Link
+                            className="linkeditiword"
+                            // to={"/super-admin/edit-dict/" + currentWord.id }
+                            // state = {currentWord}
+
+                            to={{
+                              pathname: "/super-admin/edit-dict/" + currentWord.id,
+                              state: currentWord
+                          }}
+                            >
+                              Edit
+                            </Link>
+                          </div>
+
+                            <div className="col-sm-1">
+                          <button
+                          className="badge badge-danger mr-2 btn btn-primary"
+                          onClick={this.deleteWord}
+                        >
+                          Delete
+                        </button>
+
+                          </div>
+                      </div>
+
+                            
+
+                            
+                    ) : (
+                      <div className="wordclickon">
+                       <p></p>
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+              
+
+      
+         </div>
     
     );
   }

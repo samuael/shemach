@@ -52,6 +52,12 @@ textarea {
     margin-bottom: 5rem;
 }
 
+#dict .table{
+    margin-top: 1rem;
+    /* margin-right: 5rem; */
+    max-width: 90%;
+}
+
 .page-header{
     /* margin-top: 1rem; */
     /* margin-bottom: 5rem; */
@@ -63,4 +69,46 @@ textarea {
     margin-left: 4rem;
     font-size: 15px;
 
+}
+
+/* #dict .listofdicts{
+    
+} */
+
+.diclist {
+    margin-left: 4rem;
+    margin-right: 4.5rem;
+}
+
+.editing{
+    
+        background: white;
+        max-width:fit-content;
+        /* max-width: 500px; */
+        height: fit-content;
+        margin-top: 4.5rem;
+        padding: 1rem 1rem;
+        
+        
+        /* width: 90rem; */
+        /* margin: 0 auto; */
+        align-content: center;
+        box-shadow: 0 0 15px rgba(131, 79, 79, 0.4);
+        border-radius: 10px;
+        text-align: justify;
+        
+      
+      
+}
+
+.linkeditiword {
+    text-decoration: none;
+}
+
+#dict .wordclickon{
+    text-decoration: none;
+}
+
+.alignbuttons {
+    margin-right: 1rem;
 }
