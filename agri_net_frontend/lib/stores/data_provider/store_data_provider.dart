@@ -54,21 +54,29 @@ class StoreProvider {
 
   Future<List<Store>> myStores(int ownerId) async {
     List<Store> myStores = [];
-    var response = await client.get(Uri(
-        scheme: StaticDataStore.SCHEME,
-        host: StaticDataStore.HOST,
-        port: StaticDataStore.PORT,
-        path: "/api/merchant/stores",
-        queryParameters: {"owner": ownerId}));
 
+    final queryParameters = {
+      "id": ownerId,
+    }.map((key, value) => MapEntry(key, value.toString()));
+    var response = await client.get(
+        Uri(
+            scheme: "http",
+            host: StaticDataStore.HOST,
+            port: StaticDataStore.PORT,
+            path: "/api/merchant/stores",
+            queryParameters: queryParameters),
+        headers: {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"});
+    print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200 || response.statusCode == 201) {
       var theStores = jsonDecode(response.body);
       var stores = theStores["stores"];
-      for (int i = 0; i <= stores.length; i++) {
+      for (int i = 0; i < stores.length; i++) {
         var temp = stores[i] as Map<String, dynamic>;
         myStores.add(Store.fromJson(temp));
       }
     }
+    print(myStores);
     return myStores;
   }
 }

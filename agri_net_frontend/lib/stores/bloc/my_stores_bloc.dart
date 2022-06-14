@@ -5,6 +5,14 @@ class StoreBloc extends Bloc<StoreEvent, StoreState>
   StoreRepo storeRepo;
   StoreBloc({required this.storeRepo}) : super(MyStoresInit());
 
+  @override
+  Stream<StoreState> mapEventToState(StoreEvent storeEvent) async* {
+    if (storeEvent is MyStoresEvent) {
+      var myStores = await storeRepo.myStores(storeEvent.ownerId);
+      yield MyStoresState(myStores: myStores);
+    }
+  }
+
   Future<StoreState> createNewStore(
       CreateNewStoreEvent createNewStoreEvent) async {
     var newStoreRespo = await storeRepo.createMerchantStore(

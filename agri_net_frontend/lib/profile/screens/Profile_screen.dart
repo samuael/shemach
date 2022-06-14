@@ -106,47 +106,61 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget myStores(Merchant merchant, context) {
     final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
     User loggedInUser = (_userBloc.state as Authenticated).user;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              "Stores :",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(merchant.storeCount.toString(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        Container(
-            width: MediaQuery.of(context).size.width / 4 - 19,
-            child: Center(
-                child: Row(
-              children: [
-                (widget.requestedUser.id != loggedInUser.id &&
-                        loggedInUser is Admin)
-                    ? ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => new MerchantStoreForm(
-                                        owner: widget.requestedUser,
-                                      )));
-                        },
-                        child: Text("New",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                      )
-                    : Container(),
-              ],
-            )))
-      ],
+    BlocProvider.of<StoreBloc>(context)
+        .add(MyStoresEvent(ownerId: merchant.id));
+    return BlocBuilder<StoreBloc, StoreState>(
+      builder: (context, state) {
+        if (state is MyStoresState) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                  child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new MyStoresScreen(
+                                user: widget.requestedUser,
+                              )));
+                },
+                child: ListTile(
+                  leading: Icon(Icons.store),
+                  title: Text(
+                    "Stores : ${state.myStores.length}",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )),
+              Container(
+                  width: MediaQuery.of(context).size.width / 4 - 19,
+                  child: Row(
+                    children: [
+                      (widget.requestedUser.id != loggedInUser.id &&
+                              loggedInUser is Admin)
+                          ? ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) =>
+                                            new MerchantStoreForm(
+                                              owner: widget.requestedUser,
+                                            )));
+                              },
+                              child: Text("Add",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                            )
+                          : Container(),
+                    ],
+                  ))
+            ],
+          );
+        }
+        return Container();
+      },
     );
   }
 

@@ -213,6 +213,7 @@ class _MerchantStoreFormState extends State<MerchantStoreForm> {
                       onPressed: () async {
                         final bool checker = _trySubmitForm();
                         if (checker) {
+                          print("inside input validation done");
                           final theState = await context
                               .read<StoreBloc>()
                               .createNewStore(CreateNewStoreEvent(
@@ -232,6 +233,7 @@ class _MerchantStoreFormState extends State<MerchantStoreForm> {
                             Navigator.pop(context);
                           }
                         }
+                        print("Outside input validation done");
                       },
                     ),
                   ],
@@ -446,9 +448,9 @@ class _MerchantStoreFormState extends State<MerchantStoreForm> {
   }
 
   bool _trySubmitForm() {
-    final bool isValid = false;
+    bool isValid = false;
     if (_storeFormKey.currentState != null) {
-      _storeFormKey.currentState?.validate();
+      isValid = _storeFormKey.currentState!.validate();
     }
     return isValid;
     // if (isValid == true) {
