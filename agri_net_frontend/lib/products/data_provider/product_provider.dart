@@ -33,7 +33,7 @@ class ProductProvider {
   }
 
   Future<ProductsResponse> loadMyProductPosts() async {
-    // try {
+    try {
       final Map<String, String> headers = {
         "authorization": StaticDataStore.HEADERS["authorization"]!
       };
@@ -57,10 +57,44 @@ class ProductProvider {
             msg: STATUS_CODES[response.statusCode] ?? "",
             posts: []);
       }
-    // } catch (e, a) {
-    //   print(e.toString());
-    //   return ProductsResponse(
-    //       statusCode: 999, msg: "connection issue!", posts: []);
-    // }
+    } catch (e, a) {
+      print(e.toString());
+      return ProductsResponse(
+          statusCode: 999, msg: "connection issue!", posts: []);
+    }
+  }
+
+  Future<ProductsResponse> loadProducts(int offset, int limit) async {
+    try {
+      final Map<String, String> headers = {
+        "authorization": StaticDataStore.HEADERS["authorization"]!
+      };
+      var response = await client.get(
+          Uri(
+            scheme: "http",
+            host: StaticDataStore.HOST,
+            port: StaticDataStore.PORT,
+            path: "/api/posts",
+            queryParameters: {
+              "offset": "$offset",
+              "limit": "$limit",
+            },
+          ),
+          headers: headers);
+      if (response.statusCode >= 100 && response.statusCode < 500) {
+        final bosy = jsonDecode(response.body);
+        print(bosy);
+        return ProductsResponse.fromJson(bosy);
+      } else {
+        return ProductsResponse(
+            statusCode: response.statusCode,
+            msg: STATUS_CODES[response.statusCode] ?? "",
+            posts: []);
+      }
+    } catch (e, a) {
+      print(e.toString());
+      return ProductsResponse(
+          statusCode: 999, msg: "connection issue!", posts: []);
+    }
   }
 }

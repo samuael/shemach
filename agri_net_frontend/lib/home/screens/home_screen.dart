@@ -18,6 +18,9 @@ class HomeScreen extends StatelessWidget {
         myProductsBlocProvider.add(LoadMyProductsEvent());
       }
     }
+
+    final productsPostProvider = BlocProvider.of<ProductsBloc>(context);
+    productsPostProvider.add(LoadProductsEvent());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
@@ -25,7 +28,10 @@ class HomeScreen extends StatelessWidget {
         leading: AgriNetLogo(),
         title: UserScreenAppBarDrawer(),
       ),
-      body: CollapsingSideBarDrawer(),
+      body: Stack(children: [
+        ProductPostsList(),
+        CollapsingSideBarDrawer(),
+      ]),
     );
   }
 }

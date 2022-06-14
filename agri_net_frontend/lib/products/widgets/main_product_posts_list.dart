@@ -1,13 +1,13 @@
 import "../../libs.dart";
 
-class ProductsList extends StatefulWidget {
+class ProductPostsList extends StatefulWidget {
   @override
-  State<ProductsList> createState() {
-    return ProductsListState();
+  State<ProductPostsList> createState() {
+    return ProductPostsListState();
   }
 }
 
-class ProductsListState extends State<ProductsList> {
+class ProductPostsListState extends State<ProductPostsList> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,8 +46,8 @@ class ProductsListState extends State<ProductsList> {
             ),
           ),
           // --------------------------------------------
-          BlocBuilder<MyProductsBloc, ProductState>(builder: (context, state) {
-            if (state is MyProductsLoadSuccess) {
+          BlocBuilder<ProductsBloc, ProductState>(builder: (context, state) {
+            if (state is ProductsLoadSuccess) {
               return Column(
                 children: state.posts
                     .map<ProductPostItem>((e) => ProductPostItem(post: e))

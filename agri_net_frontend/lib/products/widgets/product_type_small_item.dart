@@ -17,18 +17,22 @@ class _ProductTypeSmallViewState extends State<ProductTypeSmallView> {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded( flex : 3,
+          Expanded(
+            flex: 3,
             child: Text(
               translate(
                 lang,
                 "Current Price",
               ),
-              style : TextStyle(fontWeight:FontWeight.bold, ),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.left,
             ),
           ),
-          Expanded( flex : 1,child: Text(":")),
-          Expanded( flex : 3,
+          Expanded(flex: 1, child: Text(":")),
+          Expanded(
+            flex: 3,
             child: Text(
               "${widget.type.currentPrice}",
               textAlign: TextAlign.left,
@@ -39,18 +43,22 @@ class _ProductTypeSmallViewState extends State<ProductTypeSmallView> {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded( flex : 3,
+          Expanded(
+            flex: 3,
             child: Text(
               translate(
                 lang,
                 "Last updated at",
               ),
-              style : TextStyle(fontWeight:FontWeight.bold, ),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.left,
             ),
           ),
-          Expanded( flex : 1,child: Text(":")),
-          Expanded( flex : 3,
+          Expanded(flex: 1, child: Text(":")),
+          Expanded(
+            flex: 3,
             child: Text(
               UnixTime(widget.type.lastUpdateTime).toString() +
                   " " +
@@ -62,107 +70,117 @@ class _ProductTypeSmallViewState extends State<ProductTypeSmallView> {
       ),
     ];
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(
-          color: Theme.of(context).primaryColor,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 5,
-      ),
-      margin: EdgeInsets.symmetric(
-        horizontal: 5,
-        vertical: 5,
-      ),
-      width: MediaQuery.of(context).size.width * 0.5,
-      child: Column(
-        children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Expanded(
-              flex: 3,
-              child: Text(
-                translate(
-                  lang,
-                  "Type",
-                ),
-                style : TextStyle(fontWeight:FontWeight.bold, ),
-                textAlign: TextAlign.left,
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(
+              color: Theme.of(context).primaryColor,
             ),
-            Expanded(flex: 1, child: Text(":")),
-            Expanded(
-              flex: 3,
-              child: Text(widget.type.name,
-                  textAlign: TextAlign.left, style: TextStyle()),
-            ),
-          ]),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 5,
+          ),
+          margin: EdgeInsets.symmetric(
+            horizontal: 5,
+            vertical: 5,
+          ),
+          width: MediaQuery.of(context).size.width * 0.8,
+          child: Column(
             children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  translate(
-                    lang,
-                    "Unit",
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    translate(
+                      lang,
+                      "Type",
+                    ),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                  style : TextStyle(fontWeight:FontWeight.bold, ),
-                  textAlign: TextAlign.left,
                 ),
-              ),
-              Expanded(flex: 1, child: Text(":")),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  widget.type.getProductUnit().long,
-                  textAlign: TextAlign.left,
+                Expanded(flex: 1, child: Text(":")),
+                Expanded(
+                  flex: 3,
+                  child: Text(widget.type.name,
+                      textAlign: TextAlign.left, style: TextStyle()),
                 ),
+              ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      translate(
+                        lang,
+                        "Unit",
+                      ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Expanded(flex: 1, child: Text(":")),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      widget.type.getProductUnit().long,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ],
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      translate(
+                        lang,
+                        "Production Area",
+                      ),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                  Expanded(flex: 1, child: Text(":")),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      widget.type.productionArea,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ],
+              ),
+              ...(more ? moreinfo : [SizedBox()]),
+              Positioned(
+                right: 0,
+                bottom: 5,
+                child: IconButton(
+                  icon: Icon(more ? Icons.expand_less : Icons.expand_more),
+                  onPressed: () {
+                    setState(() {
+                      this.more = !this.more;
+                    });
+                  },
+                  color: Colors.blue,
+                ),
+              )
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 3,
-                child: Text(
-                  translate(
-                    lang,
-                    "Production Area",
-                  ),
-                  style : TextStyle(fontWeight:FontWeight.bold, ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Expanded(flex: 1, child: Text(":")),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  widget.type.productionArea,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ],
-          ),
-          ...(more ? moreinfo : [SizedBox()]),
-          Positioned(
-            right: 0,
-            bottom: 5,
-            child: IconButton(
-              icon: Icon(more ? Icons.expand_less : Icons.expand_more),
-              onPressed: () {
-                setState(() {
-                  this.more = !this.more;
-                });
-              },
-              color: Colors.blue,
-            ),
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 }

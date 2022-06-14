@@ -22,9 +22,9 @@ class StoreSelectionScreenState extends State<StoreSelectionScreen> {
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
-          margin: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(10),
             child: Container(
               color: Colors.white,
               padding: EdgeInsets.symmetric(
@@ -38,41 +38,38 @@ class StoreSelectionScreenState extends State<StoreSelectionScreen> {
                     Container(
                       child: SingleChildScrollView(
                         child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: (context.read<StoreBloc>().state
-                                  is MyStoresState)
-                              ? (context.read<StoreBloc>().state
-                                      as MyStoresState)
-                                  .myStores
-                                  .map((p) {
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      widget.callBack(p);
-                                      await Future.delayed(
-                                          Duration(seconds: 1));
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                      ),
-                                      margin: EdgeInsets.symmetric(
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          5,
-                                        ),
-                                        border: Border.all(
-                                          color: Theme.of(context)
-                                              .primaryColorLight,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Column(children: [
+                            mainAxisSize: MainAxisSize.min,
+                            children: widget.stores.map((p) {
+                              return GestureDetector(
+                                onTap: () async {
+                                  widget.callBack(p);
+                                  await Future.delayed(Duration(seconds: 1));
+                                  Navigator.of(context).pop();
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  margin: EdgeInsets.symmetric(
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      5,
+                                    ),
+                                    border: Border.all(
+                                      color:
+                                          Theme.of(context).primaryColorLight,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
                                             Text(
                                               p.storeName,
                                               style: TextStyle(
@@ -89,34 +86,42 @@ class StoreSelectionScreenState extends State<StoreSelectionScreen> {
                                                     137, 48, 47, 47),
                                               ),
                                             ),
+                                            Text(
+                                              translate(lang, "Address"),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              p.address.UniqueAddressName +
+                                                  "/" +
+                                                  p.address.Region +
+                                                  "/" +
+                                                  p.address.Zone,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
                                           ]),
-                                          Text(p.address.toString()),
-                                          Icon(
-                                            Icons.add,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }).toList()
-                              : [
-                                  Center(
-                                    child: Text(
-                                      translate(
-                                        lang,
-                                        "\tSorry!!\n No store instance is found type found ",
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
+                                      Column(children: [
+                                        IconButton(
+                                          icon:Icon(Icons.location_on_rounded),
+                                          onPressed: (){
+                                            // 
+                                            Navigator.of(context).pop();
+                                          }, 
+                                          color: Colors.red,
+                                        ),
+                                        Icon(
+                                          Icons.add,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ])
+                                    ],
                                   ),
-                                ],
-                        ),
+                                ),
+                              );
+                            }).toList()),
                       ),
                     ),
                   ],

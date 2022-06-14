@@ -388,64 +388,70 @@ class _ProductFormState extends State<ProductForm> {
                     ),
                   ),
                   StaticDataStore.ROLE == ROLE_MERCHANT
-                      ? Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 3,
-                            horizontal: 10,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Container(
-                                  width: 100,
-                                  child: Text(
-                                    translate(lang, "Select Store "),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
+                      ? BlocBuilder<StoreBloc, StoreState>(
+                          builder: (ctx, state) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 3,
+                              horizontal: 10,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    width: 100,
+                                    child: Text(
+                                      translate(lang, "Select Store "),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                flex: 5,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Theme.of(context).primaryColor),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: FlatButton(
-                                      child: Text(
-                                        "Select Stores",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).primaryColor,
+                                Expanded(
+                                  flex: 5,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: FlatButton(
+                                        child: Text(
+                                          "Select Stores",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
                                         ),
-                                      ),
-                                      onPressed: () {
-                                        if (context.watch<StoreBloc>().state
-                                            is MyStoresState) {
-                                          final stores =
-                                              (context.watch<StoreBloc>().state
-                                                      as MyStoresState)
-                                                  .myStores;
-                                          Navigator.of(context).pushNamed(
-                                              StoreSelectionScreen.RouteName,
-                                              arguments: {
-                                                "stores": stores,
-                                                "callback": setMyText,
-                                              });
-                                        }
-                                      }),
-                                ),
-                              )
-                            ],
-                          ),
-                        )
+                                        onPressed: () {
+                                          if (state
+                                              is MyStoresState) {
+                                            final stores = (state as MyStoresState)
+                                                .myStores;
+                                            Navigator.of(context).pushNamed(
+                                                StoreSelectionScreen.RouteName,
+                                                arguments: {
+                                                  "stores": stores,
+                                                  "callback": setMyText,
+                                                });
+                                          } else {
+                                            print(
+                                                "It is not succesful blocs state");
+                                          }
+                                        }),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        })
                       : SizedBox(),
                   SizedBox(
                     height: 20,

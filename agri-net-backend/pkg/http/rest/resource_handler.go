@@ -39,6 +39,7 @@ func (rhandler *ResourceHandler) GetProductImage(c *gin.Context) {
 	diabledImageServer, _ := strconv.ParseBool(os.Getenv("DISALED_IMAGE_SERVER"))
 	imgres, er := rhandler.Service.GetImageByID(ctx, uint64(id))
 	if er != nil {
+		println(er.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -58,6 +59,7 @@ func (rhandler *ResourceHandler) GetProductImage(c *gin.Context) {
 			}
 		}
 		if er != nil || imgres == nil {
+			println(er.Error())
 			c.Writer.WriteHeader(http.StatusNotFound)
 			return
 		}
@@ -66,12 +68,14 @@ func (rhandler *ResourceHandler) GetProductImage(c *gin.Context) {
 		f, err = os.Open("../../templates/dummy_img/eudhWR.jpg")
 	}
 	if err != nil {
+		println(err.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 	defer f.Close()
 	fi, err := f.Stat()
 	if err != nil {
+		println(err.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -84,11 +88,15 @@ func (rhandler *ResourceHandler) GetBlurredImage(c *gin.Context) {
 	id, er := strconv.Atoi(c.Param("id"))
 	ctx := c.Request.Context()
 	if id <= 0 || er != nil {
+		// println(er.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 	imgres, er := rhandler.Service.GetImageByID(ctx, uint64(id))
 	if er != nil || imgres == nil {
+		if er != nil {
+			println(er.Error())
+		}
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -102,12 +110,14 @@ func (rhandler *ResourceHandler) GetBlurredImage(c *gin.Context) {
 		f, err = os.Open("../../templates/dummy_img/C2Dtn6_shJ.jpg")
 	}
 	if err != nil {
+		println(err.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 	defer f.Close()
 	fi, err := f.Stat()
 	if err != nil {
+		println(err.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}
