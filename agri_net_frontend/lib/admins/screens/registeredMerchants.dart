@@ -193,6 +193,8 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
     return ListView.builder(
         itemCount: merchants.length,
         itemBuilder: (context, counter) {
+          BlocProvider.of<StoreBloc>(context)
+              .add(MyStoresEvent(ownerId: merchants[counter].id));
           return Padding(
             padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
             child: Material(

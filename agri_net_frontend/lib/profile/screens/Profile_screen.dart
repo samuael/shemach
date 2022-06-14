@@ -106,8 +106,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget myStores(Merchant merchant, context) {
     final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
     User loggedInUser = (_userBloc.state as Authenticated).user;
-    BlocProvider.of<StoreBloc>(context)
-        .add(MyStoresEvent(ownerId: merchant.id));
+    // BlocProvider.of<StoreBloc>(context)
+    //     .add(MyStoresEvent(ownerId: merchant.id));
     return BlocBuilder<StoreBloc, StoreState>(
       builder: (context, state) {
         if (state is MyStoresState) {
