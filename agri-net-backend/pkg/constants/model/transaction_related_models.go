@@ -59,5 +59,7 @@ type TransactionNotification struct {
 	TransactionID           uint64                  `json:"tr_id"`
 	TransactionNotification *TransactionRequest     `json:"transaction_request"`
 	KebdNotification        *KebdAmountRequest      `json:"kebd_request"`
+	PaymentNotification     *TransactionPayment     `json:"payment_notification"`
+	ContractNotification    *Contract               `json:"contract_notification"`
 	GuaranteeNotification   *GuaranteeAmountRequest `json:"guarantee_request"`
 }

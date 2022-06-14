@@ -40,7 +40,7 @@ func (repo *AgentRepo) RegisterAgent(ctx context.Context, agent *model.Agent) (i
 			return -4, er
 		}
 		log.Println(er.Error())
-		return agentID /*addressID, */, er
+		return agentID, er
 	}
 	agent.FieldAddress.ID = uint(addressID)
 	era := repo.DB.QueryRow(ctx, "select address_id from admin where id=$1", agent.ID).Scan(&addressID)
@@ -174,4 +174,15 @@ func (repo *AgentRepo) SearchAgent(ctx context.Context, phone, name string, crea
 		agents = append(agents, agent)
 	}
 	return agents, nil
+}
+
+//
+func (repo *AgentRepo) DeleteAgentByID(ctx context.Context, agentid uint64) error {
+	uc, er := repo.DB.Exec(ctx, "delete from agent where id=$1", agentid)
+	if er != nil {
+		return nil
+	} else if uc.RowsAffected() == 0 {
+		return errors.New("no record was deleted")
+	}
+	return nil
 }

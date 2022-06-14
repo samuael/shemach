@@ -1,4 +1,6 @@
 package service
 
-type INotificationService interface{}
-type NotificationService struct{}
+type INotificationService interface {
+}
+type NotificationService struct {
+}

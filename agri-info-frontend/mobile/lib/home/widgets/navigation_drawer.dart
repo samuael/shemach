@@ -1,5 +1,6 @@
+import "package:flutter_bloc/flutter_bloc.dart";
+import 'package:mobile/auth/auth.dart';
 import "../../libs.dart";
-// import 'package:flutter_svg/svg.dart';
 
 class NavigationDrawer extends StatelessWidget {
   NavigationDrawer({Key? key}) : super(key: key);
@@ -66,16 +67,24 @@ class NavigationDrawer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // backgroundImage:
-                  //     AssetImage('assets/image_assets/user1.jpg')),
                   Container(
-                      margin: EdgeInsets.only(top: 135, left: 90),
-                      width: MediaQuery.of(context).size.width,
-                      child: Text(
-                        "nathyalem@aait.com",
-                        style: TextStyle(
-                            fontFamily: "Roboto", fontStyle: FontStyle.italic),
-                      )),
+                    margin: EdgeInsets.only(top: 135, left: 90),
+                    width: MediaQuery.of(context).size.width,
+                    child: Text(
+                      (context.read<AuthBloc>().state
+                              is AuthSubscriberAuthenticated)
+                          ? (context.read<AuthBloc>().state
+                                  as AuthSubscriberAuthenticated)
+                              .subscriber
+                              .fullname
+                          : "Agri-Info-Systems",
+                      style: TextStyle(
+                        fontFamily: "Roboto",
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               Container(
@@ -89,7 +98,8 @@ class NavigationDrawer extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).pushNamed(SubScreen1.RouteName);
+                          context.read<IndexBloc>().add(3);
+                          Navigator.of(context).pop();
                         },
                         child: Container(
                             padding: EdgeInsets.symmetric(
@@ -116,16 +126,17 @@ class NavigationDrawer extends StatelessWidget {
                             )),
                       ),
                       Container(
+                        color: Colors.black54,
+                        child: SizedBox(
+                          height: 1,
+                          width: 200,
+                        ),
+                      ),
+                      Container(
                         padding:
                             EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                         child: Row(
                           children: [
-                            // SvgPicture.asset(
-                            //   "assets/icons/settings_black_24dp (1).svg",
-                            //   color: Colors.white,
-                            //   width: 20,
-                            //   height: 20,
-                            // ),
                             Icon(Icons.settings,
                                 color: Theme.of(context).primaryColor),
                             Container(
@@ -143,6 +154,13 @@ class NavigationDrawer extends StatelessWidget {
                           ],
                         ),
                       ),
+                      Container(
+                        color: Colors.black54,
+                        child: SizedBox(
+                          height: 1,
+                          width: 200,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -153,12 +171,6 @@ class NavigationDrawer extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                 child: Row(
                   children: [
-                    // SvgPicture.asset(
-                    //   'assets/icons/logout_black_24dp (1).svg',
-                    //   color: Colors.white,
-                    //   width: 20,
-                    //   height: 20,
-                    // ),
                     Icon(Icons.logout, color: Theme.of(context).primaryColor),
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 10),

@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +12,6 @@ import (
 	_ "github.com/samuael/agri-net/agri-net-backend/api"
 	"github.com/samuael/agri-net/agri-net-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/middleware"
-	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 // Route returns an http handler for the api.
@@ -65,7 +63,7 @@ func Route(
 	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
 
 	// web socket end points
-	router.GET("/api/connection/subscriber", rules.AuthenticatedSubscriber(), communicationHandler.SubscriberHandleWebsocketConnection)
+	router.GET("/api/connection/subscriber/:id", communicationHandler.SubscriberHandleWebsocketConnection)
 	router.GET("/api/connection/admins/:id", communicationHandler.AdminsHandleWebsocketConnection)
 
 	// message related end points
@@ -91,9 +89,11 @@ func Route(
 
 	// agents related enpoints
 	router.POST("/api/admin/agent/new", rules.Authenticated(), rules.Authorized(), agenthandler.RegisterAgent)
+	router.DELETE("/api/admin/agent/:id", rules.Authenticated(), rules.Authorized(), agenthandler.DeleteAgentByID)
 
 	// merchants related endpoints
 	router.POST("/api/admin/merchant/new", rules.Authenticated(), rules.Authorized(), merchanthandler.RegisterMerchant)
+	router.DELETE("/api/admin/merchant/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.DeleteMerchantByID)
 
 	// CXP(  Commodity exchage participant ) related routes
 	router.POST("/api/cxp/account/confirm", userhandler.ConfirmTempoCXP)
@@ -116,7 +116,10 @@ func Route(
 	// This routes are applicable for only Merchants and Agents
 	router.POST("/api/cxp/post/new", rules.Authenticated(), rules.Authorized(), crophandler.CreateProduct)
 	router.POST("/api/cxp/post/images/:postid", rules.Authenticated(), rules.Authorized(), crophandler.UploadProductImages)
+
 	router.GET("/api/posts", rules.Authenticated(), crophandler.Getposts)
+	router.GET("/api/cxp/posts", rules.Authenticated(), crophandler.GetMyPosts)
+
 	router.GET("/api/post/:id", rules.Authenticated(), crophandler.GetPostByID)
 
 	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)
@@ -132,20 +135,20 @@ func Route(
 	router.POST("/api/cxp/transaction/amend", rules.Authenticated(), rules.Authorized(), transactionhandler.TransactionAmendmenRequest)
 	router.GET("/api/merchant/transaction/request/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.AcceptAmendmentRequest)
 	router.POST("/api/merchant/transaction/request/ammend", rules.Authenticated(), rules.Authorized(), transactionhandler.PerformAmend)
+	// ------------------------------------------------------------------------------------------------------------------------
 	router.POST("/api/cxp/transaction/request/kebd", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestKebd)
+	router.POST("/api/merchant/transaction/kebd/request/amendment", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestKebdRequestAmendment)
+	router.POST("/api/merchant/transaction/kebd/amend", rules.Authenticated(), rules.Authorized(), transactionhandler.AmendKebdRequest)
+
 	router.POST("/api/merchant/transaction/request/guarantee", rules.Authenticated(), rules.Authorized(), transactionhandler.RequestGuaranteePayment)
 	router.GET("/api/cxp/transaction/seller/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.SellerAcceptedTransaction)
 	router.GET("/api/merchant/transaction/buyer/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.BuyerAcceptTransaction)
 	router.GET("/api/cxp/mytransactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyTransactionNotifications)
+	router.GET("/api/cxp/transaction/reactivate/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.ReactivateTransaction)
 
-	router.GET("/something/:id", func(c *gin.Context) {
-		fmt.Println(string(helper.MarshalThis(c.Request.Header)))
-		_, password, _ := c.Request.BasicAuth()
-		c.Writer.Write((helper.MarshalThis(map[string]string{"Username": c.Param("id"), "Password": password})))
-	})
 	router.RouterGroup.Use(FilterDirectory())
 	{
-		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"images/"))
+		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")))
 	}
 	return router
 }

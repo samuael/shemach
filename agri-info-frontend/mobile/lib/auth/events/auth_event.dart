@@ -22,3 +22,12 @@ class AuthSubscriberAuthenticatedEvent extends AuthEvent{
     required this.subscriber, 
     required this.token});
 }
+
+class AuthAddSubscription extends AuthEvent{
+  int productID;
+  AuthAddSubscription(this.productID);
+}
+class AuthRemoveSubscription extends AuthEvent{
+  int productID;
+  AuthRemoveSubscription(this.productID);
+}

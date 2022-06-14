@@ -118,7 +118,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 horizontal: 20,
               ),
               child: TextField(
-                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                // inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                 keyboardType: TextInputType.number,
                 cursorColor: Theme.of(context).primaryColorLight,
                 controller: phoneController,
@@ -418,6 +418,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     .pushNamed(ConfirmationScreen.RouteName, arguments: {
                   "fullname": fullnameController.text,
                   "phone": phoneController.text,
+                  "islogin" : false,
                 });
               },
               child: Text(

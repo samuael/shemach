@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
@@ -23,19 +25,24 @@ type IMerchantHandler interface {
 	SubscribeForProduct(c *gin.Context)
 	UnsubscriberForProduct(c *gin.Context)
 	MerchantsSearch(c *gin.Context)
+	DeleteMerchantByID(c *gin.Context)
 }
 
 type MerchantHandler struct {
-	Service     merchant.IMerchantService
-	UserService user.IUserService
+	Service        merchant.IMerchantService
+	UserService    user.IUserService
+	PaymentService payment.IPaymentService
 }
 
 func NewMerchantHandler(
 	service merchant.IMerchantService,
-	userser user.IUserService) IMerchantHandler {
+	userser user.IUserService,
+	paymentservice payment.IPaymentService,
+) IMerchantHandler {
 	return &MerchantHandler{
-		Service:     service,
-		UserService: userser,
+		Service:        service,
+		UserService:    userser,
+		PaymentService: paymentservice,
 	}
 }
 
@@ -109,6 +116,25 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			c.JSON(resp.StatusCode, resp)
 			return
 		}
+		// chech payment for the
+		_, er := mhandler.PaymentService.ValidateInvoice(ctx, &model.HellocashInvoiceRequest{
+			Amount:      50,
+			Description: "Please complete this payment to continue to the transaction!",
+			From:        input.Phone,
+			Currency:    "ETB",
+		})
+		if er != nil && !strings.Contains(er.Error(), "undefined account") {
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Msg = translation.Translate(input.Lang, "internal problem, please try again later!")
+			c.JSON(resp.StatusCode, resp)
+			return
+		} else if er != nil && strings.Contains(er.Error(), "undefined account") {
+			resp.StatusCode = http.StatusExpectationFailed
+			resp.Msg = translation.Translate(input.Lang, "there is no valid account with this phone number")
+			c.JSON(resp.StatusCode, resp)
+			return
+		}
+		ctx, _ = context.WithTimeout(ctx, time.Second*15)
 		tempo := &model.TempoCXP{
 			CreatedAt: uint64(time.Now().Unix()),
 			Phone:     input.Phone,
@@ -123,7 +149,7 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			Remark:     translation.Translate(session.Lang, `This is your confirmation and temporary password code`),
 		}
 		// mhandler.OtpService <- otpResponse
-		er := mhandler.UserService.RegisterTempoCXP(ctx, tempo)
+		er = mhandler.UserService.RegisterTempoCXP(ctx, tempo)
 		if er != nil {
 			if strings.Contains(er.Error(), "duplicate key value violates unique constraint") {
 				println(er.Error())
@@ -161,8 +187,11 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			merchant.Address = &model.Address{}
 		}
 		status, _ := mhandler.Service.RegisterMerchant(ctx, merchant)
+		if er != nil {
+			resp.StatusCode = http.StatusInternalServerError
+			resp.Msg = translation.TranslateIt(er.Error())
+		}
 		if status == -1 {
-			// unauthorized
 			resp.StatusCode = http.StatusUnauthorized
 			resp.Msg = translation.TranslateIt("you are not authorized to create this merchant instance")
 		} else if status == -2 {
@@ -291,14 +320,43 @@ func (mhandler *MerchantHandler) MerchantsSearch(c *gin.Context) {
 		limit = offset + 10
 	}
 	merchants, er := mhandler.Service.SearchMerchants(ctx, phone, name, uint64(createdBy), uint(offset), uint(limit))
-	if er != nil {
+	if er != nil && strings.Contains(er.Error(), "no record was deleted") {
 		response.StatusCode = http.StatusNotFound
 		response.Msg = translation.Translate(session.Lang, "mercahts not found ")
+	} else if er != nil {
+		response.StatusCode = http.StatusInternalServerError
+		response.Msg = translation.Translate(session.Lang, "can't delete the merchant instance")
+	} else {
+		response.StatusCode = http.StatusOK
+		response.Msg = translation.Translate(session.Lang, "merchants found")
+		response.Merchants = merchants
+	}
+	c.JSON(response.StatusCode, response)
+}
+
+func (mhandler *MerchantHandler) DeleteMerchantByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	response := &struct {
+		StatusCode int    `json:"status_code"`
+		Msg        string `json:"msg"`
+	}{}
+	merchantid, er := strconv.Atoi(c.Param("id"))
+	if er != nil || merchantid <= 0 {
+		response.Msg = translation.Translate(session.Lang, "invalid merchant id")
+		response.StatusCode = http.StatusBadRequest
 		c.JSON(response.StatusCode, response)
 		return
 	}
+	er = mhandler.Service.DeleteMerchantByID(ctx, uint64(merchantid))
+	if er != nil {
+		response.Msg = translation.Translate(session.Lang, "can't found a merchant instance with this id")
+		response.StatusCode = http.StatusNotFound
+		c.JSON(response.StatusCode, response)
+		return
+	}
+	response.Msg = translation.Translate(session.Lang, "merchant deleted succesfuly")
 	response.StatusCode = http.StatusOK
-	response.Msg = translation.Translate(session.Lang, "merchants found")
-	response.Merchants = merchants
 	c.JSON(response.StatusCode, response)
+	return
 }

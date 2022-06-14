@@ -7,16 +7,17 @@ const String ROLE_INFOADMIN = "infoadmin";
 const String ROLE_ADMIN = "admin";
 
 class StaticDataStore {
-// 192.168.203.52  ALLE
-// 10.5.194.220 STUDENT
-// 10.5.228.227 STAFF
-  static const String HOST = "192.168.43.52";
+  // static const String HOST = "192.168.43.208";
+  static const String HOST = "127.0.0.1";
   static const int PORT = 8080;
-
-  static const String SCHEME = "http://";
+  static const String SCHEME = "http";
   static String get URI {
-    return "$SCHEME$HOST:$PORT";
+    return "$SCHEME://$HOST:$PORT/";
   }
+
+  static Map<String, String> headers = {
+    "Authorization" : "Bearer $USER_TOKEN",
+  };
 
   static String USER_TOKEN = "";
   static String TOKEN = "";

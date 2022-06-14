@@ -1,5 +1,4 @@
 import '../../libs.dart';
-import '../../theme.dart';
 
 class CollapsingSideBarDrawer extends StatefulWidget {
   CollapsingSideBarDrawer();
@@ -30,7 +29,7 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 5,
+      // elevation: 5,
       child: AnimatedBuilder(
           animation: animationController,
           builder: (context, widget) {

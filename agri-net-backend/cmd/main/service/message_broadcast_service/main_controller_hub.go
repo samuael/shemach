@@ -9,6 +9,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/state"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/message"
+	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
 )
 
 type MainBroadcastHub struct {
@@ -56,6 +57,7 @@ func (mainbh *MainBroadcastHub) Run() {
 				message, status, er := mainbh.MessageService.SaveMessage(ctx)
 				if (status != state.STATUS_OK) || (er != nil) {
 				}
+				println(string(helper.MarshalThis(message)))
 				mainbh.BroadcastNewMessage(message)
 			}
 		case update := <-mainbh.ProductUpdate:
@@ -64,6 +66,7 @@ func (mainbh *MainBroadcastHub) Run() {
 			}
 		case <-ticker.C:
 			{
+				tm.Println(tm.Color("Running", tm.RED))
 			}
 		}
 	}

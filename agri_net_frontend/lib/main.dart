@@ -1,27 +1,25 @@
-import 'package:agri_net_frontend/admins/widgets/register_admin_form.dart';
-
 import 'libs.dart';
 
 void main() {
-  runApp(
-    MultiBlocProvider(providers: [
-    BlocProvider<AuthBloc>(
-        create: (context) => AuthBloc(
-              repo: AuthRepo(provider: AuthProvider()),
-            )),
+  runApp(MultiBlocProvider(providers: [
     BlocProvider<UserBloc>(
-      create: (context) =>
-          UserBloc(userRepo: UserRepo(userProvider: UserProvider())),
+      create: (context) => UserBloc(repo: UserRepo(provider: AuthProvider())),
     ),
     BlocProvider(create: (context) {
-      return AdminsBloc(
-          adminsRepo: AdminsRepo(adminsProvider: AdminsProvider()))
+      return AdminsBloc(adminsRepo: AdminsRepo(adminsProvider: UserProvider()))
         ..add(GetAllAdminsEvent());
     }),
     BlocProvider(create: (context) {
-      return ProductBloc(
-        repo: ProductRepo(provider: ProductProvider()),
-      )..add(GetProductListEvent());
+      return ProductTypeBloc(
+        ProductTypesRepository(ProductTypesProvider()),
+      );
+    }),
+    BlocProvider(create: (context) {
+      return MyProductsBloc(
+        ProductsRepo(
+          ProductProvider(),
+        ),
+      );
     }),
   ], child: MyHomePage()));
 }
@@ -37,15 +35,10 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    // if (MyHomePage.once == 0) {
-    //   context.read<AdminsBloc>().add(GetAllUsersEvent());
-    //   MyHomePage.once++;
-    // }
     return MaterialApp(
         title: 'Agri-Net',
         theme: ThemeData(
           primaryColor: Colors.green, //  MaterialColor(primary, swatch),
-          canvasColor: Colors.white,
         ),
         initialRoute: AuthScreen.RouteName,
         onGenerateRoute: (setting) {
@@ -58,25 +51,15 @@ class MyHomePageState extends State<MyHomePage> {
             return MaterialPageRoute(builder: (context) {
               return ProductScreen();
             });
-          } else if (route == ProfileScreen.RouteName) {
-            return MaterialPageRoute(builder: (context) {
-              return ProfileScreen();
-            });
           } else if (route == RegisteredMerchantsScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return RegisteredMerchantsScreen();
             });
-          }
-          // else if (route == ContractScreen.RouteName) {
-          //   return MaterialPageRoute(builder: (context) {
-          //     return ContractScreen();
-          //   });
-          // } else if (route == NotificationScreen.RouteName) {
-          //   return MaterialPageRoute(builder: (context) {
-          //     return NotificationScreen();
-          //   });
-          // }
-          else if (route == HomeScreen.RouteName) {
+          } else if (route == RegisteredAgentsScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return RegisteredAgentsScreen();
+            });
+          } else if (route == HomeScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return HomeScreen();
             });
@@ -87,6 +70,25 @@ class MyHomePageState extends State<MyHomePage> {
           } else if (route == RegisterAdminPage.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return RegisterAdminPage();
+            });
+          } else if (route == UserProfileScreen.RouteName) {
+            User args = setting.arguments as User;
+            return MaterialPageRoute(builder: (context) {
+              return UserProfileScreen(
+                requestedUser: args,
+              );
+            });
+          } else if (route == ProductTypeSelectionScreen.RouteName) {
+            final arguments = setting.arguments as Map<String, dynamic>;
+            ProductTypeState state = (arguments["state"]) as ProductTypeState;
+            List<ProductType> products =
+                arguments["products"] as List<ProductType>;
+            Function callBack = (arguments["callback"] as Function);
+            String text = (arguments["text"] as String);
+
+            return MaterialPageRoute(builder: (context) {
+              return ProductTypeSelectionScreen(
+                  state, products, callBack, text);
             });
           }
         });

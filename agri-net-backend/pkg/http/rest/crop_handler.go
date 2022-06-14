@@ -31,6 +31,7 @@ type ICropHandler interface {
 	UploadProductImages(c *gin.Context)
 	Getposts(c *gin.Context)
 	GetPostByID(c *gin.Context)
+	GetMyPosts(c *gin.Context)
 }
 type CropHandler struct {
 	Service         crop.ICropService
@@ -339,6 +340,51 @@ func (chandler CropHandler) UploadProductImages(c *gin.Context) {
 	res.Msg = fmt.Sprintf("%d %s", len(images), translation.Translate(session.Lang, "images uploaded successfuly"))
 	res.BluredImageRoutes = blurredImageRoutes
 	res.ImageRoutes = imageRoutes
+	c.JSON(res.StatusCode, res)
+}
+
+func (chandler *CropHandler) GetMyPosts(c *gin.Context) {
+	ctx := c.Request.Context()
+	session := ctx.Value("session").(*model.Session)
+	res := &struct {
+		Msg        string        `json:"msg,omitempty"`
+		StatusCode int           `json:"status_code"`
+		Posts      []*model.Crop `json:"posts,omitempty"`
+	}{}
+	offset, er := strconv.Atoi(c.Query("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(c.Query("limit"))
+	if er != nil {
+		limit = offset + 10
+	}
+	var posts []*model.Crop
+	if session.Role == state.AGENT {
+		stores, er := chandler.StoreService.GetMerchantStores(ctx, session.ID)
+		if er != nil {
+			res.StatusCode = http.StatusNotFound
+			res.Msg = translation.TranslateIt("posts not found")
+			c.JSON(res.StatusCode, res)
+			return
+		}
+		storeIDS := []uint64{}
+		for x := range stores {
+			storeIDS = append(storeIDS, stores[x].ID)
+		}
+		posts, er = chandler.Service.GetMerchantPosts(ctx, storeIDS, uint(offset), uint(limit))
+	} else {
+		posts, er = chandler.Service.GetAgentPosts(ctx, session.ID, uint(offset), uint(limit))
+	}
+	if er != nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("posts not found")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.Posts = posts
+	res.StatusCode = http.StatusOK
+	res.Msg = translation.TranslateIt("fetched")
 	c.JSON(res.StatusCode, res)
 }
 

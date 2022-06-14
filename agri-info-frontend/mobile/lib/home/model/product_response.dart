@@ -11,7 +11,7 @@ class ProductsResponse {
     return ProductsResponse(
       msg : json["msg"]?? '' ,
       statusCode : json["status_code"]??999,
-      products : ProductType.fromListOfJSON(json["products"])?? [], 
+      products : ProductType.fromListOfJSON(json["products"]), 
     );
   }
 }

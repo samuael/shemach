@@ -22,4 +22,6 @@ type ITransactionRepo interface {
 	GetTransactionNotificationByTransactionID(ctx context.Context, trid uint64) (*model.TransactionRequest, error)
 	GetKebdNotificationByTransactionID(ctx context.Context, trid uint64) (*model.KebdAmountRequest, error)
 	GetGuaranteeNotificationByTransactionID(ctx context.Context, trid uint64) (*model.GuaranteeAmountRequest, error)
+	CreateKebdAmendmentRequest(ctx context.Context, merchantid uint64, input *model.KebdAmountRequest) (int, error)
+	AmendKebdRequest(ctx context.Context, cxpid uint64, input *model.KebdAmountRequest) (int, error)
 }

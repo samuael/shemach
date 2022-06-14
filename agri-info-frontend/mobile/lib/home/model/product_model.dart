@@ -1,3 +1,5 @@
+import 'package:mobile/libs.dart';
+
 class ProductType {
   int id;
   String name;
@@ -25,7 +27,7 @@ class ProductType {
       name: json["name"] ?? "",
       productionArea: json["production_area"] ?? '',
       unitid: json["unit_id"] ?? 1,
-      currentPrice: json["current_price"] ?? 0.0,
+      currentPrice: double.parse("${json["current_price"]}", (el){return 0.0;}),
       createdBy: json["created_by"] ?? 0,
       createdAt: json["created_at"] ?? 0,
       lastUpdateTime: json["last_update_time"] ?? 0,
@@ -36,6 +38,14 @@ class ProductType {
     return jsons.map<ProductType>((a) {
       return ProductType.fromJson(a as Map<String, dynamic>);
     }).toList();
+  }
+
+  ProductUnit getProductUnit() {
+      final punit = getProductunitByID(this.unitid);
+      if (punit==null){
+        return ProductUnit(category:"unknown",id:0, short:"unk", long : "unknown");
+      }
+      return punit;
   }
   
 }
@@ -51,6 +61,8 @@ class ProductUnit {
     required this.short,
     required this.long,
   });
+
+
 }
 
 final productUnits = [

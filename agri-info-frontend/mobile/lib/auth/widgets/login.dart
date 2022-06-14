@@ -59,7 +59,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             horizontal: 20,
           ),
           child: TextField(
-            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+            // inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
             cursorColor: Theme.of(context).primaryColorLight,
             controller: phoneController,
@@ -134,6 +134,12 @@ class _LoginWidgetState extends State<LoginWidget> {
                     logging = false;
                   });
                 }
+              }else {
+                setState(() {
+                    this.message = translate(lang, "please provide valid phone number");
+                    this.messageColor = Colors.red;
+                    logging = false;
+                  });
               }
             },
             icon: Icon(Icons.login),
@@ -153,14 +159,19 @@ class _LoginWidgetState extends State<LoginWidget> {
             ),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Text(
-            translate(lang, message),
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: messageColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: logging
+              ? CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                  strokeWidth: 5,
+                )
+              : Text(
+                  translate(lang, message),
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: messageColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
         ),
         GestureDetector(
           onTap: () {
@@ -168,12 +179,23 @@ class _LoginWidgetState extends State<LoginWidget> {
           },
           child: Container(
             padding: EdgeInsets.all(10),
-            child: Text(
-              "Registration",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  translate( lang , "Registration"),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                    
+                  ),
+                  
+                ),
+                Icon(
+                  Icons.arrow_right,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ],
             ),
           ),
         )
