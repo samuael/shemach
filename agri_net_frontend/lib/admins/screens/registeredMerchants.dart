@@ -14,18 +14,10 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
-    if ((_userBloc.state is Authenticated)) {
-      BlocProvider.of<AdminsBloc>(context).add(GetAllMerchantsEvent(
-          admin: (_userBloc.state as Authenticated).user as Admin));
-    } else {
-      throw Exception("Not an admin");
-    }
-
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Theme.of(context).canvasColor,
-        elevation: 5,
         toolbarHeight: MediaQuery.of(context).size.height / 13,
         leading: IconButton(
             color: Colors.black,
@@ -105,27 +97,30 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
   }
 
   Widget searchBar() {
-    return Center(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 221, 223, 222),
-          borderRadius: BorderRadius.circular(32),
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 25,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).primaryColor),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: TextField(
+        onChanged: (t) {
+          setState(() {
+            // widget.text = t;
+          });
+        },
+        autofocus: true,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
         ),
-        width: MediaQuery.of(context).size.width / 2 - 20,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-          child: TextField(
-            keyboardType: TextInputType.text,
-            cursorColor: Theme.of(context).cardTheme.shadowColor,
-            controller: searchController,
-            decoration: new InputDecoration(
-                border: InputBorder.none,
-                fillColor: Colors.black54,
-                hintText: 'Search',
-                suffixIcon: Icon(
-                  Icons.search,
-                  color: Colors.black,
-                )),
+        // controller: searchController,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          suffixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).primaryColor,
           ),
         ),
       ),
