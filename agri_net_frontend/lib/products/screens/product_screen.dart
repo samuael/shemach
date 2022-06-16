@@ -48,9 +48,6 @@ class _ProductScreenState extends State<ProductScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            productsList = !productsList;
-          });
           if (productsList) {
             pageController.nextPage(
               duration: Duration(
@@ -76,17 +73,23 @@ class _ProductScreenState extends State<ProductScreen> {
         ),
       ),
       body: Container(
-          child: PageView(
-              controller: pageController,
-              onPageChanged: (val) {
-                setState(() {
-                  productsList = !productsList;
-                });
-              },
-              children: [
+        child: PageView(
+          controller: pageController,
+          onPageChanged: (val) {
+            setState(() {
+              if (val == 0) {
+                productsList = true;
+              } else {
+                productsList = false;
+              }
+            });
+          },
+          children: [
             ProductsList(),
             ProductForm(),
-          ])),
+          ],
+        ),
+      ),
     );
   }
 }

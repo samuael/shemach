@@ -10,9 +10,12 @@ class ProductForm extends StatefulWidget {
 
 class _ProductFormState extends State<ProductForm> {
   ProductType? type;
+  Store? selectedStore;
+
   bool negotiablePrice = true;
 
   bool isPosting = false;
+  bool onProgress = false;
 
   TextEditingController searchController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
@@ -26,13 +29,14 @@ class _ProductFormState extends State<ProductForm> {
     });
   }
 
-  Store? selectedStore;
-
   setMyStore(Store? store) {
     setState(() {
       selectedStore = store;
     });
   }
+
+  String message = "";
+  Color messageColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -42,26 +46,31 @@ class _ProductFormState extends State<ProductForm> {
           children: [
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).primaryColor),
+                border: Border.all(color: messageColor),
                 borderRadius: BorderRadius.circular(10),
               ),
               padding: EdgeInsets.symmetric(
-                horizontal: 40,
-                vertical: 30,
+                horizontal: 10,
+                vertical: 10,
               ),
               margin: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 10,
+                vertical: 4,
+                horizontal: 4,
               ),
               width: MediaQuery.of(context).size.width * 0.8,
-              height: 30,
-              child: Text(
-                "I am starting an startup. Fot that, I need an Android app. Its functionality will be like freelance or fiverr. Rest details in ib. I have a very low budget. Skills: Android | iPhone | Java | Mobile App Development | PHP",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+              // height: 30,
+              child: onProgress
+                  ? LinearProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    )
+                  : Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: messageColor,
+                      ),
+                    ),
             ),
             Container(
               padding: EdgeInsets.symmetric(
@@ -436,9 +445,7 @@ class _ProductFormState extends State<ProductForm> {
                                         ),
                                         onPressed: () {
                                           if (state is MyStoresState) {
-                                            final stores =
-                                                (state as MyStoresState)
-                                                    .myStores;
+                                            final stores = state.myStores;
                                             Navigator.of(context).pushNamed(
                                                 StoreSelectionScreen.RouteName,
                                                 arguments: {
@@ -466,11 +473,16 @@ class _ProductFormState extends State<ProductForm> {
                       GestureDetector(
                         onTap: () async {
                           isPosting = false;
+                          message = "";
+                          messageColor = Colors.white;
                           if (type != null &&
                               quantityController.text != "" &&
                               descriptionController.text != "" &&
                               quantityController.text != "" &&
                               priceController.text != "") {
+                            setState(() {
+                              onProgress = true;
+                            });
                             final response = await context
                                 .read<MyProductsBloc>()
                                 .createProductPost(
@@ -485,12 +497,71 @@ class _ProductFormState extends State<ProductForm> {
                                     negotiablePrice: negotiablePrice,
                                   ),
                                 );
+                            setState(() {
+                              onProgress = false;
+                            });
                             if (response.statusCode == 200 ||
                                 response.statusCode == 201) {
                               context
                                   .read<MyProductsBloc>()
                                   .add(AddNewProduct(response.crop!));
+                              setState(() {
+                                message = translate(
+                                    lang, "post created succesfully!");
+                                messageColor = Colors.green;
+                              });
+                            } else {
+                              setState(() {
+                                message = translate(lang, response.msg);
+                                messageColor = Colors.red;
+                              });
                             }
+                          } else if (type == null &&
+                              quantityController.text == "" &&
+                              descriptionController.text == "" &&
+                              priceController.text == "") {
+                            setState(
+                              () {
+                                message = translate(lang,
+                                    "please provide product post informations");
+                                messageColor = Colors.red;
+                              },
+                            );
+                            return;
+                          }
+                          if (type == null) {
+                            setState(() {
+                              message += "\n" +
+                                  translate(lang, "select the product type");
+                              messageColor = Colors.red;
+                            });
+                          } else if (quantityController.text == "" ||
+                              int.tryParse(quantityController.text) == 0) {
+                            setState(() {
+                              message += "\n" +
+                                  translate(lang,
+                                      "provide the quantity interms of ") +
+                                  translate(
+                                      lang, "${type!.getProductUnit().long}");
+                              messageColor = Colors.red;
+                            });
+                          }
+                          if (descriptionController.text == "") {
+                            setState(() {
+                              message += "\n" +
+                                  translate(lang,
+                                      "provide a short description about the product");
+                              messageColor = Colors.red;
+                            });
+                          }
+                          if ((priceController.text == "") ||
+                              double.tryParse(priceController.text) == 0) {
+                            setState(() {
+                              message += "\n" +
+                                  translate(
+                                      lang, "provide valid price value > 0.0");
+                              messageColor = Colors.red;
+                            });
                           }
                         },
                         child: ClipRRect(

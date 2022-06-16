@@ -20,7 +20,9 @@ class HomeScreen extends StatelessWidget {
     }
 
     final productsPostProvider = BlocProvider.of<ProductsBloc>(context);
-    productsPostProvider.add(LoadProductsEvent());
+    if (!(productsPostProvider.state is ProductsLoadSuccess)) {
+      productsPostProvider.add(LoadProductsEvent());
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,

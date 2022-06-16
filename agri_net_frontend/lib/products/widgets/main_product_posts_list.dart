@@ -53,6 +53,24 @@ class ProductPostsListState extends State<ProductPostsList> {
                     .map<ProductPostItem>((e) => ProductPostItem(post: e))
                     .toList(),
               );
+            } else if (state is ProductsLoading) {
+              return Center(
+                child: Column(
+                  children: [
+                    CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ),
+                    Text(
+                      translate(lang, "loading ..."),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    )
+                  ],
+                ),
+              );
             } else {
               return Center(
                 child: Column(
@@ -65,8 +83,8 @@ class ProductPostsListState extends State<ProductPostsList> {
                       ),
                       onPressed: () {
                         context
-                            .read<ProductTypeBloc>()
-                            .add(ProductTypesLoadEvent());
+                            .read<ProductsBloc>()
+                            .add(LoadProductsEvent());
                       },
                     )
                   ],

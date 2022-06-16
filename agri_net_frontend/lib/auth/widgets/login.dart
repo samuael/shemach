@@ -54,7 +54,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ),
                 );
               } else if (state is NotAuthenticated) {
-                return  Container(
+                return Container(
                   // width: 40,
                   height: 40,
                   child: Text(
@@ -98,12 +98,12 @@ class _LoginWidgetState extends State<LoginWidget> {
             controller: emailController,
             decoration: InputDecoration(
               labelText: "Email or Phone",
-              fillColor: Colors.lightBlue,
-              hoverColor: Colors.lightBlue,
+              fillColor: Theme.of(context).primaryColorLight,
+              hoverColor: Theme.of(context).primaryColorLight,
               suffixIcon: Icon(Icons.mail_outline),
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.lightBlue,
+                  color: Theme.of(context).primaryColorLight,
                   style: BorderStyle.none,
                 ),
               ),
@@ -147,13 +147,16 @@ class _LoginWidgetState extends State<LoginWidget> {
           child: Stack(children: [
             ElevatedButton.icon(
               style: ButtonStyle(
-                // backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).primaryColor),
                 animationDuration: Duration(seconds: 1),
                 padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(
                     horizontal: 40,
+                    vertical: 10,
                   ),
                 ),
+                elevation: MaterialStateProperty.all<double>(0),
               ),
               onPressed: () async {
                 // checking the validity of input values
