@@ -54,7 +54,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ),
                 );
               } else if (state is NotAuthenticated) {
-                return  Container(
+                return Container(
                   // width: 40,
                   height: 40,
                   child: Text(
@@ -194,6 +194,18 @@ class _LoginWidgetState extends State<LoginWidget> {
                     context
                         .read<UserBloc>()
                         .add(UserLoggedInEvent(userSate.user, userSate.role));
+                    if (userSate.role == ROLE_SUPERADMIN) {
+                      BlocProvider.of<AdminsBloc>(context)
+                          .add(GetAllAdminsEvent());
+                    }
+                    if (userSate.user is Admin) {
+                      BlocProvider.of<AdminsBloc>(context).add(
+                          GetAllAgentsEvent(admin: (userSate.user as Admin)));
+                      BlocProvider.of<AdminsBloc>(context).add(
+                          GetAllMerchantsEvent(
+                              admin: (userSate.user as Authenticated).user
+                                  as Admin));
+                    }
                     Navigator.of(context).pushNamed(HomeScreen.RouteName);
                   } else if (userSate is NotAuthenticated) {
                     context

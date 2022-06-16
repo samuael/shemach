@@ -1,3 +1,5 @@
+import 'package:agri_net_frontend/profile/widgets/address.dart';
+
 import '../../libs.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -10,10 +12,6 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  final _controller = Completer<GoogleMapController>();
-
-  MapPickerController mapPickerController = MapPickerController();
-
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -76,10 +74,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   ]),
                                   _profilePage(),
                                   (widget.requestedUser is Admin)
-                                      ? adress(
+                                      ? AddressView(
                                           (widget.requestedUser as Admin)
-                                              .address,
-                                          context)
+                                              .address)
                                       : (widget.requestedUser is Merchant)
                                           ? Expanded(
                                               child: Column(children: [
@@ -87,19 +84,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                     widget.requestedUser
                                                         as Merchant,
                                                     context),
-                                                adress(
+                                                AddressView(
                                                     (widget.requestedUser
                                                             as Merchant)
-                                                        .address,
-                                                    context),
+                                                        .address),
                                               ]),
                                             )
                                           : (widget.requestedUser is Agent)
-                                              ? adress(
+                                              ? AddressView(
                                                   (widget.requestedUser
                                                           as Agent)
                                                       .address,
-                                                  context)
+                                                )
                                               : Container()
                                 ],
                               )),
@@ -176,239 +172,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         }
         return Container();
       },
-    );
-  }
-
-  Widget adress(Address address, BuildContext context) {
-    double lat = address.Latitude;
-    double lon = address.Longitude;
-    CameraPosition cameraPosition =
-        CameraPosition(target: LatLng(lat, lon), zoom: 0.0);
-
-    var textController = TextEditingController();
-    return Flexible(
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Material(
-            elevation: 15,
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3 + 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "City : ",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.normal),
-                            ),
-                            Expanded(
-                              child: new SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: new Text(
-                                  address.City,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3 + 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text("Woreda : ",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.normal)),
-                            Expanded(
-                              child: new SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: new Text(
-                                  address.Woreda,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3 + 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Kebele : ",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.normal),
-                            ),
-                            Expanded(
-                              child: new SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: new Text(
-                                  address.Kebele,
-                                  style: new TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3 + 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Unique : ",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.normal),
-                            ),
-                            Expanded(
-                              child: new SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: new Text(
-                                  address.UniqueAddressName,
-                                  style: new TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3 + 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Zone : ",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.normal),
-                            ),
-                            Expanded(
-                              child: new SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: new Text(
-                                  address.Zone,
-                                  style: new TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width / 3 + 30,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Region : ",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.normal),
-                            ),
-                            Expanded(
-                              child: new SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: new Text(
-                                  address.Region,
-                                  style: new TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: MapPicker(
-              // pass icon widget
-              iconWidget: Icon(
-                Icons.location_pin,
-                color: Colors.red,
-                size: 30,
-              ),
-              //add map picker controller
-              mapPickerController: mapPickerController,
-              child: GoogleMap(
-                myLocationEnabled: true,
-                zoomControlsEnabled: false,
-                // hide location button
-                myLocationButtonEnabled: false,
-                mapType: MapType.hybrid,
-                //  camera position
-                initialCameraPosition: cameraPosition,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                },
-                onCameraMoveStarted: () {
-                  // notify map is moving
-                  mapPickerController.mapMoving!();
-                  textController.text = "checking ...";
-                },
-                // onCameraMove: (cameraPosition) {
-                //   cameraPosition
-                // },
-                onCameraIdle: () async {
-                  // notify map stopped moving
-                  mapPickerController.mapFinishedMoving!();
-                  //get address name from camera position
-                  List<Placemark> placemarks = await placemarkFromCoordinates(
-                    cameraPosition.target.latitude,
-                    cameraPosition.target.longitude,
-                  );
-
-                  // update the ui with the address
-                  textController.text =
-                      '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
-                },
-              ),
-            ),
-          ),
-        ),
-      ]),
     );
   }
 
@@ -544,7 +307,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ClipOval(
           child: Container(
         padding: EdgeInsets.all(all),
-        color: Color.fromARGB(255, 175, 168, 168),
+        color: Theme.of(context).primaryColor,
         child: child,
       ));
 }

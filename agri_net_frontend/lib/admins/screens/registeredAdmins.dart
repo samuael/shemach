@@ -12,9 +12,7 @@ class _AdminsScreenState extends State<AdminsScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      BlocProvider.of<AdminsBloc>(context).add(GetAllAdminsEvent());
-    });
+    SchedulerBinding.instance!.addPostFrameCallback((_) {});
   }
 
   @override

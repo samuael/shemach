@@ -28,9 +28,9 @@ class HomeScreen extends StatelessWidget {
         leading: AgriNetLogo(),
         title: UserScreenAppBarDrawer(),
       ),
-      body: Stack(children: [
-        ProductPostsList(),
+      body: Row(children: [
         CollapsingSideBarDrawer(),
+        ProductPostsList(),
       ]),
     );
   }

@@ -1,15 +1,15 @@
 import '../../libs.dart';
 
-class StoreAddress extends StatefulWidget {
+class MapView extends StatefulWidget {
   final double lat;
   final double lon;
-  StoreAddress(this.lat, this.lon);
+  MapView(this.lat, this.lon);
 
   @override
-  State<StoreAddress> createState() => _StoreAddressState();
+  State<MapView> createState() => _MapViewState();
 }
 
-class _StoreAddressState extends State<StoreAddress> {
+class _MapViewState extends State<MapView> {
   final _controller = Completer<GoogleMapController>();
   MapPickerController mapPickerController = MapPickerController();
 
