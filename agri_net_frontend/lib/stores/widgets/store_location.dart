@@ -1,9 +1,9 @@
 import '../../libs.dart';
 
 class StoreAddress extends StatefulWidget {
-  double lat;
-  double lon;
-  StoreAddress({required this.lat, required this.lon});
+  final double lat;
+  final double lon;
+  StoreAddress(this.lat, this.lon);
 
   @override
   State<StoreAddress> createState() => _StoreAddressState();

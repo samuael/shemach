@@ -13,4 +13,8 @@ class ProductsRepo {
     return this.provider.loadMyProductPosts();
   }
 
+  Future<ProductsResponse>  loadProducts( int offset, int limit ) async {
+    return this.provider.loadProducts(offset,limit);
+  }
+
 }

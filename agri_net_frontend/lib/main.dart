@@ -28,6 +28,9 @@ void main() {
         ),
       );
     }),
+    BlocProvider(create: (context) {
+      return ProductsBloc(repo: ProductsRepo(ProductProvider()));
+    }),
   ], child: MyHomePage()));
 }
 
@@ -84,6 +87,20 @@ class MyHomePageState extends State<MyHomePage> {
               return UserProfileScreen(
                 requestedUser: args,
               );
+            });
+          } else if (route == StoreSelectionScreen.RouteName) {
+            final arguments = setting.arguments as Map<String, dynamic>;
+            // ProductTypeState state = (arguments["state"]) as ProductTypeState;
+            List<Store> stores = arguments["stores"] as List<Store>;
+            Function callBack = (arguments["callback"] as Function);
+            return MaterialPageRoute(builder: (context) {
+              return StoreSelectionScreen(stores, callBack);
+            });
+          } else if (route == ProductPostDetailScreen.RouteName) {
+            final ProductPost post = ((setting.arguments
+                as Map<String, dynamic>)["post"] as ProductPost);
+            return MaterialPageRoute(builder: (context) {
+              return ProductPostDetailScreen(post);
             });
           } else if (route == ProductTypeSelectionScreen.RouteName) {
             final arguments = setting.arguments as Map<String, dynamic>;

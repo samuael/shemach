@@ -26,6 +26,14 @@ class _ProductFormState extends State<ProductForm> {
     });
   }
 
+  Store? selectedStore;
+
+  setMyStore(Store? store) {
+    setState(() {
+      selectedStore = store;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,9 +106,6 @@ class _ProductFormState extends State<ProductForm> {
                                       if (state is ProductTypeLoadSuccess) {
                                         products = state.products;
                                       }
-                                      print("Products Length: ${products}");
-                                      // type = await selectProductType(context,
-                                      //     text, state, products, setMyText);
                                       Navigator.of(context).pushNamed(
                                           ProductTypeSelectionScreen.RouteName,
                                           arguments: {
@@ -382,6 +387,72 @@ class _ProductFormState extends State<ProductForm> {
                       ],
                     ),
                   ),
+                  StaticDataStore.ROLE == ROLE_MERCHANT
+                      ? BlocBuilder<StoreBloc, StoreState>(
+                          builder: (ctx, state) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 3,
+                              horizontal: 10,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    width: 100,
+                                    child: Text(
+                                      translate(lang, "Select Store "),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 5,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: FlatButton(
+                                        child: Text(
+                                          "Select Stores",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          if (state
+                                              is MyStoresState) {
+                                            final stores = (state as MyStoresState)
+                                                .myStores;
+                                            Navigator.of(context).pushNamed(
+                                                StoreSelectionScreen.RouteName,
+                                                arguments: {
+                                                  "stores": stores,
+                                                  "callback": setMyText,
+                                                });
+                                          } else {
+                                            print(
+                                                "It is not succesful blocs state");
+                                          }
+                                        }),
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        })
+                      : SizedBox(),
                   SizedBox(
                     height: 20,
                   ),
@@ -410,10 +481,6 @@ class _ProductFormState extends State<ProductForm> {
                                     negotiablePrice: negotiablePrice,
                                   ),
                                 );
-                                print("\n\n\n\n");
-                                print(response.msg );
-                                print("\n\n\n\n");
-
                             if (response.statusCode == 200 ||
                                 response.statusCode == 201) {
                               context
