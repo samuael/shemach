@@ -16,6 +16,7 @@ class ProductsBloc extends Bloc<ProductEvent, ProductState>
         if (this.state is ProductsLoadSuccess) {
           final thestate = this.state;
           (thestate as ProductsLoadSuccess).posts.addAll(response.posts);
+          emit(ProductInit());
           emit(thestate);
         } else {
           emit(ProductsLoadSuccess(response.posts));

@@ -76,7 +76,7 @@ class _ProductTypeSmallViewState extends State<ProductTypeSmallView> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
             border: Border.all(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).primaryColorLight,
             ),
           ),
           padding: EdgeInsets.symmetric(
@@ -87,7 +87,7 @@ class _ProductTypeSmallViewState extends State<ProductTypeSmallView> {
             horizontal: 5,
             vertical: 5,
           ),
-          width: MediaQuery.of(context).size.width * 0.8,
+          width: MediaQuery.of(context).size.width * 0.95,
           child: Column(
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

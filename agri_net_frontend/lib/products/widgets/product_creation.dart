@@ -57,6 +57,10 @@ class _ProductFormState extends State<ProductForm> {
               height: 30,
               child: Text(
                 "I am starting an startup. Fot that, I need an Android app. Its functionality will be like freelance or fiverr. Rest details in ib. I have a very low budget. Skills: Android | iPhone | Java | Mobile App Development | PHP",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
             Container(
@@ -431,10 +435,10 @@ class _ProductFormState extends State<ProductForm> {
                                           ),
                                         ),
                                         onPressed: () {
-                                          if (state
-                                              is MyStoresState) {
-                                            final stores = (state as MyStoresState)
-                                                .myStores;
+                                          if (state is MyStoresState) {
+                                            final stores =
+                                                (state as MyStoresState)
+                                                    .myStores;
                                             Navigator.of(context).pushNamed(
                                                 StoreSelectionScreen.RouteName,
                                                 arguments: {

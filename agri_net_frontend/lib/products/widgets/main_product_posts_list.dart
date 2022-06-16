@@ -47,7 +47,7 @@ class ProductPostsListState extends State<ProductPostsList> {
           ),
           // --------------------------------------------
           BlocBuilder<ProductsBloc, ProductState>(builder: (context, state) {
-            if (state is ProductsLoadSuccess) {
+            if ((state is ProductsLoadSuccess) && state.posts.length > 0) {
               return Column(
                 children: state.posts
                     .map<ProductPostItem>((e) => ProductPostItem(post: e))
@@ -60,7 +60,7 @@ class ProductPostsListState extends State<ProductPostsList> {
                     Text("No Product Instance found"),
                     IconButton(
                       icon: Icon(
-                        Icons.airline_seat_recline_normal_rounded,
+                        Icons.replay,
                         color: Colors.blue,
                       ),
                       onPressed: () {
@@ -72,6 +72,38 @@ class ProductPostsListState extends State<ProductPostsList> {
                   ],
                 ),
               );
+            }
+          }),
+          BlocBuilder<ProductsBloc, ProductState>(builder: (context, state) {
+            if ((state is ProductsLoadSuccess) && state.posts.length > 0) {
+              return Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 10,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 10,
+                    ),
+                    color: Theme.of(context).primaryColor,
+                    child: Text(
+                      translate(
+                        lang,
+                        "See more ...",
+                      ),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return SizedBox();
             }
           }),
         ]),

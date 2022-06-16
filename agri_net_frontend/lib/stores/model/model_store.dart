@@ -29,7 +29,9 @@ class Store {
         activeProducts: json["active_products"],
         storeName: json["store_name"],
         activeContracts: json["active_contracts"],
-        address: Address.fromJson(json["address"]),
+        address: json["address"] != null
+            ? Address.fromJson(json["address"])
+            : Address.zeroAddress(),
         createdAt: createdAt,
         createdBy: json["created_by"]);
   }
