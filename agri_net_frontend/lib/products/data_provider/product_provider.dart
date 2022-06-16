@@ -45,8 +45,6 @@ class ProductProvider {
             path: "/api/cxp/posts",
           ),
           headers: headers);
-      print(response.statusCode);
-      print(response.body);
       if (response.statusCode >= 100 && response.statusCode < 500) {
         final bosy = jsonDecode(response.body);
         print(bosy);

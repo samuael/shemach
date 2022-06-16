@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import "../../libs.dart";
 
 class ProductPostImages extends StatefulWidget {

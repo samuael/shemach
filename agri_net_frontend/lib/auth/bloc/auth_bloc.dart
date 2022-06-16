@@ -26,6 +26,20 @@ class UserBloc extends Bloc<UserEvent, UserState> implements Cubit<UserState> {
     }
   }
 
+  Future<UserState> confirmYourAccount(UserConfirmationEvent  event) async {
+    this.mapEventToState(UserLoginInProgressEvent());
+    final thestate = await repo.confirmUserByPhone(event.phone, event.password);
+    this.mapEventToState(UserInitEvent());
+    if (thestate.user != null && thestate.role != null) {
+      final val = Authenticated(user: thestate.user!, role: thestate.role!);
+      this.mapEventToState(UserLoggedInEvent(val.user, val.role));
+      return (Authenticated(user: thestate.user!, role: thestate.role!));
+    }
+    final val = NotAuthenticated(thestate.msg);
+    this.mapEventToState(UserLoginNotSuccesfulEvent(val.Msg));
+    return val;
+  }
+
   Future<UserState> login(UserLoginEvent event) async {
     this.mapEventToState(UserLoginInProgressEvent());
     final thestate = await repo.loginAdmin(event.email, event.password);

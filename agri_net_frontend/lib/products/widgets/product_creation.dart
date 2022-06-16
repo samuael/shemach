@@ -38,6 +38,12 @@ class _ProductFormState extends State<ProductForm> {
   String message = "";
   Color messageColor = Colors.white;
 
+  void callWhenCloseBack() {
+    setState(() {
+      this.selectedStore = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -436,7 +442,8 @@ class _ProductFormState extends State<ProductForm> {
                                     ),
                                     child: this.selectedStore != null
                                         ? SmallStoreItemView(
-                                            this.selectedStore!)
+                                            this.selectedStore!,
+                                            this.callWhenCloseBack)
                                         : FlatButton(
                                             child: Text(
                                               "Select Stores",
@@ -454,7 +461,7 @@ class _ProductFormState extends State<ProductForm> {
                                                         .RouteName,
                                                     arguments: {
                                                       "stores": stores,
-                                                      "callback": setMyText,
+                                                      "callback": setMyStore,
                                                     });
                                               } else {
                                                 print(
@@ -483,7 +490,10 @@ class _ProductFormState extends State<ProductForm> {
                               quantityController.text != "" &&
                               descriptionController.text != "" &&
                               quantityController.text != "" &&
-                              priceController.text != "") {
+                              priceController.text != "" &&
+                              ((StaticDataStore.ROLE == ROLE_MERCHANT &&
+                                      selectedStore != null) ||
+                                  StaticDataStore.ROLE == ROLE_AGENT)) {
                             setState(() {
                               onProgress = true;
                             });
@@ -514,6 +524,9 @@ class _ProductFormState extends State<ProductForm> {
                                     lang, "post created succesfully!");
                                 messageColor = Colors.green;
                               });
+                              Navigator.of(context).pushNamed(
+                                  UploadProductPostImages.RouteName,
+                                  arguments: {"post": response.crop!});
                             } else {
                               setState(() {
                                 message = translate(lang, response.msg);

@@ -9,13 +9,11 @@ class AdminsScreen extends StatefulWidget {
 }
 
 class _AdminsScreenState extends State<AdminsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      BlocProvider.of<AdminsBloc>(context).add(GetAllAdminsEvent());
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   SchedulerBinding.instance!.addPostFrameCallback((_) {});
+  // }
 
   @override
   Widget build(BuildContext context) {

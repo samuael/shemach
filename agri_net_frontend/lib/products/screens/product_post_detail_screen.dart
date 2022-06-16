@@ -51,6 +51,83 @@ class ProductDetailScreenState extends State<ProductPostDetailScreen> {
               children: [
                 ProductLargePostImages(
                     widget.post.images.length > 0 ? widget.post.images : [0]),
+                context.watch<MyProductsBloc>().isMyProduct(widget.post.id)
+                    ? Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        translate(lang, "Delete"),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                        size: 30,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                        UploadProductPostImages.RouteName,
+                                        arguments: {"post": widget.post});
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        border: Border.all(
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                      child: Row(children: [
+                                        Text(
+                                          translate(lang, "Edit"),
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.edit,
+                                          color: Theme.of(context).primaryColor,
+                                          size: 30,
+                                        ),
+                                      ])))
+                            ],
+                          ),
+                        ),
+                      )
+                    : SizedBox(),
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 20,

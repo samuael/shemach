@@ -2,7 +2,8 @@ import "../../libs.dart";
 
 class SmallStoreItemView extends StatelessWidget {
   final Store store;
-  SmallStoreItemView(this.store);
+  final Function callback;
+  SmallStoreItemView(this.store, this.callback);
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +16,12 @@ class SmallStoreItemView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox(
+            width: 5,
+          ),
           Text(
             store.storeName,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).primaryColor,
@@ -24,18 +29,18 @@ class SmallStoreItemView extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(
-              Icons.map,
-              color: Colors.red,
+              Icons.store,
+              color: Theme.of(context).primaryColor,
             ),
             onPressed: () {},
           ),
           IconButton(
             icon: Icon(
-              Icons.close,
-              color: Theme.of(context).primaryColor,
+              Icons.cancel,
+              color: Colors.red,
             ),
             onPressed: () {
-              Navigator.of(context).pop();
+              this.callback();
             },
           ),
         ],

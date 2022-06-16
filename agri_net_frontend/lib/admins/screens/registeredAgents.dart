@@ -10,23 +10,6 @@ class RegisteredAgentsScreen extends StatefulWidget {
 
 class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
   @override
-  void initState() {
-    super.initState();
-    print("Init state");
-    SchedulerBinding.instance!.addPostFrameCallback((_) {
-      final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
-      if ((_userBloc.state is Authenticated)) {
-        print("SchedulerBinding state");
-        BlocProvider.of<AdminsBloc>(context).add(GetAllAgentsEvent(
-            admin: (_userBloc.state as Authenticated).user as Admin));
-      } else {
-        print("Exception state");
-        throw Exception("Not an admin");
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -40,7 +23,7 @@ class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
             },
             icon: BackButton()),
         title: Text(
-          "Registered Agents",
+          " Agents",
           style: TextStyle(
               fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -86,8 +69,41 @@ class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
         if (state is AllAgentsFechedState) {
           return Column(
             children: [
-              Expanded(
-                child: agentRow(state.agentsList),
+              Flexible(
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 25,
+                      ),
+                      decoration: BoxDecoration(
+                        border:
+                            Border.all(color: Theme.of(context).primaryColor),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: TextField(
+                        onChanged: (t) {
+                          setState(() {
+                            // widget.text = t;
+                          });
+                        },
+                        autofocus: true,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        // controller: searchController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          suffixIcon: Icon(
+                            Icons.search,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    agentRow(state.agentsList),
+                  ],
+                ),
               ),
             ],
           );

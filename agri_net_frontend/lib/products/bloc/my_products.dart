@@ -35,4 +35,15 @@ class MyProductsBloc extends Bloc<ProductEvent, ProductState> {
   Future<ProductPostResponse> createProductPost(ProductPostInput input) async {
     return await this.repo.createProductPost(input);
   }
+
+  bool isMyProduct(int id ){
+    if (this.state is MyProductsLoadSuccess){
+      for(final post in (this.state as MyProductsLoadSuccess).posts){
+        if (post.id== id){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

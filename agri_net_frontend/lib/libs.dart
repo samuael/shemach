@@ -25,3 +25,4 @@ export 'package:google_maps_flutter/google_maps_flutter.dart';
 export 'package:map_picker/map_picker.dart';
 export 'package:geocoding/geocoding.dart';
 export "stores/stores.dart";
+export "agents/agents.dart";

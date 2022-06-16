@@ -32,7 +32,9 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          ProductPostsList(),
+          context.watch<IndexBloc>().state == 0
+              ? ProductPostsList()
+              : NotificationsScreen(),
           CollapsingSideBarDrawer(),
         ],
       ),

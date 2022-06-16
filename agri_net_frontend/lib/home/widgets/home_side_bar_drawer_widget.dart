@@ -12,7 +12,7 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
     with SingleTickerProviderStateMixin {
   double maxWidth = 140;
   double minWidth = 40;
-  bool isSideBarExpanded = false;
+  bool isSideBarCollapsed = false;
   late AnimationController animationController;
   late Animation<double> widthAnimation;
   int currentSelectedIndex = -1;
@@ -61,8 +61,8 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
             child: InkWell(
               onTap: () {
                 setState(() {
-                  isSideBarExpanded = !isSideBarExpanded;
-                  isSideBarExpanded
+                  isSideBarCollapsed = !isSideBarCollapsed;
+                  isSideBarCollapsed
                       ? animationController.forward()
                       : animationController.reverse();
                 });
@@ -100,10 +100,14 @@ class _CollapsingSideBarDrawerState extends State<CollapsingSideBarDrawer>
                       sideBarlItems[counter].icon,
                       animationController,
                       currentSelectedIndex == counter, () {
-                    setState(() {
-                      currentSelectedIndex = counter;
+                        print(sideBarlItems[counter].index);
+                    if (sideBarlItems[counter].index != -1) {
+                      context
+                          .read<IndexBloc>()
+                          .add(sideBarlItems[counter].index);
+                    } else {
                       Navigator.pushNamed(context, sideBarlItems[counter].path);
-                    });
+                    }
                   }),
                   divider
                 ],
