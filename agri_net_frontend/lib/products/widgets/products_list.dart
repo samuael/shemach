@@ -35,7 +35,6 @@ class ProductsListState extends State<ProductsList> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
-              // controller: searchController,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 suffixIcon: Icon(
@@ -47,26 +46,50 @@ class ProductsListState extends State<ProductsList> {
           ),
           // --------------------------------------------
           BlocBuilder<MyProductsBloc, ProductState>(builder: (context, state) {
-            if (state is MyProductsLoadSuccess) {
+            if ((state is MyProductsLoadSuccess) && state.posts.length > 0) {
               return Column(
                 children: state.posts
                     .map<ProductPostItem>((e) => ProductPostItem(post: e))
                     .toList(),
               );
+            } else if (state is MyProductsLoading) {
+              return Center(
+                child: Column(
+                  children: [
+                    CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ),
+                    Text(
+                      translate(lang, "loading ..."),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    )
+                  ],
+                ),
+              );
             } else {
               return Center(
                 child: Column(
                   children: [
-                    Text("No Product Instance found"),
+                    Text(
+                      "No Product Instance found",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
                     IconButton(
                       icon: Icon(
-                        Icons.airline_seat_recline_normal_rounded,
+                        Icons.replay,
                         color: Colors.blue,
                       ),
                       onPressed: () {
-                        context
-                            .read<ProductTypeBloc>()
-                            .add(ProductTypesLoadEvent());
+                        context.read<MyProductsBloc>().add(
+                              LoadMyProductsEvent(),
+                            );
                       },
                     )
                   ],

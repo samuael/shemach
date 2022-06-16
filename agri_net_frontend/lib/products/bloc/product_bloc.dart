@@ -10,12 +10,15 @@ class ProductsBloc extends Bloc<ProductEvent, ProductState>
       if (this.state is ProductsLoadSuccess) {
         offset = (this.state as ProductsLoadSuccess).posts.length;
         limit = offset + 20;
+      }else {
+        emit(ProductsLoading());
       }
       final response = await this.repo.loadProducts(offset, limit);
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (this.state is ProductsLoadSuccess) {
           final thestate = this.state;
           (thestate as ProductsLoadSuccess).posts.addAll(response.posts);
+          emit(ProductInit());
           emit(thestate);
         } else {
           emit(ProductsLoadSuccess(response.posts));

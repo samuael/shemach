@@ -50,8 +50,8 @@ class _ProductPostImageItemState extends State<ProductPostSingleImageItem> {
                       ),
                       child: Container(
                         color: Color.fromARGB(40, 49, 48, 48),
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.width * 0.4,
                         child: Image.asset(
                           'assets/images/logo.jpg',
                           // color: Color.fromARGB(5, 0, 0, 0),
@@ -93,11 +93,9 @@ class _ProductPostImageItemState extends State<ProductPostSingleImageItem> {
                             50,
                           ),
                           border: Border.all(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).primaryColorLight,
                           )),
                       child: Center(
-                        // top: constraints.maxHeight * 0.45,
-                        // left: constraints.maxWidth * 0.45,
                         child: IconButton(
                           icon: Icon(Icons.download),
                           onPressed: () {

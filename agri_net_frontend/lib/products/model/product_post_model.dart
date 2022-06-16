@@ -40,7 +40,7 @@ class ProductPost {
       address: json['address'] != null
           ? new Address.fromJson(json['address'])
           : Address.zeroAddress(),
-      images: (json['images']).map<int>((e) {
+      images: (json['images'] ?? []).map<int>((e) {
             return (e as int);
           }).toList() ??
           [],

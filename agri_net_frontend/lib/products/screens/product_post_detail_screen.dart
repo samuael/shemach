@@ -32,6 +32,7 @@ class ProductDetailScreenState extends State<ProductPostDetailScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        centerTitle: true,
       ),
       body: ClipRRect(
         borderRadius: BorderRadius.circular(10),

@@ -80,6 +80,7 @@ func Route(
 	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
 	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
+	router.GET("/api/user/:id", rules.Authenticated(), userhandler.GetUserByID)
 
 	// admin related routes
 	router.POST("/api/superadmin/admin/new/", rules.Authenticated(), rules.Authorized(), adminhandler.RegisterAdmin)

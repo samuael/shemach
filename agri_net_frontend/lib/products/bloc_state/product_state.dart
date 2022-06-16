@@ -13,6 +13,7 @@ class MyProductsLoadFailed extends ProductState{
 }
 class MyProductInit extends ProductState{}
 
+class MyProductsLoading extends ProductState{}
 
 // 
 
@@ -30,3 +31,5 @@ class ProductLoadFailed extends ProductState{
 }
 
 class ProductInit extends ProductState{}
+
+class ProductsLoading extends ProductState{}

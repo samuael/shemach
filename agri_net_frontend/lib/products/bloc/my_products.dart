@@ -4,9 +4,10 @@ class MyProductsBloc extends Bloc<ProductEvent, ProductState> {
   final ProductsRepo repo;
   MyProductsBloc(this.repo) : super(MyProductInit()) {
     on<LoadMyProductsEvent>((event, emit) async {
+      if (!(this.state is MyProductsLoadSuccess)){
+        emit(MyProductsLoading());
+      }
       final response = await this.repo.loadMyProductPosts();
-      print(response.msg);
-      print(response.posts.length);
       if (response.statusCode == 200) {
         if (this.state == MyProductsLoadSuccess) {
           final thestate = this.state;

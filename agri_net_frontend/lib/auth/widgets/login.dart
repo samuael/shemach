@@ -98,12 +98,12 @@ class _LoginWidgetState extends State<LoginWidget> {
             controller: emailController,
             decoration: InputDecoration(
               labelText: "Email or Phone",
-              fillColor: Colors.lightBlue,
-              hoverColor: Colors.lightBlue,
+              fillColor: Theme.of(context).primaryColorLight,
+              hoverColor: Theme.of(context).primaryColorLight,
               suffixIcon: Icon(Icons.mail_outline),
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.lightBlue,
+                  color: Theme.of(context).primaryColorLight,
                   style: BorderStyle.none,
                 ),
               ),
@@ -147,13 +147,16 @@ class _LoginWidgetState extends State<LoginWidget> {
           child: Stack(children: [
             ElevatedButton.icon(
               style: ButtonStyle(
-                // backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).primaryColor),
                 animationDuration: Duration(seconds: 1),
                 padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(
                     horizontal: 40,
+                    vertical: 10,
                   ),
                 ),
+                elevation: MaterialStateProperty.all<double>(0),
               ),
               onPressed: () async {
                 // checking the validity of input values
@@ -196,6 +199,20 @@ class _LoginWidgetState extends State<LoginWidget> {
                     context
                         .read<UserBloc>()
                         .add(UserLoggedInEvent(userSate.user, userSate.role));
+<<<<<<< HEAD
+=======
+                    if (userSate.role == ROLE_SUPERADMIN) {
+                      BlocProvider.of<AdminsBloc>(context)
+                          .add(GetAllAdminsEvent());
+                    }
+                    if (userSate.user is Admin) {
+                      BlocProvider.of<AdminsBloc>(context).add(
+                          GetAllAgentsEvent(admin: (userSate.user as Admin)));
+                      BlocProvider.of<AdminsBloc>(context).add(
+                          GetAllMerchantsEvent(
+                              admin: (userSate.user as Admin)));
+                    }
+>>>>>>> f0799f5082054b734dcc904874bac8b73559497c
                   } else if (userSate is NotAuthenticated) {
                     context
                         .read<UserBloc>()
