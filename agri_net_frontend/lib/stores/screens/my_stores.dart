@@ -245,60 +245,52 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
                                                       context: context,
                                                       builder:
                                                           (BuildContext cxt) {
-                                                        return Align(
-                                                          alignment: Alignment
-                                                              .topCenter,
-                                                          child: Padding(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(25,
-                                                                    60, 25, 60),
-                                                            child: Material(
-                                                              shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              15)),
-                                                              child: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  Expanded(
-                                                                    child:
-                                                                        Column(
-                                                                      children: [
-                                                                        Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.end,
-                                                                          children: [
-                                                                            InkWell(
-                                                                                onTap: () {
-                                                                                  Navigator.of(context).pop();
-                                                                                },
-                                                                                child: Icon(Icons.close_outlined)),
-                                                                          ],
-                                                                        ),
-                                                                        storeLocation(
-                                                                            state.myStores[counter].address.Latitude,
-                                                                            state.myStores[counter].address.Longitude),
-                                                                      ],
-                                                                    ),
+                                                        return Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  0, 50, 0, 10),
+                                                          child: Dialog(
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            10),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            10))),
+                                                            child: Stack(
+                                                              children: <
+                                                                  Widget>[
+                                                                storeLocation(
+                                                                    state.myStores[
+                                                                        counter]),
+                                                                Positioned.fill(
+                                                                  right: 0.0,
+                                                                  child: Align(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .topRight,
+                                                                    child: InkWell(
+                                                                        onTap: () {
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        },
+                                                                        child: Icon(
+                                                                          Icons
+                                                                              .close_outlined,
+                                                                          size:
+                                                                              30,
+                                                                          color:
+                                                                              Colors.red,
+                                                                        )),
                                                                   ),
-                                                                ],
-                                                              ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
                                                         );
                                                       },
                                                     );
-
-                                                    // showDialog(
-                                                    //     context: context,
-                                                    //     builder:
-                                                    //         (BuildContext
-                                                    //             context) {
-                                                    //       return storeLocation();
-                                                    //     });
                                                   },
                                                   color: Colors.redAccent,
                                                   icon: Icon(Icons
@@ -324,56 +316,67 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
     );
   }
 
-  Widget storeLocation(double lat, double long) {
+  Widget storeLocation(Store store) {
     final _controller = Completer<GoogleMapController>();
     MapPickerController mapPickerController = MapPickerController();
-    LatLng target = LatLng(lat, long);
-    CameraPosition cameraPosition = CameraPosition(target: target, zoom: 0.0);
-    return Expanded(
-      child: Container(
-        child: MapPicker(
-          // pass icon widget
-          iconWidget: Icon(
-            Icons.location_pin,
-            color: Colors.red,
-            size: 30,
-          ),
-          //add map picker controller
-          mapPickerController: mapPickerController,
-          child: GoogleMap(
-            myLocationEnabled: true,
-            zoomControlsEnabled: false,
-            // hide location button
-            myLocationButtonEnabled: false,
-            mapType: MapType.hybrid,
-            //  camera position
-            initialCameraPosition: cameraPosition,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
-            onCameraMoveStarted: () {
-              // notify map is moving
-              mapPickerController.mapMoving!();
-              // textController.text = "checking ...";
-            },
-            // onCameraMove: (cameraPosition) {
-            //   cameraPosition
-            // },
-            onCameraIdle: () async {
-              // notify map stopped moving
-              mapPickerController.mapFinishedMoving!();
-              //get address name from camera position
-              List<Placemark> placemarks = await placemarkFromCoordinates(
-                cameraPosition.target.latitude,
-                cameraPosition.target.longitude,
-              );
+    LatLng target = LatLng(store.address.Latitude, store.address.Longitude);
+    CameraPosition cameraPosition = CameraPosition(target: target, zoom: 2.0);
 
-              // update the ui with the address
-              // textController.text =
-              //     '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
-            },
-          ),
-        ),
+    final Set<Marker> markers = new Set();
+    markers.add(Marker(
+      //add second marker
+      markerId: MarkerId(target.toString()),
+      position: target, //position of marker
+      infoWindow: InfoWindow(
+        //popup info
+        title: 'Store',
+        snippet: '${store.storeName}',
+      ),
+      icon: BitmapDescriptor.defaultMarker, //Icon for Marker
+    ));
+
+    return MapPicker(
+      // pass icon widget
+      iconWidget: Icon(
+        Icons.location_pin,
+        color: Colors.red,
+        size: 30,
+      ),
+      //add map picker controller
+      mapPickerController: mapPickerController,
+      child: GoogleMap(
+        markers: markers,
+        myLocationEnabled: true,
+        zoomControlsEnabled: false,
+        // hide location button
+        myLocationButtonEnabled: false,
+        mapType: MapType.normal,
+        //  camera position
+        initialCameraPosition: cameraPosition,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+        onCameraMoveStarted: () {
+          // notify map is moving
+          mapPickerController.mapMoving!();
+          // textController.text = "checking ...";
+        },
+        // onCameraMove: (cameraPosition) {
+        //   cameraPosition
+        // },
+        onCameraIdle: () async {
+          // notify map stopped moving
+          mapPickerController.mapFinishedMoving!();
+          //get address name from camera position
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+            cameraPosition.target.latitude,
+            cameraPosition.target.longitude,
+          );
+
+          // update the ui with the address
+          // textController.text =
+          //     '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
+        },
       ),
     );
   }

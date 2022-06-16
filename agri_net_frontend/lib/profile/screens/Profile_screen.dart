@@ -20,87 +20,98 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
     User loggedInUser = (_userBloc.state as Authenticated).user;
-    return BlocProvider(
-        create: (Context) {
-          return ProfileBLoc(
-              user: widget.requestedUser,
-              isCurrentUser: widget.requestedUser.id == loggedInUser.id,
-              profileRepository:
-                  ProfileRepository(profileProvider: ProfileProvider()));
-        },
-        child: BlocListener<ProfileBLoc, ProfileState>(
-          listener: ((context, state) {
-            if (state.imageSourceActionSheetIsVisible!) {
-              showImageSource(context);
-            }
-            if (state.avatorPath != '') {
-              setState(() {
-                print(loggedInUser.imgurl);
-                loggedInUser.imgurl = state.avatorPath!;
-                print(loggedInUser.imgurl);
-              });
-            }
-          }),
-          child: BlocBuilder<ProfileBLoc, ProfileState>(
-            builder: ((context, state) => Scaffold(
-                  body: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Material(
-                        elevation: 5,
-                        child: Container(
-                          child: Center(
-                              child: Column(
-                            children: [
-                              Stack(children: [
-                                buildImage(widget.requestedUser.imgurl),
-                                (widget.requestedUser.id == loggedInUser.id)
-                                    ? Positioned(
-                                        child: buildEditIcon(context),
-                                        // right: -15,
-                                        left: 90,
-                                        top: 90,
-                                      )
-                                    : Positioned(
-                                        child: Container(),
-                                        right: 4,
-                                        top: 10,
-                                      ),
-                              ]),
-                              _profilePage(),
-                              (widget.requestedUser is Admin)
-                                  ? adress(
-                                      (widget.requestedUser as Admin).address,
-                                      context)
-                                  : (widget.requestedUser is Merchant)
-                                      ? Expanded(
-                                          child: Column(children: [
-                                            myStores(
-                                                widget.requestedUser
-                                                    as Merchant,
-                                                context),
-                                            adress(
-                                                (widget.requestedUser
-                                                        as Merchant)
-                                                    .address,
-                                                context),
-                                          ]),
-                                        )
-                                      : (widget.requestedUser is Agent)
-                                          ? adress(
-                                              (widget.requestedUser as Agent)
-                                                  .address,
-                                              context)
-                                          : Container()
-                            ],
-                          )),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("User Profile"),
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: BlocProvider(
+            create: (Context) {
+              return ProfileBLoc(
+                  user: widget.requestedUser,
+                  isCurrentUser: widget.requestedUser.id == loggedInUser.id,
+                  profileRepository:
+                      ProfileRepository(profileProvider: ProfileProvider()));
+            },
+            child: BlocListener<ProfileBLoc, ProfileState>(
+              listener: ((context, state) {
+                if (state.imageSourceActionSheetIsVisible!) {
+                  showImageSource(context);
+                }
+                if (state.avatorPath != '') {
+                  setState(() {
+                    print(loggedInUser.imgurl);
+                    loggedInUser.imgurl = state.avatorPath!;
+                    print(loggedInUser.imgurl);
+                  });
+                }
+              }),
+              child: BlocBuilder<ProfileBLoc, ProfileState>(
+                builder: ((context, state) => Scaffold(
+                      body: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Material(
+                            elevation: 5,
+                            child: Container(
+                              child: Center(
+                                  child: Column(
+                                children: [
+                                  Stack(children: [
+                                    buildImage(widget.requestedUser.imgurl),
+                                    (widget.requestedUser.id == loggedInUser.id)
+                                        ? Positioned(
+                                            child: buildEditIcon(context),
+                                            // right: -15,
+                                            left: 90,
+                                            top: 90,
+                                          )
+                                        : Positioned(
+                                            child: Container(),
+                                            right: 4,
+                                            top: 10,
+                                          ),
+                                  ]),
+                                  _profilePage(),
+                                  (widget.requestedUser is Admin)
+                                      ? adress(
+                                          (widget.requestedUser as Admin)
+                                              .address,
+                                          context)
+                                      : (widget.requestedUser is Merchant)
+                                          ? Expanded(
+                                              child: Column(children: [
+                                                myStores(
+                                                    widget.requestedUser
+                                                        as Merchant,
+                                                    context),
+                                                adress(
+                                                    (widget.requestedUser
+                                                            as Merchant)
+                                                        .address,
+                                                    context),
+                                              ]),
+                                            )
+                                          : (widget.requestedUser is Agent)
+                                              ? adress(
+                                                  (widget.requestedUser
+                                                          as Agent)
+                                                      .address,
+                                                  context)
+                                              : Container()
+                                ],
+                              )),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                )),
-          ),
-        ));
+                    )),
+              ),
+            )),
+      ),
+    );
   }
 
   Widget myStores(Merchant merchant, context) {
@@ -125,7 +136,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                               )));
                 },
                 child: ListTile(
-                  leading: Icon(Icons.store),
+                  leading: Icon(
+                    Icons.store,
+                    color: Theme.of(context).primaryColor,
+                  ),
                   title: Text(
                     "Stores : ${state.myStores.length}",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -139,6 +153,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       (widget.requestedUser.id != loggedInUser.id &&
                               loggedInUser is Admin)
                           ? ElevatedButton(
+                              // style: ButtonStyle(backgroundColor: Theme.of(context).),
                               onPressed: () {
                                 Navigator.push(
                                     context,
@@ -443,7 +458,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget _nameTile() {
     return BlocBuilder<ProfileBLoc, ProfileState>(
         builder: ((context, state) => ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(
+                Icons.person,
+                color: Theme.of(context).primaryColor,
+              ),
               title: Row(
                 children: [
                   Text(
@@ -465,7 +483,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget _emailTile() {
     return BlocBuilder<ProfileBLoc, ProfileState>(
         builder: ((context, state) => ListTile(
-              leading: Icon(Icons.email),
+              leading: Icon(Icons.email, color: Theme.of(context).primaryColor),
               title: Text(
                 state.user.email,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -476,7 +494,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget _phoneTile() {
     return BlocBuilder<ProfileBLoc, ProfileState>(
         builder: ((context, state) => ListTile(
-              leading: Icon(Icons.phone),
+              leading: Icon(Icons.phone, color: Theme.of(context).primaryColor),
               title: Text(
                 state.user.phone,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
