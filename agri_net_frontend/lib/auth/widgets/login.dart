@@ -199,20 +199,6 @@ class _LoginWidgetState extends State<LoginWidget> {
                     context
                         .read<UserBloc>()
                         .add(UserLoggedInEvent(userSate.user, userSate.role));
-<<<<<<< HEAD
-=======
-                    if (userSate.role == ROLE_SUPERADMIN) {
-                      BlocProvider.of<AdminsBloc>(context)
-                          .add(GetAllAdminsEvent());
-                    }
-                    if (userSate.user is Admin) {
-                      BlocProvider.of<AdminsBloc>(context).add(
-                          GetAllAgentsEvent(admin: (userSate.user as Admin)));
-                      BlocProvider.of<AdminsBloc>(context).add(
-                          GetAllMerchantsEvent(
-                              admin: (userSate.user as Admin)));
-                    }
->>>>>>> f0799f5082054b734dcc904874bac8b73559497c
                   } else if (userSate is NotAuthenticated) {
                     context
                         .read<UserBloc>()
