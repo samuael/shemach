@@ -187,26 +187,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                     dtext = emailController.text.substring(1);
                     dtext = "+251" + dtext;
                   }
+                  //
                   final userSate = await context
                       .read<UserBloc>()
                       .login(UserLoginEvent(dtext, passwordController.text));
                   if (userSate is Authenticated) {
+                    Navigator.of(context).pushNamed(HomeScreen.RouteName);
                     context
                         .read<UserBloc>()
                         .add(UserLoggedInEvent(userSate.user, userSate.role));
-                    if (userSate.role == ROLE_SUPERADMIN) {
-                      BlocProvider.of<AdminsBloc>(context)
-                          .add(GetAllAdminsEvent());
-                    }
-                    if (userSate.user is Admin) {
-                      BlocProvider.of<AdminsBloc>(context).add(
-                          GetAllAgentsEvent(admin: (userSate.user as Admin)));
-                      BlocProvider.of<AdminsBloc>(context).add(
-                          GetAllMerchantsEvent(
-                              admin: (userSate.user as Authenticated).user
-                                  as Admin));
-                    }
-                    Navigator.of(context).pushNamed(HomeScreen.RouteName);
                   } else if (userSate is NotAuthenticated) {
                     context
                         .read<UserBloc>()

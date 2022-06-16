@@ -1,1 +1,1 @@
-export '../../profile/widgets/map_widget.dart';
+export 'store_widget.dart';
