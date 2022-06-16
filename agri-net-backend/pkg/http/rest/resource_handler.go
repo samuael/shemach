@@ -88,7 +88,6 @@ func (rhandler *ResourceHandler) GetBlurredImage(c *gin.Context) {
 	id, er := strconv.Atoi(c.Param("id"))
 	ctx := c.Request.Context()
 	if id <= 0 || er != nil {
-		// println(er.Error())
 		c.Writer.WriteHeader(http.StatusNotFound)
 		return
 	}

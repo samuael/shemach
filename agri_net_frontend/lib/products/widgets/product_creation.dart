@@ -434,29 +434,33 @@ class _ProductFormState extends State<ProductForm> {
                                               Theme.of(context).primaryColor),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: FlatButton(
-                                        child: Text(
-                                          "Select Stores",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          if (state is MyStoresState) {
-                                            final stores = state.myStores;
-                                            Navigator.of(context).pushNamed(
-                                                StoreSelectionScreen.RouteName,
-                                                arguments: {
-                                                  "stores": stores,
-                                                  "callback": setMyText,
-                                                });
-                                          } else {
-                                            print(
-                                                "It is not succesful blocs state");
-                                          }
-                                        }),
+                                    child: this.selectedStore != null
+                                        ? SmallStoreItemView(
+                                            this.selectedStore!)
+                                        : FlatButton(
+                                            child: Text(
+                                              "Select Stores",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              if (state is MyStoresState) {
+                                                final stores = state.myStores;
+                                                Navigator.of(context).pushNamed(
+                                                    StoreSelectionScreen
+                                                        .RouteName,
+                                                    arguments: {
+                                                      "stores": stores,
+                                                      "callback": setMyText,
+                                                    });
+                                              } else {
+                                                print(
+                                                    "It is not succesful blocs state");
+                                              }
+                                            }),
                                   ),
                                 )
                               ],
