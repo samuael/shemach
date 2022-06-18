@@ -41,6 +41,7 @@ class _TransactionItemState extends State<TransactionItem> {
               child: SingleChildScrollView(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                     child: Row(
                       children: [
                         Expanded(
@@ -67,6 +68,7 @@ class _TransactionItemState extends State<TransactionItem> {
                     ),
                   ),
                   Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                     child: Row(
                       children: [
                         Expanded(
@@ -91,6 +93,86 @@ class _TransactionItemState extends State<TransactionItem> {
                     ),
                   ),
                   Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.black12,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            translate(lang, "Description"),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(" : "),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Text("${widget.transaction.description}"),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            translate(lang, "Kebd Amount"),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(" : "),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                              "${widget.transaction.kebdAmount}  ${translate(lang, " Birr ")} "),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            translate(lang, "Guarantee Amount"),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(" : "),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                              "${widget.transaction.guaranteeAmount} ${translate(lang, " Birr ")}"),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                     child: Row(
                       children: [
                         Expanded(
@@ -110,6 +192,31 @@ class _TransactionItemState extends State<TransactionItem> {
                           flex: 5,
                           child: Text(
                               "${UnixTime(widget.transaction.createdAt).toString()}  ${translate(lang, " before ")}"),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            translate(lang, "Deadline"),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Text(" : "),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                              "${UnixTime(widget.transaction.deadline).toString()} ${widget.transaction.deadline > (DateTime.now().millisecondsSinceEpoch / 1000).round() ? translate(lang, "After") : translate(lang, "Before")} "),
                         )
                       ],
                     ),
@@ -138,7 +245,7 @@ class _TransactionItemState extends State<TransactionItem> {
                         color: Colors.white,
                       ),
                     ),
-                  )
+                  ),
                 ]),
               ),
             ),

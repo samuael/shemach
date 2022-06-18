@@ -27,6 +27,6 @@ class UserResponse {
                         ? Agent.fromJson(json["user"]) as User
                         : (role == ROLE_INFOADMIN
                             ? Admin.fromJson(json["user"]) as User
-                            : null))) as User));
+                            : null))) ));
   }
 }

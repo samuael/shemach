@@ -4,6 +4,9 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   UsersRepo repo;
   UsersBloc(this.repo) : super(UsersInit()) {
     on<LoadUserByIDEvent>((event, emit) async {
+      if (event.id <= 0) {
+        return;
+      }
       if (!(this.state is UsersLoadedState)) {
         emit(UsersLoading());
       } else {
@@ -43,6 +46,9 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     });
 
     on<LoadMerchantByStoreIDEvent>((event, emit) async {
+      if (event.storeID <= 0) {
+        return;
+      }
       if (!(this.state is UsersLoadedState)) {
         emit(UsersLoading());
       } else {

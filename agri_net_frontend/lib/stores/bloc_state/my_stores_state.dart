@@ -2,19 +2,17 @@ import 'package:agri_net_frontend/libs.dart';
 
 class StoreState {}
 
-class MyStoresState extends StoreState {
-  List<Store> myStores;
-  MyStoresState({required this.myStores});
-}
-
 class MyStoresInit extends StoreState {}
 
-class NewStoreCreatedState extends StoreState {
-  Store store;
-  NewStoreCreatedState({required this.store});
+class LoadingMyStoresState extends StoreState {}
+
+class MyStoresLoadedState extends StoreState {
+  Map<int, List<Store>> myStores;
+  MyStoresLoadedState({required this.myStores});
 }
 
-class FailedToCreateStoreState extends StoreState {
+class LoadingStoresFailedState extends StoreState {
+  int statusCode;
   String msg;
-  FailedToCreateStoreState({required this.msg});
+  LoadingStoresFailedState({required this.statusCode, required this.msg});
 }

@@ -67,7 +67,7 @@ func main() {
 	paymentservice := payment.NewPaymentService(paymentrepo)
 	if er := paymentservice.Authenticate(context.Background()); er != nil || paymentservice == nil {
 		println(er.Error())
-		os.Exit(1)
+		// os.Exit(1)
 	}
 	userrepo := pgx_storage.NewUserRepo(conn)
 	userservice := user.NewUserService(userrepo)

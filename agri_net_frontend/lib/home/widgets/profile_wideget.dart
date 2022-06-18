@@ -12,7 +12,7 @@ class _UserAccountePageState extends State<UserAccountePage> {
     User theUser = (_userBloc.state as Authenticated).user;
     if (theUser is Merchant) {
       BlocProvider.of<StoreBloc>(context)
-          .add(MyStoresEvent(ownerId: theUser.id));
+          .add(LoadMyStoresEvent(ownerId: theUser.id));
     }
 
     return Padding(
