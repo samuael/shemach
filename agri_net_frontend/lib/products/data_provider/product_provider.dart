@@ -95,4 +95,30 @@ class ProductProvider {
           statusCode: 999, msg: "connection issue!", posts: []);
     }
   }
+
+
+
+
+  Future<ProductPostResponse>  getProductPostResponseByID(int id) async {
+    try {
+      Map<String, String> headers = {
+        "authorization": StaticDataStore.HEADERS["authorization"]!
+      };
+      var response = await client.get(
+        Uri(
+          host: StaticDataStore.HOST,
+          port: StaticDataStore.PORT,
+          scheme: StaticDataStore.SCHEME,
+          path: "/api/post/$id",
+        ),
+        headers: headers,
+      );
+      final body = jsonDecode(response.body) ?? {} as Map<String, dynamic>;
+      return ProductPostResponse.fromJson(body);
+    } catch (e, a) {
+      return ProductPostResponse(
+          statusCode: 999, msg: "Connection issue!!!", crop: null);
+    }
+  }
+
 }

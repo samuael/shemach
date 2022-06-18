@@ -101,6 +101,12 @@ class MyHomePageState extends State<MyHomePage> {
             return MaterialPageRoute(builder: (context) {
               return AdminsScreen();
             });
+          } else if (route == TransactionDetailScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              Transaction transaction = ((setting.arguments
+                  as Map<String, Transaction>)["transaction"] as Transaction);
+              return TransactionDetailScreen(transaction);
+            });
           } else if (route == CreateTransactionScreen.RouteName) {
             ProductPost post =
                 (setting.arguments as Map<String, ProductPost>)["post"]!;

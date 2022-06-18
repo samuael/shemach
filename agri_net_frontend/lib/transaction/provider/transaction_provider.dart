@@ -20,7 +20,6 @@ class TransactionProvider {
           headers: headers);
       if (response.statusCode >= 100 && response.statusCode < 500) {
         final bosy = jsonDecode(response.body);
-        print(bosy);
         return MyTransactionsResponse.fromJson(bosy);
       } else {
         return MyTransactionsResponse(

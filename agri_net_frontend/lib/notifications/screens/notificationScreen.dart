@@ -139,11 +139,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ),
               ),
               GestureDetector(
-                onTap : (){
-                  setState((){
-                    selectedIndex =2;
+                onTap: () {
+                  setState(() {
+                    selectedIndex = 2;
                   });
-                }, 
+                },
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 5,
@@ -234,6 +234,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
         ),
       ),
+      // ---------------------------------------
+
+      selectedIndex == 0 ? TransactionsList() : SizedBox()
     ]));
   }
 }

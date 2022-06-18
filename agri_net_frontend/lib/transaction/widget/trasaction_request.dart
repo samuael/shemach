@@ -100,12 +100,24 @@ class _CreateTransactionState extends State<CreateTransaction> {
                             textAlign: TextAlign.center,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              border: InputBorder.none,
-                              suffixIcon: Icon(
-                                Icons.amp_stories_outlined,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
+                                border: InputBorder.none,
+                                suffix: Text(
+                                  translate(
+                                      lang,
+                                      (context.watch<ProductTypeBloc>().state
+                                              is ProductTypeLoadSuccess)
+                                          ? ((context.watch<ProductTypeBloc>().state
+                                                          as ProductTypeLoadSuccess)
+                                                      .getProductTypeByID(
+                                                          widget.post.id) ??
+                                                  ProductType.zeroProductType())
+                                              .getProductUnit()
+                                              .long
+                                          : "Unknown"),
+                                          style: TextStyle(
+                                  fontStyle : FontStyle.italic ,
+                                    color: Theme.of(context).primaryColor),
+                                )),
                           ),
                         ),
                       )
@@ -149,9 +161,11 @@ class _CreateTransactionState extends State<CreateTransaction> {
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              suffixIcon: Icon(
-                                Icons.money,
-                                color: Theme.of(context).primaryColor,
+                              suffixIcon: Text(
+                                translate(lang, "Birr"),
+                                style: TextStyle(
+                                  fontStyle : FontStyle.italic ,
+                                    color: Theme.of(context).primaryColor),
                               ),
                             ),
                           ),
@@ -219,6 +233,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
                         return 0;
                       }) >
                       0 &&
+                  int.parse(quantityController.text, onError: (text) {
+                        return 0;
+                      }) <=
+                      widget.post.remainingQuantity &&
                   int.parse(priceController.text, onError: (text) {
                         return 0;
                       }) >
@@ -247,6 +265,9 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     message = translate(lang, transactionResponse.msg);
                     messageColor = Colors.green;
                   });
+                  priceController.text="";
+                  descriptionController.text ="";
+                  quantityController.text="";
                 } else {
                   setState(() {
                     message = translate(lang, transactionResponse.msg);
@@ -264,6 +285,15 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   descriptionController.text == "") {
                 setState(() {
                   message = translate(lang, " please fill the form ");
+                  messageColor = Colors.red;
+                });
+              } else if (int.parse(quantityController.text, onError: (text) {
+                    return 0;
+                  }) >
+                  widget.post.remainingQuantity) {
+                setState(() {
+                  message = translate(lang,
+                      " the available products quantity is less than requested ");
                   messageColor = Colors.red;
                 });
               }

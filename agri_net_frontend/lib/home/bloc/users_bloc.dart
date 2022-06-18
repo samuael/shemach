@@ -70,14 +70,13 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
 
   User? getMerchantByStoreID(int storeID) {
     if (this.state is UsersLoadedState) {
-      if (!((this.state as UsersLoadedState).merchants == null)) {
-        for (final sid in (this.state as UsersLoadedState).merchants!.keys) {
-          if (storeID == sid) {
-            return (this.state as UsersLoadedState).merchants![sid];
-          }
+      for (final sid in (this.state as UsersLoadedState).merchants.keys) {
+        if (storeID == sid) {
+          return (this.state as UsersLoadedState).merchants[sid];
         }
       }
     }
+    this.add(LoadMerchantByStoreIDEvent(storeID));
     return null;
   }
 

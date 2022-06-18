@@ -41,15 +41,22 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   bool looping = true;
   void stopLoop() {
     looping = false;
+    hoolders -= 1;
   }
 
+  static int hoolders = 0;
   Future<void> startLoadTransactionsLoop() async {
+    if (hoolders >= 1) {
+      return;
+    }
+    hoolders += 1;
     this.looping = true;
     while (looping) {
       await Future.delayed(Duration(minutes: 1), () {
         print("Loading ...");
         this.add(TransactionLoadEvent());
       });
+      await Future.delayed(Duration(seconds: 40), () {});
     }
   }
 }
