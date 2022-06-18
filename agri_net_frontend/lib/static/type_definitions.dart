@@ -75,7 +75,7 @@ List<NavigationModel> adminSideBarItems = [
 
 List<NavigationModel> merchantSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("My Stores", Icons.store),
+  NavigationModel("My Stores", Icons.store, path: MyStoresScreen.RouteName),
   NavigationModel("My Produts", Icons.store),
   NavigationModel(
     "Contracts",

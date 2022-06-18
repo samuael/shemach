@@ -4,8 +4,7 @@ import '../../libs.dart';
 
 class MyStoresScreen extends StatefulWidget {
   static String RouteName = "/stores";
-  Merchant mercahnt;
-  MyStoresScreen(this.mercahnt);
+  MyStoresScreen();
 
   @override
   State<MyStoresScreen> createState() => _MyStoresScreenState();
@@ -53,24 +52,24 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
                 );
               }
               if (state is MyStoresLoadedState) {
-                if ((state.myStores[widget.mercahnt.id]) != null &&
-                    (state.myStores[widget.mercahnt.id])!.length > 0) {
-                  final stores = state.myStores[widget.mercahnt.id];
+                if ((state.myStores[StaticDataStore.ID]) != null &&
+                    (state.myStores[StaticDataStore.ID])!.length > 0) {
+                  final stores = state.myStores[StaticDataStore.ID];
                   return Flexible(
                       child: ListView.builder(
                           itemCount: stores!.length,
                           itemBuilder: (context, counter) {
-                            return Text('${stores[counter]}');
+                            return StoreView(stores[counter]);
                           }));
                 }
                 return Flexible(
-                    child: (state.myStores[widget.mercahnt.id]) != null
+                    child: (state.myStores[StaticDataStore.ID]) != null
                         ? ListView.builder(
                             itemCount:
-                                state.myStores[widget.mercahnt.id]!.length,
+                                state.myStores[StaticDataStore.ID]!.length,
                             itemBuilder: (context, counter) {
                               return StoreView(
-                                  state.myStores[widget.mercahnt.id]![counter]);
+                                  state.myStores[StaticDataStore.ID]![counter]);
                             })
                         : Center());
               }
@@ -86,7 +85,7 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
                       ),
                       onPressed: () {
                         context.read<StoreBloc>().add(
-                            LoadMyStoresEvent(ownerId: widget.mercahnt.id));
+                            LoadMyStoresEvent(ownerId: StaticDataStore.ID));
                       },
                     )
                   ],

@@ -122,6 +122,10 @@ class MyHomePageState extends State<MyHomePage> {
               return ProductTypeSelectionScreen(
                   state, products, callBack, text);
             });
+          } else if (route == MyStoresScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return MyStoresScreen();
+            });
           }
         });
   }
