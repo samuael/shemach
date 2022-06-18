@@ -45,6 +45,12 @@ void main() {
           BlocProvider(create: (context) {
             return ProductsBloc(repo: ProductsRepo(ProductProvider()));
           }),
+          BlocProvider(create: (context) {
+            return UsersBloc(UsersRepo(UsersProvider()));
+          }),
+          BlocProvider(create: (context) {
+            return TransactionBloc(TransactionRepo(TransactionProvider()));
+          })
         ],
         child: MyHomePage(),
       ),
@@ -94,6 +100,12 @@ class MyHomePageState extends State<MyHomePage> {
           } else if (route == AdminsScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return AdminsScreen();
+            });
+          } else if (route == CreateTransactionScreen.RouteName) {
+            ProductPost post =
+                (setting.arguments as Map<String, ProductPost>)["post"]!;
+            return MaterialPageRoute(builder: (context) {
+              return CreateTransactionScreen(post);
             });
           } else if (route == RegisterAdminPage.RouteName) {
             return MaterialPageRoute(builder: (context) {

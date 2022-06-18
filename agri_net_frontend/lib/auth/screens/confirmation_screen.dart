@@ -63,14 +63,16 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             // mainAxisAlignment : MainAxisAlignment.spaceAround,
             children: [
               Positioned(
-                  top: 0,
-                  left: 0,
-                  child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.arrow_left,
-                        color: Theme.of(context).primaryColor,
-                      ),),),
+                top: 0,
+                left: 0,
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.arrow_left,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
               Center(
                 child: Container(
                   height: MediaQuery.of(context).size.width * 0.7,
@@ -98,7 +100,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                           child: CircularProgressIndicator(
                             value: duration.inSeconds / (60 * 3),
                             strokeWidth: 5,
-                            color: Theme.of(context).primaryColor ,
+                            color: Theme.of(context).primaryColor,
                             // valueColor: Theme.of(context).primaryColor,
                           ),
                           height: MediaQuery.of(context).size.width * 0.2,

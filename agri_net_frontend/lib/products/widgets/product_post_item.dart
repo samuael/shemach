@@ -46,31 +46,33 @@ class ProductPostItemState extends State<ProductPostItem> {
                 padding: EdgeInsets.symmetric(
                   horizontal: 20,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AnimatedContainer(
-                      duration: Duration(
-                        seconds: 2,
-                      ),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 20,
-                      ),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: Text(
-                        (seemore && !expanded)
-                            ? (widget.post.description).substring(0, 250)
-                            : widget.post.description,
-                        // overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.justify,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.visible,
-                          height: 1.5,
+                child: SingleChildScrollView(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnimatedContainer(
+                        duration: Duration(
+                          seconds: 2,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 20,
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.74,
+                        child: Text(
+                          (seemore && !expanded)
+                              ? (widget.post.description).substring(0, 250)
+                              : widget.post.description,
+                          // overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.visible,
+                            height: 1.5,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               seemore

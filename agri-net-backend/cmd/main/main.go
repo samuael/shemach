@@ -134,12 +134,15 @@ func main() {
 		agentservice, resourceservice)
 
 	transactionrepo := pgx_storage.NewTransactionRepo(conn)
-	transactionservice := transaction.NewTransactionService(transactionrepo, paymentrepo, contractrepo)
+	transactionservice := transaction.NewTransactionService(transactionrepo,
+		paymentrepo, contractrepo)
 	transactionhandler :=
 		rest.NewTransactionHandler(transactionservice, userservice, cropservice,
 			merchantservice, storeservice, paymentservice)
 
-	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
+	userhandler := rest.NewUserHandler(templates, userservice, authenticator,
+		adminservice, superadminservice,
+		agentservice, merchantservice, infoadminservice, storeservice)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
 		subscriberService,

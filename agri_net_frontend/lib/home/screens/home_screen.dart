@@ -1,9 +1,17 @@
 import '../../libs.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String RouteName = "homescreen";
   HomeScreen();
 
+  @override
+  State<HomeScreen> createState() {
+    return HomeScreenState();
+  }
+}
+
+class HomeScreenState extends State<HomeScreen> {
+  TransactionBloc? transactionProvider;
   @override
   Widget build(BuildContext context) {
     final productTypeProvider = BlocProvider.of<ProductTypeBloc>(context);
@@ -23,6 +31,14 @@ class HomeScreen extends StatelessWidget {
     if (!(productsPostProvider.state is ProductsLoadSuccess)) {
       productsPostProvider.add(LoadProductsEvent());
     }
+
+    if (StaticDataStore.ROLE == ROLE_MERCHANT ||
+        StaticDataStore.ROLE == ROLE_AGENT) {
+      transactionProvider = BlocProvider.of<TransactionBloc>(context);
+      transactionProvider?.add(TransactionLoadEvent());
+      transactionProvider?.startLoadTransactionsLoop();
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
@@ -39,5 +55,13 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (this.transactionProvider != null) {
+      this.transactionProvider!.stopLoop();
+    }
   }
 }

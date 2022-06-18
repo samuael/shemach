@@ -44,7 +44,7 @@ class NavigationModel {
   String? path;
   int index;
 
-  NavigationModel(this.title, this.icon, {this.path, this.index=-1 });
+  NavigationModel(this.title, this.icon, {this.path, this.index = -1});
 }
 
 List<NavigationModel> superAdminSideBarItems = [
@@ -54,7 +54,7 @@ List<NavigationModel> superAdminSideBarItems = [
   NavigationModel(
     "Notifications",
     Icons.notifications,
-    index :1,
+    index: 1,
   ),
   NavigationModel("Sttings", Icons.settings),
   NavigationModel("Log Out", Icons.logout, path: AuthScreen.RouteName),
@@ -77,14 +77,14 @@ List<NavigationModel> adminSideBarItems = [
     path: NotificationsScreen.RouteName,
     index: 1,
   ),
-  NavigationModel("Sttings", Icons.settings),
+  NavigationModel("Settings", Icons.settings),
   NavigationModel("Log Out", Icons.logout, path: AuthScreen.RouteName),
 ];
 
 List<NavigationModel> merchantSideBarItems = [
-  NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
+  NavigationModel("Products", Icons.home, index: 0),
   NavigationModel("My Stores", Icons.store),
-  NavigationModel("My Produts", Icons.store),
+  NavigationModel("My Produts", Icons.store, path: ProductScreen.RouteName),
   NavigationModel(
     "Contracts",
     Icons.person,
@@ -101,8 +101,12 @@ List<NavigationModel> merchantSideBarItems = [
 ];
 
 List<NavigationModel> agentSideBarItems = [
-  NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("My Produts", Icons.store),
+  NavigationModel("Products", Icons.home, index: 0),
+  NavigationModel(
+    "My Produts",
+    Icons.store,
+    path: ProductScreen.RouteName,
+  ),
   NavigationModel(
     "Contracts",
     Icons.person,

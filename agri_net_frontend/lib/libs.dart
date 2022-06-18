@@ -26,3 +26,4 @@ export 'package:map_picker/map_picker.dart';
 export 'package:geocoding/geocoding.dart';
 export "stores/stores.dart";
 export "agents/agents.dart";
+export "transaction/transaction.dart";

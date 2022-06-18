@@ -66,8 +66,6 @@ class StoreProvider {
             path: "/api/merchant/stores",
             queryParameters: queryParameters),
         headers: {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"});
-    print(response.body);
-    print(response.statusCode);
     if (response.statusCode == 200 || response.statusCode == 201) {
       var theStores = jsonDecode(response.body);
       var stores = theStores["stores"];
@@ -76,7 +74,6 @@ class StoreProvider {
         myStores.add(Store.fromJson(temp));
       }
     }
-    print(myStores);
     return myStores;
   }
 }

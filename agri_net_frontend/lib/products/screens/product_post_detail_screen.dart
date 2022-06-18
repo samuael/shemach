@@ -1,3 +1,5 @@
+import 'package:agri_net_frontend/merchants/model/crop_model.dart';
+
 import "../../libs.dart";
 import "package:flutter/material.dart";
 
@@ -19,6 +21,9 @@ class ProductDetailScreenState extends State<ProductPostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     bool seemore = widget.post.description.length > 250;
+    context
+        .read<UsersBloc>()
+        .add(LoadMerchantByStoreIDEvent(widget.post.storeId));
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -312,6 +317,42 @@ class ProductDetailScreenState extends State<ProductPostDetailScreen> {
                     ),
                   ],
                 ),
+                UserSmallViewItem(storeid: this.widget.post.storeId),
+                GestureDetector(
+                  child: Container(
+                    width: 100,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          child: Text(
+                            "Buy",
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_right_outlined,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      CreateTransactionScreen.RouteName,
+                      arguments: {
+                        "post": widget.post,
+                      },
+                    );
+                  },
+                )
               ],
             ),
           ),
