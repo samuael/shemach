@@ -421,18 +421,18 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         setState(() {});
                         context.read<UserBloc>().add(
                             UserLoggedInEvent(userState.user, userState.role));
-                        if (userState.role == ROLE_SUPERADMIN) {
-                          BlocProvider.of<AdminsBloc>(context)
-                              .add(GetAllAdminsEvent());
-                        }
-                        if (userState.user is Admin) {
-                          BlocProvider.of<AdminsBloc>(context).add(
-                              GetAllAgentsEvent(
-                                  admin: (userState.user as Admin)));
-                          BlocProvider.of<AdminsBloc>(context).add(
-                              GetAllMerchantsEvent(
-                                  admin: (userState.user as Admin)));
-                        }
+                        // if (userState.role == ROLE_SUPERADMIN) {
+                        //   BlocProvider.of<AdminsBloc>(context)
+                        //       .add(GetAllAdminsEvent());
+                        // }
+                        // if (userState.user is Admin) {
+                        //   BlocProvider.of<AdminsBloc>(context).add(
+                        //       GetAllAgentsEvent(
+                        //           admin: (userState.user as Admin)));
+                        //   BlocProvider.of<AdminsBloc>(context).add(
+                        //       GetAllMerchantsEvent(
+                        //           admin: (userState.user as Admin)));
+                        // }
                       } else if (userState is NotAuthenticated) {
                         context
                             .read<UserBloc>()

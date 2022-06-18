@@ -3,9 +3,9 @@ import 'package:agri_net_frontend/profile/widgets/address.dart';
 import '../../libs.dart';
 
 class MyStoresScreen extends StatefulWidget {
-  static String RouteName = "stores";
-  User user;
-  MyStoresScreen({required this.user});
+  static String RouteName = "/stores";
+
+  MyStoresScreen();
 
   @override
   State<MyStoresScreen> createState() => _MyStoresScreenState();
@@ -13,10 +13,15 @@ class MyStoresScreen extends StatefulWidget {
 
 class _MyStoresScreenState extends State<MyStoresScreen> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final myStoresProvider = BlocProvider.of<StoreBloc>(context);
-    if (!(myStoresProvider.state is MyStoresState)) {
-      myStoresProvider.add(MyStoresEvent(ownerId: StaticDataStore.ID));
+    if (!(myStoresProvider.state is MyStoresInit)) {
+      myStoresProvider.add(LoadMyStoresEvent(ownerId: StaticDataStore.ID));
     }
     return Scaffold(
       appBar: AppBar(
@@ -32,13 +37,23 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
           padding: EdgeInsets.all(10),
           child: BlocBuilder<StoreBloc, StoreState>(
             builder: (context, state) {
-              if (state is MyStoresState) {
+              if (context.watch<StoreBloc>().state is MyStoresLoadedState) {
                 return Flexible(
-                    child: ListView.builder(
-                        itemCount: state.myStores.length,
-                        itemBuilder: (context, counter) {
-                          return StoreView(state.myStores[counter]);
-                        }));
+                    child: (context.watch<StoreBloc>().state
+                                    as MyStoresLoadedState)
+                                .myStores[StaticDataStore.ID] !=
+                            null
+                        ? ListView.builder(
+                            itemCount: (context.watch<StoreBloc>().state
+                                    as MyStoresLoadedState)
+                                .myStores[StaticDataStore.ID]!
+                                .length,
+                            itemBuilder: (context, counter) {
+                              return StoreView((context.watch<StoreBloc>().state
+                                      as MyStoresLoadedState)
+                                  .myStores[StaticDataStore.ID]![counter]);
+                            })
+                        : Center());
               }
 
               return Container();

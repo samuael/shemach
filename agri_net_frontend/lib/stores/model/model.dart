@@ -1,2 +1,2 @@
 export 'model_store.dart';
-export 'new_store_response.dart';
+export 'store_response.dart';

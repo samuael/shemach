@@ -22,11 +22,11 @@ class UserResponse {
             : role == ROLE_ADMIN
                 ? Admin.fromJson(json["user"])
                 : (role == ROLE_MERCHANT
-                    ? Merchant.fromJson(json["user"]) as User
+                    ? Merchant.fromJson(json["user"])
                     : (role == ROLE_AGENT
-                        ? Agent.fromJson(json["user"]) as User
+                        ? Agent.fromJson(json["user"])
                         : (role == ROLE_INFOADMIN
-                            ? Admin.fromJson(json["user"]) as User
-                            : null))) as User));
+                            ? Admin.fromJson(json["user"])
+                            : null))) ));
   }
 }

@@ -1,7 +1,4 @@
-import 'package:agri_net_frontend/merchants/model/crop_model.dart';
-
 import "../../libs.dart";
-import "package:flutter/material.dart";
 
 class ProductPostDetailScreen extends StatefulWidget {
   static const String RouteName = "/product_post_detail_screen";

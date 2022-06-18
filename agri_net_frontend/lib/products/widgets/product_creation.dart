@@ -454,7 +454,8 @@ class _ProductFormState extends State<ProductForm> {
                                               ),
                                             ),
                                             onPressed: () {
-                                              if (state is MyStoresState) {
+                                              if (state
+                                                  is MyStoresLoadedState) {
                                                 final stores = state.myStores;
                                                 Navigator.of(context).pushNamed(
                                                     StoreSelectionScreen

@@ -8,54 +8,79 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]).then(
-    (value) => runApp(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<UserBloc>(
-            create: (context) =>
-                UserBloc(repo: UserRepo(provider: AuthProvider())),
-          ),
-          BlocProvider(create: (context) {
-            return AdminsBloc(
-                adminsRepo: AdminsRepo(adminsProvider: UserProvider()))
-              ..add(GetAllAdminsEvent());
-          }),
-          BlocProvider(create: (context) {
-            return ProductTypeBloc(
-              ProductTypesRepository(ProductTypesProvider()),
-            );
-          }),
-          BlocProvider(
-            create: (context) {
-              return StoreBloc(
-                  storeRepo: StoreRepo(storeProvider: StoreProvider()));
-            },
-          ),
-          BlocProvider(create: (context) {
-            return MyProductsBloc(
-              ProductsRepo(
-                ProductProvider(),
-              ),
-            );
-          }),
-          BlocProvider(create: (context) {
-            return IndexBloc();
-          }),
-          BlocProvider(create: (context) {
-            return ProductsBloc(repo: ProductsRepo(ProductProvider()));
-          }),
-          BlocProvider(create: (context) {
-            return UsersBloc(UsersRepo(UsersProvider()));
-          }),
-          BlocProvider(create: (context) {
-            return TransactionBloc(TransactionRepo(TransactionProvider()));
-          })
-        ],
-        child: MyHomePage(),
-      ),
-    ),
-  );
+  ]).then((value) => runApp(MultiBlocProvider(providers: [
+        BlocProvider<UserBloc>(
+          create: (context) =>
+              UserBloc(repo: UserRepo(provider: AuthProvider())),
+        ),
+        BlocProvider(create: (context) {
+          return AdminsBloc(
+              adminsRepo: AdminsRepo(adminsProvider: AdminProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return ProductTypeBloc(
+            ProductTypesRepository(ProductTypesProvider()),
+          );
+        }),
+        BlocProvider(
+          create: (context) {
+            return StoreBloc(
+                storeRepo: StoreRepo(storeProvider: StoreProvider()));
+          },
+        ),
+        BlocProvider(create: (context) {
+          return MyProductsBloc(
+            ProductsRepo(
+              ProductProvider(),
+            ),
+          );
+        }),
+        BlocProvider(create: (context) {
+          return IndexBloc();
+        }),
+        BlocProvider(create: (context) {
+          return ProductsBloc(repo: ProductsRepo(ProductProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return UsersBloc(UsersRepo(UsersProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return TransactionBloc(TransactionRepo(TransactionProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return AdminsBloc(
+              adminsRepo: AdminsRepo(adminsProvider: AdminProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return AgentsBloc(
+              agentRepo: AgentRepo(agentProvider: AgentProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return MercahntsBloc(
+              merchantRepo: MerchantRepo(merchantProvider: MerchantProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return ProductTypeBloc(
+            ProductTypesRepository(ProductTypesProvider()),
+          );
+        }),
+        BlocProvider(
+          create: (context) {
+            return StoreBloc(
+                storeRepo: StoreRepo(storeProvider: StoreProvider()));
+          },
+        ),
+        BlocProvider(create: (context) {
+          return MyProductsBloc(
+            ProductsRepo(
+              ProductProvider(),
+            ),
+          );
+        }),
+        BlocProvider(create: (context) {
+          return ProductsBloc(repo: ProductsRepo(ProductProvider()));
+        }),
+      ], child: MyHomePage())));
 }
 
 class MyHomePage extends StatefulWidget {
@@ -70,6 +95,7 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Agri-Net',
         theme: ThemeData(
           primaryColor: Colors.green, //  MaterialColor(primary, swatch),

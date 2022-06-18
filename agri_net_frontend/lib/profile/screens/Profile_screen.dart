@@ -13,11 +13,20 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
-    User loggedInUser = (_userBloc.state as Authenticated).user;
+    final userProvider = BlocProvider.of<UserBloc>(context);
+    final loggedInUser = (userProvider.state as Authenticated).user;
+    final storeProvider = BlocProvider.of<StoreBloc>(context);
+    if (widget.requestedUser is Merchant) {
+      storeProvider.add(LoadMyStoresEvent(ownerId: widget.requestedUser.id));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("User Profile"),
@@ -40,9 +49,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 }
                 if (state.avatorPath != '') {
                   setState(() {
-                    print(loggedInUser.imgurl);
                     loggedInUser.imgurl = state.avatorPath!;
-                    print(loggedInUser.imgurl);
                   });
                 }
               }),
@@ -72,7 +79,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                             top: 10,
                                           ),
                                   ]),
-                                  _profilePage(),
+                                  Column(
+                                    children: [
+                                      (widget.requestedUser.firstname != '')
+                                          ? _nameTile()
+                                          : SizedBox(),
+                                      (widget.requestedUser.email != '')
+                                          ? _emailTile()
+                                          : SizedBox(),
+                                      (widget.requestedUser.phone != '')
+                                          ? _phoneTile()
+                                          : SizedBox(),
+                                    ],
+                                  ),
                                   (widget.requestedUser is Admin)
                                       ? AddressView(
                                           (widget.requestedUser as Admin)
@@ -80,10 +99,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       : (widget.requestedUser is Merchant)
                                           ? Expanded(
                                               child: Column(children: [
-                                                myStores(
-                                                    widget.requestedUser
-                                                        as Merchant,
-                                                    context),
+                                                Stack(
+                                                  children: [
+                                                    ExpansionTile(
+                                                      textColor:
+                                                          Theme.of(context)
+                                                              .primaryColor,
+                                                      iconColor:
+                                                          Theme.of(context)
+                                                              .primaryColor,
+                                                      title: Text(
+                                                        "Stores",
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      children: [
+                                                        myStores(context)
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
                                                 AddressView(
                                                     (widget.requestedUser
                                                             as Merchant)
@@ -110,68 +151,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget myStores(Merchant merchant, context) {
-    final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
-    User loggedInUser = (_userBloc.state as Authenticated).user;
-    // BlocProvider.of<StoreBloc>(context)
-    //     .add(MyStoresEvent(ownerId: merchant.id));
-    return BlocBuilder<StoreBloc, StoreState>(
-      builder: (context, state) {
-        if (state is MyStoresState) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                  child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new MyStoresScreen(
-                                user: widget.requestedUser,
-                              )));
-                },
-                child: ListTile(
-                  leading: Icon(
-                    Icons.store,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  title: Text(
-                    "Stores : ${state.myStores.length}",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              )),
-              Container(
-                  width: MediaQuery.of(context).size.width / 4 - 19,
-                  child: Row(
-                    children: [
-                      (widget.requestedUser.id != loggedInUser.id &&
-                              loggedInUser is Admin)
-                          ? ElevatedButton(
-                              // style: ButtonStyle(backgroundColor: Theme.of(context).),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) =>
-                                            new MerchantStoreForm(
-                                              owner: widget.requestedUser,
-                                            )));
-                              },
-                              child: Text("Add",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                            )
-                          : Container(),
-                    ],
-                  ))
-            ],
-          );
-        }
-        return Container();
-      },
+  Widget myStores(BuildContext context) {
+    final storesState = BlocProvider.of<StoreBloc>(context).state;
+    if (storesState is LoadingMyStoresState) {
+      return Center(
+        child: Column(
+          children: [
+            CircularProgressIndicator(
+              strokeWidth: 3,
+            ),
+            Text(
+              translate(lang, "loading ..."),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
+                color: Theme.of(context).primaryColor,
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    if (storesState is MyStoresLoadedState &&
+        storesState.myStores[widget.requestedUser.id] != null) {
+      final myStores = storesState.myStores[widget.requestedUser.id];
+      return Expanded(
+        child: ListView.builder(
+            itemCount: myStores!.length,
+            itemBuilder: (context, counter) {
+              return Column(
+                children: [
+                  StoreView(myStores[counter]),
+                ],
+              );
+            }),
+      );
+    }
+    return Center(
+      child: Column(
+        children: [
+          Text("No Store Instance found"),
+          IconButton(
+            icon: Icon(
+              Icons.replay,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              context
+                  .read<StoreBloc>()
+                  .add(LoadMyStoresEvent(ownerId: widget.requestedUser.id));
+            },
+          )
+        ],
+      ),
     );
   }
 
@@ -203,19 +235,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 )
               ],
             ));
-  }
-
-  Widget _profilePage() {
-    return SafeArea(
-        child: Center(
-      child: Column(
-        children: [
-          _nameTile(),
-          _emailTile(),
-          _phoneTile(),
-        ],
-      ),
-    ));
   }
 
   Widget _nameTile() {
@@ -277,9 +296,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 '${StaticDataStore.URI}${imgSrc}',
                 fit: BoxFit.cover,
               )
-            : Icon(
-                Icons.person,
-              ),
+            : Image.asset('assets/images/Avatar_icon_green.svg.png'),
       ),
     );
   }

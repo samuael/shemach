@@ -4,20 +4,29 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
   UsersRepo repo;
   UsersBloc(this.repo) : super(UsersInit()) {
     on<LoadUserByIDEvent>((event, emit) async {
+      if (event.id <= 0) {
+        return;
+      }
       if (!(this.state is UsersLoadedState)) {
         emit(UsersLoading());
-      } else {
-        if (this.getUserByID(event.id) != null) {
-          emit(this.state);
-          return;
-        }
       }
       final userResponse = await this.repo.provider.getUserByID(event.id);
+      servings -= 1;
       if (userResponse.statusCode == 200) {
         if (this.state is UsersLoadedState) {
           (this.state as UsersLoadedState).users[event.id] = userResponse.user!;
+          if (userResponse.role == ROLE_MERCHANT) {
+            emit(UsersLoadedState({event.id: userResponse.user!},
+                merchants: {event.id: userResponse.user! as Merchant}));
+          }
         } else {
-          emit(UsersLoadedState({event.id: userResponse.user!}, merchants: {}));
+          if (userResponse.role == ROLE_MERCHANT) {
+            emit(UsersLoadedState({event.id: userResponse.user!},
+                merchants: {event.id: userResponse.user! as Merchant}));
+          } else {
+            emit(UsersLoadedState({event.id: userResponse.user!},
+                merchants: {}));
+          }
         }
       } else {
         emit(UsersLoadFailedState());
@@ -43,17 +52,16 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     });
 
     on<LoadMerchantByStoreIDEvent>((event, emit) async {
+      if (event.storeID <= 0) {
+        return;
+      }
       if (!(this.state is UsersLoadedState)) {
         emit(UsersLoading());
-      } else {
-        if (this.getMerchantByStoreID(event.storeID) != null) {
-          emit(this.state);
-          return;
-        }
       }
       final userResponse =
           await this.repo.provider.getMerchantByStoreID(event.storeID);
-      print("The response is ${userResponse.statusCode} : ${userResponse.msg}");
+      // print("The response is ${userResponse.statusCode} : ${userResponse.msg}");
+      servings -= 1;
       if (userResponse.statusCode == 200) {
         if (this.state is UsersLoadedState) {
           (this.state as UsersLoadedState).users[userResponse.user!.id] =
@@ -76,9 +84,14 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
         }
       }
     }
-    this.add(LoadMerchantByStoreIDEvent(storeID));
+    if (servings <= 0) {
+      servings += 1;
+      this.add(LoadMerchantByStoreIDEvent(storeID));
+    }
     return null;
   }
+
+  int servings = 0;
 
   User? getUserByID(int userid) {
     if (this.state is UsersLoadedState) {
@@ -87,6 +100,10 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
           return (this.state as UsersLoadedState).users[userid]!;
         }
       }
+    }
+    if (servings <= 0) {
+      servings += 1;
+      this.add(LoadUserByIDEvent(userid));
     }
     return null;
   }
