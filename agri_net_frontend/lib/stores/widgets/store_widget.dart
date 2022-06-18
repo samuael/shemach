@@ -37,14 +37,6 @@ class _StoreViewState extends State<StoreView> {
                 Text("Owner : ",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                // Text(
-                //   widget.user.firstname +
-                //       " " +
-                //       widget.user.lastname,
-                //   style: TextStyle(
-                //     fontSize: 18,
-                //   ),
-                // )
               ],
             ),
             Row(

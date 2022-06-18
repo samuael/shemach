@@ -24,7 +24,7 @@ class _MapViewState extends State<MapView> {
       position: target, //position of marker
       infoWindow: InfoWindow(
         //popup info
-        title: 'Store',
+        title: 'Marker',
       ),
       icon: BitmapDescriptor.defaultMarker, //Icon for Marker
     ));

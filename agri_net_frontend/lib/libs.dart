@@ -9,7 +9,7 @@ export 'package:shared_preferences/shared_preferences.dart';
 export 'package:email_validator/email_validator.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:path_provider/path_provider.dart';
-export 'admins/admins.dart';
+export 'users/users.dart';
 export 'auth/auth.dart';
 export 'home/home.dart';
 export 'products/products.dart';

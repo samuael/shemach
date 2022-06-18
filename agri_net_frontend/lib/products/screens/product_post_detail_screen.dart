@@ -235,6 +235,7 @@ class ProductDetailScreenState extends State<ProductPostDetailScreen> {
                     ),
                   ],
                 ),
+                ElevatedButton(onPressed: () {}, child: Text("Request"))
               ],
             ),
           ),

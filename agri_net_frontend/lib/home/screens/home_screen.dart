@@ -9,6 +9,8 @@ class HomeScreen extends StatelessWidget {
     final productTypeProvider = BlocProvider.of<ProductTypeBloc>(context);
     final userProvider = BlocProvider.of<UserBloc>(context);
     final adminProvider = BlocProvider.of<AdminsBloc>(context);
+    final agentProvider = BlocProvider.of<AgentsBloc>(context);
+    final merchantProvider = BlocProvider.of<MercahntsBloc>(context);
 
     if (productTypeProvider.state is ProductTypeInit) {
       productTypeProvider.add(ProductTypesLoadEvent());
@@ -25,12 +27,18 @@ class HomeScreen extends StatelessWidget {
     if (userProvider.state is Authenticated) {
       final theUser = (userProvider.state as Authenticated).user;
       if (StaticDataStore.ROLE == ROLE_SUPERADMIN) {
-        adminProvider.add(GetAllAdminsEvent());
+        if (adminProvider.state is AdminsStateInIt) {
+          adminProvider.add(LoadAdminsInIt());
+        }
       }
       if (theUser is Admin) {
         final theAdmin = theUser as Admin;
-        adminProvider.add(GetAllAgentsEvent(admin: theAdmin));
-        adminProvider.add(GetAllMerchantsEvent(admin: theAdmin));
+        if (agentProvider.state is AgentsInItState) {
+          agentProvider.add(LoadMyAgentsEvent(adminID: theAdmin.id));
+        }
+        if (merchantProvider.state is MerchantsInItState) {
+          merchantProvider.add(LoadMyMerchantsEvent(adminID: theAdmin.id));
+        }
       }
     }
 

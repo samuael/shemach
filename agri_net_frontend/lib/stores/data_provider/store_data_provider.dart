@@ -52,31 +52,33 @@ class StoreProvider {
         statusCode: response.statusCode, msg: jsonDecode(response.body)["msg"]);
   }
 
-  Future<List<Store>> myStores(int ownerId) async {
-    List<Store> myStores = [];
+  Future<StoresResponse> myStores(int ownerId) async {
+    try {
+      final queryParameters = {
+        "id": ownerId,
+      }.map((key, value) => MapEntry(key, value.toString()));
 
-    final queryParameters = {
-      "id": ownerId,
-    }.map((key, value) => MapEntry(key, value.toString()));
-    var response = await client.get(
-        Uri(
-            scheme: "http",
-            host: StaticDataStore.HOST,
-            port: StaticDataStore.PORT,
-            path: "/api/merchant/stores",
-            queryParameters: queryParameters),
-        headers: {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"});
-    print(response.body);
-    print(response.statusCode);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      var theStores = jsonDecode(response.body);
-      var stores = theStores["stores"];
-      for (int i = 0; i < stores.length; i++) {
-        var temp = stores[i] as Map<String, dynamic>;
-        myStores.add(Store.fromJson(temp));
+      var response = await client.get(
+          Uri(
+              scheme: "http",
+              host: StaticDataStore.HOST,
+              port: StaticDataStore.PORT,
+              path: "api/merchant/stores",
+              queryParameters: queryParameters),
+          headers: {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"});
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> stores = jsonDecode(response.body);
+        return StoresResponse.fromJson(stores);
+      } else {
+        return StoresResponse(
+            statusCode: response.statusCode,
+            msg: STATUS_CODES[response.statusCode] ?? "",
+            stores: []);
       }
+    } catch (e, a) {
+      return StoresResponse(
+          statusCode: 999, msg: "Something WentWrong", stores: []);
     }
-    print(myStores);
-    return myStores;
   }
 }

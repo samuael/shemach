@@ -48,7 +48,7 @@ class NavigationModel {
 
 List<NavigationModel> superAdminSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("Admins", Icons.people, path: AdminsScreen.RouteName),
+  NavigationModel("Admins", Icons.person, path: AdminsScreen.RouteName),
   NavigationModel("Search", Icons.search),
   NavigationModel(
     "Notifications",
@@ -60,7 +60,7 @@ List<NavigationModel> superAdminSideBarItems = [
 
 List<NavigationModel> adminSideBarItems = [
   NavigationModel("Products", Icons.home, path: ProductScreen.RouteName),
-  NavigationModel("Merchants", Icons.store,
+  NavigationModel("Merchants", Icons.person,
       path: RegisteredMerchantsScreen.RouteName),
   NavigationModel("Agents", Icons.person,
       path: RegisteredAgentsScreen.RouteName),

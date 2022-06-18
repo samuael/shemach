@@ -11,8 +11,7 @@ class AddNewProduct extends ProductEvent {
   AddNewProduct(this.post);
 }
 
-
-// 
+//
 class LoadProductsEvent extends ProductEvent {}
 
 // class LoadProductsInit extends ProductEvent {}
