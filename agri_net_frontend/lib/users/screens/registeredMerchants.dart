@@ -60,6 +60,12 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
                   );
                 }
                 if (state is MerchantsLoadedState) {
+                  if (state.merchants.length > 0) {
+                    for (int i = 0; i < state.merchants.length; i++) {
+                      storeProvider.add(
+                          LoadMyStoresEvent(ownerId: state.merchants[i].id));
+                    }
+                  }
                   return Column(
                     children: [
                       // topBarOfMerchantsList(context),

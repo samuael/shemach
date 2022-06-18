@@ -17,6 +17,7 @@ class StoreBloc extends Bloc<StoreEvent, StoreState>
                 .addAll({event.ownerId: response.stores});
             emit(this.state);
           } else {
+            print(response..stores);
             emit(MyStoresLoadedState(
                 myStores: {event.ownerId: response.stores}));
           }

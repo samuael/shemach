@@ -66,7 +66,6 @@ class StoreProvider {
               path: "api/merchant/stores",
               queryParameters: queryParameters),
           headers: {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"});
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         Map<String, dynamic> stores = jsonDecode(response.body);
         return StoresResponse.fromJson(stores);

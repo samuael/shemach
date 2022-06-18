@@ -1,4 +1,5 @@
 import 'package:agri_net_frontend/profile/widgets/address.dart';
+import 'package:agri_net_frontend/profile/widgets/widgets.dart';
 
 import '../../libs.dart';
 
@@ -99,36 +100,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       : (widget.requestedUser is Merchant)
                                           ? Expanded(
                                               child: Column(children: [
-                                                Stack(
-                                                  children: [
-                                                    ExpansionTile(
-                                                      textColor:
-                                                          Theme.of(context)
-                                                              .primaryColor,
-                                                      iconColor:
-                                                          Theme.of(context)
-                                                              .primaryColor,
-                                                      title: Text(
-                                                        "Stores",
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      children: [
-                                                        myStores(context)
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
                                                 AddressView(
                                                     (widget.requestedUser
                                                             as Merchant)
                                                         .address),
+                                                ExpansionTile(
+                                                  textColor: Theme.of(context)
+                                                      .primaryColor,
+                                                  iconColor: Theme.of(context)
+                                                      .primaryColor,
+                                                  title: Text(
+                                                    "Stores",
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  children: [myStores(context)],
+                                                ),
                                               ]),
                                             )
                                           : (widget.requestedUser is Agent)
@@ -152,7 +143,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Widget myStores(BuildContext context) {
-    final storesState = BlocProvider.of<StoreBloc>(context).state;
+    final storesState = context.watch<StoreBloc>().state;
     if (storesState is LoadingMyStoresState) {
       return Center(
         child: Column(
@@ -171,40 +162,66 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ],
         ),
       );
-    }
-    if (storesState is MyStoresLoadedState &&
+    } else if (storesState is MyStoresLoadedState &&
         storesState.myStores[widget.requestedUser.id] != null) {
       final myStores = storesState.myStores[widget.requestedUser.id];
-      return Expanded(
-        child: ListView.builder(
-            itemCount: myStores!.length,
-            itemBuilder: (context, counter) {
-              return Column(
-                children: [
-                  StoreView(myStores[counter]),
-                ],
-              );
-            }),
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.5 - 50,
+        child: Expanded(
+          child: SingleChildScrollView(
+            child: ListView.builder(
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemCount: myStores!.length,
+                itemBuilder: (context, counter) {
+                  return StoreView(myStores[counter]);
+                }),
+          ),
+        ),
+      );
+      // Expanded(
+      //     child: Column(
+      //   children: myStores!.map<StoreView>((e) => StoreView(e)).toList(),
+      // ));
+    } else if (storesState is LoadingStoresFailedState) {
+      return Center(
+        child: Column(
+          children: [
+            Text("${storesState.msg}"),
+            IconButton(
+              icon: Icon(
+                Icons.replay,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                context
+                    .read<StoreBloc>()
+                    .add(LoadMyStoresEvent(ownerId: widget.requestedUser.id));
+              },
+            )
+          ],
+        ),
+      );
+    } else {
+      return Center(
+        child: Column(
+          children: [
+            Text("No Store Instance found"),
+            IconButton(
+              icon: Icon(
+                Icons.replay,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                context
+                    .read<StoreBloc>()
+                    .add(LoadMyStoresEvent(ownerId: widget.requestedUser.id));
+              },
+            )
+          ],
+        ),
       );
     }
-    return Center(
-      child: Column(
-        children: [
-          Text("No Store Instance found"),
-          IconButton(
-            icon: Icon(
-              Icons.replay,
-              color: Colors.blue,
-            ),
-            onPressed: () {
-              context
-                  .read<StoreBloc>()
-                  .add(LoadMyStoresEvent(ownerId: widget.requestedUser.id));
-            },
-          )
-        ],
-      ),
-    );
   }
 
   void showImageSource(BuildContext context) {

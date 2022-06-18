@@ -100,8 +100,8 @@ class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
                 },
                 child: Icon(
                   Icons.add,
-                  color: Colors.black,
-                  size: 35,
+                  color: Theme.of(context).primaryColor,
+                  size: 50,
                 ),
               ),
             )
