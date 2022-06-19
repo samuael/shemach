@@ -9,7 +9,7 @@ const String ROLE_ADMIN = "admin";
 class StaticDataStore {
   // static const String HOST = "192.168.43.208";
   static int ID = 0;
-  static const String HOST = "192.168.43.208";
+  static const String HOST = "10.5.244.146";
   static const int PORT = 8080;
   static const String SCHEME = "http";
   static String get URI {
