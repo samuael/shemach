@@ -66,10 +66,8 @@ List<NavigationModel> adminSideBarItems = [
     Icons.home,
     path: ProductScreen.RouteName,
   ),
-  NavigationModel("Merchants", Icons.person,
-      path: RegisteredMerchantsScreen.RouteName),
-  NavigationModel("Agents", Icons.person,
-      path: RegisteredAgentsScreen.RouteName),
+  NavigationModel("Merchants", Icons.person, path: MerchantsScreen.RouteName),
+  NavigationModel("Agents", Icons.person, path: AgentsScreen.RouteName),
   NavigationModel("Search", Icons.search),
   NavigationModel(
     "Notifications",

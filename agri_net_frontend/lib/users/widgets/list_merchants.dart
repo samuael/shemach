@@ -1,15 +1,13 @@
 import '../../libs.dart';
 
-class RegisteredMerchantsScreen extends StatefulWidget {
-  static String RouteName = "merchants";
-  const RegisteredMerchantsScreen({Key? key}) : super(key: key);
+class MerchantsList extends StatefulWidget {
+  const MerchantsList({Key? key}) : super(key: key);
 
   @override
-  State<RegisteredMerchantsScreen> createState() =>
-      _RegisteredMerchantsScreenState();
+  State<MerchantsList> createState() => _MerchantsListState();
 }
 
-class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
+class _MerchantsListState extends State<MerchantsList> {
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -21,118 +19,81 @@ class _RegisteredMerchantsScreenState extends State<RegisteredMerchantsScreen> {
   Widget build(BuildContext context) {
     final storeProvider = BlocProvider.of<StoreBloc>(context);
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Theme.of(context).canvasColor,
-          toolbarHeight: MediaQuery.of(context).size.height / 13,
-          leading: IconButton(
-            color: Colors.black,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: BackButton(),
-          ),
-          title: Text(
-            " Merchants ",
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-          centerTitle: true,
-        ),
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColorLight,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                children: [
-                  BlocBuilder<MercahntsBloc, MerchantsState>(
-                      builder: (context, state) {
-                    if (state is MerchantsLoadingState) {
-                      return Center(
-                        child: Column(
-                          children: [
-                            CircularProgressIndicator(
-                              strokeWidth: 3,
-                            ),
-                            Text(
-                              translate(lang, "loading ..."),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.italic,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    }
-                    if (state is MerchantsLoadedState) {
-                      if (state.merchants.length > 0) {
-                        for (int i = 0; i < state.merchants.length; i++) {
-                          storeProvider.add(LoadMyStoresEvent(
-                              ownerId: state.merchants[i].id));
-                        }
-                      }
-                      return Column(
-                        children: [
-                          // topBarOfMerchantsList(context),
-                          Expanded(child: merchantRow(state.merchants)),
-                        ],
-                      );
-                    }
-                    return Center(
-                      child: Column(
-                        children: [
-                          Text("No Merchant Instance found"),
-                          IconButton(
-                            icon: Icon(
-                              Icons.replay,
-                              color: Colors.blue,
-                            ),
-                            onPressed: () {
-                              context.read<MercahntsBloc>().add(
-                                  LoadMyMerchantsEvent(
-                                      adminID: StaticDataStore.ID));
-                            },
-                          )
-                        ],
-                      ),
-                    );
-                  }),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: FloatingActionButton(
-                      backgroundColor: Theme.of(context).canvasColor,
-                      elevation: 5.0,
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) =>
-                                    new RegisterMerchantForm()));
-                      },
-                      child: Icon(
-                        Icons.add,
-                        color: Theme.of(context).primaryColor,
-                        size: 50,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            vertical: 3,
           ),
-        ));
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Theme.of(context).primaryColorLight,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Stack(
+            children: [
+              BlocBuilder<MercahntsBloc, MerchantsState>(
+                  builder: (context, state) {
+                if (state is MerchantsLoadingState) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          strokeWidth: 3,
+                        ),
+                        Text(
+                          translate(lang, "loading ..."),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }
+                if (state is MerchantsLoadedState) {
+                  if (state.merchants.length > 0) {
+                    for (int i = 0; i < state.merchants.length; i++) {
+                      storeProvider.add(
+                          LoadMyStoresEvent(ownerId: state.merchants[i].id));
+                    }
+                  }
+                  return Column(
+                    children: [
+                      // topBarOfMerchantsList(context),
+                      Expanded(child: merchantRow(state.merchants)),
+                    ],
+                  );
+                }
+                return Center(
+                  child: Column(
+                    children: [
+                      Text("No Merchant Instance found"),
+                      IconButton(
+                        icon: Icon(
+                          Icons.replay,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () {
+                          context.read<MercahntsBloc>().add(
+                              LoadMyMerchantsEvent(
+                                  adminID: StaticDataStore.ID));
+                        },
+                      )
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    ));
   }
 
   Widget searchBar() {
