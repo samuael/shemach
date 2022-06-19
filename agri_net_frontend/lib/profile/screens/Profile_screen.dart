@@ -30,114 +30,143 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("User Profile"),
-        backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
+        backgroundColor: Theme.of(context).canvasColor,
+        toolbarHeight: MediaQuery.of(context).size.height / 13,
+        leading: IconButton(
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: BackButton(),
+        ),
+        title: Text(
+          " Profile ",
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        centerTitle: true,
       ),
       body: SafeArea(
-        child: BlocProvider(
-            create: (Context) {
-              return ProfileBLoc(
-                  user: widget.requestedUser,
-                  isCurrentUser: widget.requestedUser.id == loggedInUser.id,
-                  profileRepository:
-                      ProfileRepository(profileProvider: ProfileProvider()));
-            },
-            child: BlocListener<ProfileBLoc, ProfileState>(
-              listener: ((context, state) {
-                if (state.imageSourceActionSheetIsVisible!) {
-                  showImageSource(context);
-                }
-                if (state.avatorPath != '') {
-                  setState(() {
-                    loggedInUser.imgurl = state.avatorPath!;
-                  });
-                }
-              }),
-              child: BlocBuilder<ProfileBLoc, ProfileState>(
-                builder: ((context, state) => Scaffold(
-                      body: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Material(
-                            elevation: 5,
-                            child: Container(
-                              child: Center(
-                                  child: Column(
-                                children: [
-                                  Stack(children: [
-                                    buildImage(widget.requestedUser.imgurl),
-                                    (widget.requestedUser.id == loggedInUser.id)
-                                        ? Positioned(
-                                            child: buildEditIcon(context),
-                                            // right: -15,
-                                            left: 90,
-                                            top: 90,
-                                          )
-                                        : Positioned(
-                                            child: Container(),
-                                            right: 4,
-                                            top: 10,
-                                          ),
-                                  ]),
-                                  Column(
-                                    children: [
-                                      (widget.requestedUser.firstname != '')
-                                          ? _nameTile()
-                                          : SizedBox(),
-                                      (widget.requestedUser.email != '')
-                                          ? _emailTile()
-                                          : SizedBox(),
-                                      (widget.requestedUser.phone != '')
-                                          ? _phoneTile()
-                                          : SizedBox(),
-                                    ],
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              child: BlocProvider(
+                  create: (Context) {
+                    return ProfileBLoc(
+                        user: widget.requestedUser,
+                        isCurrentUser:
+                            widget.requestedUser.id == loggedInUser.id,
+                        profileRepository: ProfileRepository(
+                            profileProvider: ProfileProvider()));
+                  },
+                  child: BlocListener<ProfileBLoc, ProfileState>(
+                    listener: ((context, state) {
+                      if (state.imageSourceActionSheetIsVisible!) {
+                        showImageSource(context);
+                      }
+                      if (state.avatorPath != '') {
+                        setState(() {
+                          loggedInUser.imgurl = state.avatorPath!;
+                        });
+                      }
+                    }),
+                    child: BlocBuilder<ProfileBLoc, ProfileState>(
+                      builder: ((context, state) => Scaffold(
+                            body: Material(
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Theme.of(context).primaryColorLight,
                                   ),
-                                  (widget.requestedUser is Admin)
-                                      ? AddressView(
-                                          (widget.requestedUser as Admin)
-                                              .address)
-                                      : (widget.requestedUser is Merchant)
-                                          ? Expanded(
-                                              child: Column(children: [
-                                                AddressView(
-                                                    (widget.requestedUser
-                                                            as Merchant)
-                                                        .address),
-                                                ExpansionTile(
-                                                  textColor: Theme.of(context)
-                                                      .primaryColor,
-                                                  iconColor: Theme.of(context)
-                                                      .primaryColor,
-                                                  title: Text(
-                                                    "Stores",
-                                                    style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .primaryColor,
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  children: [myStores(context)],
-                                                ),
-                                              ]),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                    child: Column(
+                                  children: [
+                                    Stack(children: [
+                                      buildImage(widget.requestedUser.imgurl),
+                                      (widget.requestedUser.id ==
+                                              loggedInUser.id)
+                                          ? Positioned(
+                                              child: buildEditIcon(context),
+                                              // right: -15,
+                                              left: 90,
+                                              top: 90,
                                             )
-                                          : (widget.requestedUser is Agent)
-                                              ? AddressView(
-                                                  (widget.requestedUser
-                                                          as Agent)
-                                                      .address,
-                                                )
-                                              : Container()
-                                ],
-                              )),
+                                          : Positioned(
+                                              child: Container(),
+                                              right: 4,
+                                              top: 10,
+                                            ),
+                                    ]),
+                                    Column(
+                                      children: [
+                                        (widget.requestedUser.firstname != '')
+                                            ? _nameTile()
+                                            : SizedBox(),
+                                        (widget.requestedUser.email != '')
+                                            ? _emailTile()
+                                            : SizedBox(),
+                                        (widget.requestedUser.phone != '')
+                                            ? _phoneTile()
+                                            : SizedBox(),
+                                      ],
+                                    ),
+                                    (widget.requestedUser is Admin)
+                                        ? AddressView(
+                                            (widget.requestedUser as Admin)
+                                                .address)
+                                        : (widget.requestedUser is Merchant)
+                                            ? Expanded(
+                                                child: Column(children: [
+                                                  AddressView(
+                                                      (widget.requestedUser
+                                                              as Merchant)
+                                                          .address),
+                                                  ExpansionTile(
+                                                    textColor: Theme.of(context)
+                                                        .primaryColor,
+                                                    iconColor: Theme.of(context)
+                                                        .primaryColor,
+                                                    title: Text(
+                                                      "Stores",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    children: [
+                                                      myStores(context)
+                                                    ],
+                                                  ),
+                                                ]),
+                                              )
+                                            : (widget.requestedUser is Agent)
+                                                ? AddressView(
+                                                    (widget.requestedUser
+                                                            as Agent)
+                                                        .address,
+                                                  )
+                                                : Container()
+                                  ],
+                                )),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    )),
-              ),
-            )),
+                          )),
+                    ),
+                  )),
+            ),
+          ),
+        ),
       ),
     );
   }

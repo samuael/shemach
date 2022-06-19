@@ -63,254 +63,333 @@ class _RegisterMerchantFormState extends State<RegisterMerchantForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Theme.of(context).canvasColor,
-        elevation: 5,
         toolbarHeight: MediaQuery.of(context).size.height / 13,
         leading: IconButton(
-            color: Colors.black,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: BackButton()),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: BackButton(),
+        ),
         title: Text(
-          "Register New Merchant",
+          " Register Merchant ",
           style: TextStyle(
               fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
+        centerTitle: true,
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height * 0.4 + 30,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  firstLastName(context),
-                  Container(
-                    height: MediaQuery.of(context).size.height / 20,
-                    width: MediaQuery.of(context).size.width - 20,
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      cursorColor: Theme.of(context).primaryColorLight,
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.mail_outline),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your email address';
-                        }
-                        // Check if the entered email has the right format
-                        if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                          return 'Please enter a valid email address';
-                        }
-                        // Return null if the entered email is valid
-                        return null;
-                      },
-                      onChanged: (value) => emailController,
-                    ),
-                  ),
-                  emailPhone(context),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Address:",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                  woredaCity(context),
-                  uniqueAddress(context),
-                  zoneRegion(context),
-                  LatLon(context)
-                ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                vertical: 3,
               ),
-            ),
-            Flexible(
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.4,
-                child: Stack(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).primaryColorLight,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Expanded(
-                      child: MapPicker(
-                        // pass icon widget
-                        iconWidget: Icon(
-                          Icons.location_pin,
-                          color: Colors.red,
-                          size: 30,
-                        ),
-                        //add map picker controller
-                        mapPickerController: mapPickerController,
-                        child: GoogleMap(
-                          myLocationEnabled: true,
-                          zoomControlsEnabled: false,
-                          // hide location button
-                          myLocationButtonEnabled: false,
-                          mapType: MapType.hybrid,
-                          //  camera position
-                          initialCameraPosition: cameraPosition,
-                          onMapCreated: (GoogleMapController controller) {
-                            _controller.complete(controller);
-                          },
-                          onCameraMoveStarted: () {
-                            // notify map is moving
-                            mapPickerController.mapMoving!();
-                            textController.text = "checking ...";
-                          },
-                          onCameraMove: (cameraPosition) {
-                            this.cameraPosition = cameraPosition;
-                          },
-                          onCameraIdle: () async {
-                            // notify map stopped moving
-                            mapPickerController.mapFinishedMoving!();
-                            //get address name from camera position
-                            List<Placemark> placemarks =
-                                await placemarkFromCoordinates(
-                              cameraPosition.target.latitude,
-                              cameraPosition.target.longitude,
-                            );
-
-                            // update the ui with the address
-                            uniqueAddressController.text =
-                                '${placemarks.first.name}';
-                            regionController.text =
-                                '${placemarks.first.administrativeArea}';
-                            zoneController.text =
-                                '${placemarks.first.subAdministrativeArea}';
-                            cityControler.text = '${placemarks.first.locality}';
-                            woredaController.text =
-                                '${placemarks.first.subLocality}';
-                            kebeleController.text =
-                                '${placemarks.first.street}';
-                            textController.text =
-                                '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
-                          },
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: MediaQuery.of(context).size.height * 0.01,
-                      width: MediaQuery.of(context).size.width - 20,
-                      height: 50,
-                      child: TextFormField(
-                        maxLines: 3,
-                        textAlign: TextAlign.center,
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.zero,
-                            border: InputBorder.none),
-                        controller: textController,
-                      ),
-                    ),
-                    Positioned(
-                      top: MediaQuery.of(context).size.height * 0.3 + 35,
-                      left: MediaQuery.of(context).size.width * 0.305,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.4 + 30,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: TextButton(
-                              child: const Text(
-                                "Track Location",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.normal,
-                                  color: Colors.black,
-                                  fontSize: 19,
-                                  // height: 19/19,
-                                ),
+                          firstLastName(context),
+                          Container(
+                            height: MediaQuery.of(context).size.height / 20,
+                            width: MediaQuery.of(context).size.width - 20,
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              cursorColor: Theme.of(context).primaryColorLight,
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                labelText: "Email",
+                                border: OutlineInputBorder(),
+                                suffixIcon: Icon(Icons.mail_outline),
                               ),
-                              onPressed: () {
-                                latitudeControler.text =
-                                    '${cameraPosition.target.latitude}';
-                                longitudeController.text =
-                                    '${cameraPosition.target.longitude}';
-                                print(
-                                    "Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
-                                print("Address: ${textController.text}");
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Please enter your email address';
+                                }
+                                // Check if the entered email has the right format
+                                if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                                  return 'Please enter a valid email address';
+                                }
+                                // Return null if the entered email is valid
+                                return null;
                               },
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Color.fromARGB(255, 228, 223, 223)),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
+                              onChanged: (value) => emailController,
+                            ),
+                          ),
+                          emailPhone(context),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Address:",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                          woredaCity(context),
+                          uniqueAddress(context),
+                          zoneRegion(context),
+                          LatLon(context)
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        child: Stack(
+                          children: [
+                            Expanded(
+                              child: MapPicker(
+                                // pass icon widget
+                                iconWidget: Icon(
+                                  Icons.location_pin,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                                //add map picker controller
+                                mapPickerController: mapPickerController,
+                                child: GoogleMap(
+                                  myLocationEnabled: true,
+                                  zoomControlsEnabled: false,
+                                  // hide location button
+                                  myLocationButtonEnabled: false,
+                                  mapType: MapType.hybrid,
+                                  //  camera position
+                                  initialCameraPosition: cameraPosition,
+                                  onMapCreated:
+                                      (GoogleMapController controller) {
+                                    _controller.complete(controller);
+                                  },
+                                  onCameraMoveStarted: () {
+                                    // notify map is moving
+                                    mapPickerController.mapMoving!();
+                                    textController.text = "checking ...";
+                                  },
+                                  onCameraMove: (cameraPosition) {
+                                    this.cameraPosition = cameraPosition;
+                                  },
+                                  onCameraIdle: () async {
+                                    // notify map stopped moving
+                                    mapPickerController.mapFinishedMoving!();
+                                    //get address name from camera position
+                                    List<Placemark> placemarks =
+                                        await placemarkFromCoordinates(
+                                      cameraPosition.target.latitude,
+                                      cameraPosition.target.longitude,
+                                    );
+
+                                    // update the ui with the address
+                                    uniqueAddressController.text =
+                                        '${placemarks.first.name}';
+                                    regionController.text =
+                                        '${placemarks.first.administrativeArea}';
+                                    zoneController.text =
+                                        '${placemarks.first.subAdministrativeArea}';
+                                    cityControler.text =
+                                        '${placemarks.first.locality}';
+                                    woredaController.text =
+                                        '${placemarks.first.subLocality}';
+                                    kebeleController.text =
+                                        '${placemarks.first.street}';
+                                    textController.text =
+                                        '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
+                                  },
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            Positioned(
+                              top: MediaQuery.of(context).size.height * 0.01,
+                              width: MediaQuery.of(context).size.width - 20,
+                              height: 50,
+                              child: TextFormField(
+                                maxLines: 3,
+                                textAlign: TextAlign.center,
+                                readOnly: true,
+                                decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.zero,
+                                    border: InputBorder.none),
+                                controller: textController,
+                              ),
+                            ),
+                            Positioned(
+                              top:
+                                  MediaQuery.of(context).size.height * 0.3 + 20,
+                              left: MediaQuery.of(context).size.width * 0.305,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: TextButton(
+                                      child: const Text(
+                                        "Track Location",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: Colors.black,
+                                          fontSize: 19,
+                                          // height: 19/19,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        latitudeControler.text =
+                                            '${cameraPosition.target.latitude}';
+                                        longitudeController.text =
+                                            '${cameraPosition.target.longitude}';
+                                        print(
+                                            "Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
+                                        print(
+                                            "Address: ${textController.text}");
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Color.fromARGB(
+                                                    255, 228, 223, 223)),
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Theme.of(context).primaryColor),
+                              animationDuration: Duration(seconds: 1),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                              ),
+                              elevation: MaterialStateProperty.all<double>(0),
+                            ),
+                            onPressed: () async {
+                              bool validated = _trySubmitForm();
+                              if (validated) {
+                                final response = await context
+                                    .read<MercahntsBloc>()
+                                    .registerMerchant(CreatNewMerchantEvent(
+                                        firstname: firstnameController.text,
+                                        lastname: lastnameController.text,
+                                        email: emailController.text,
+                                        phone: phoneControler.text,
+                                        kebele: kebeleController.text,
+                                        city: cityControler.text,
+                                        woreda: woredaController.text,
+                                        zone: zoneController.text,
+                                        region: regionController.text,
+                                        unique_address:
+                                            uniqueAddressController.text,
+                                        latitude:
+                                            cameraPosition.target.latitude,
+                                        longitude:
+                                            cameraPosition.target.latitude));
+                                if (response.statusCode == 200) {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            },
+                            child: Text(
+                              "Register",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
+                      ],
                     )
+                    // Container(
+                    //   height: MediaQuery.of(context).size.height * 0.05,
+                    //   child: Container(
+                    //     height: MediaQuery.of(context).size.height / 25,
+                    //     width: MediaQuery.of(context).size.width / 3,
+                    //     decoration: BoxDecoration(
+                    //         color: Theme.of(context).primaryColor,
+                    //         borderRadius: BorderRadius.circular(3)),
+                    //     child: ElevatedButton(
+                    //         style: ButtonStyle(
+                    //           backgroundColor: MaterialStateProperty.all<Color>(
+                    //               Theme.of(context).primaryColor),
+                    //           animationDuration: Duration(seconds: 1),
+                    //           padding: MaterialStateProperty.all<EdgeInsets>(
+                    //             EdgeInsets.symmetric(
+                    //               horizontal: 40,
+                    //               vertical: 10,
+                    //             ),
+                    //           ),
+                    //           elevation: MaterialStateProperty.all<double>(0),
+                    //         ),
+                    //         onPressed: () async {
+                    //           bool validated = _trySubmitForm();
+                    //           if (validated) {
+                    //             final response = await context
+                    //                 .read<MercahntsBloc>()
+                    //                 .registerMerchant(CreatNewMerchantEvent(
+                    //                     firstname: firstnameController.text,
+                    //                     lastname: lastnameController.text,
+                    //                     email: emailController.text,
+                    //                     phone: phoneControler.text,
+                    //                     kebele: kebeleController.text,
+                    //                     city: cityControler.text,
+                    //                     woreda: woredaController.text,
+                    //                     zone: zoneController.text,
+                    //                     region: regionController.text,
+                    //                     unique_address: uniqueAddressController.text,
+                    //                     latitude: cameraPosition.target.latitude,
+                    //                     longitude: cameraPosition.target.latitude));
+                    //             if (response.statusCode == 200) {
+                    //               Navigator.pop(context);
+                    //             }
+                    //           }
+                    //         },
+                    //         child: Text(
+                    //           "Register",
+                    //           style:
+                    //               TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    //         )),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.05,
-              child: Container(
-                height: MediaQuery.of(context).size.height / 25,
-                width: MediaQuery.of(context).size.width / 3,
-                decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: BorderRadius.circular(3)),
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Theme.of(context).primaryColor),
-                      animationDuration: Duration(seconds: 1),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 10,
-                        ),
-                      ),
-                      elevation: MaterialStateProperty.all<double>(0),
-                    ),
-                    onPressed: () async {
-                      bool validated = _trySubmitForm();
-                      if (validated) {
-                        final response = await context
-                            .read<MercahntsBloc>()
-                            .registerMerchant(CreatNewMerchantEvent(
-                                firstname: firstnameController.text,
-                                lastname: lastnameController.text,
-                                email: emailController.text,
-                                phone: phoneControler.text,
-                                kebele: kebeleController.text,
-                                city: cityControler.text,
-                                woreda: woredaController.text,
-                                zone: zoneController.text,
-                                region: regionController.text,
-                                unique_address: uniqueAddressController.text,
-                                latitude: cameraPosition.target.latitude,
-                                longitude: cameraPosition.target.latitude));
-                        if (response.statusCode == 200) {
-                          Navigator.pop(context);
-                        }
-                      }
-                    },
-                    child: Text(
-                      "Register",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
