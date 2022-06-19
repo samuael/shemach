@@ -36,11 +36,10 @@ func Route(
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "OPTIONS"},
-		AllowOrigins:     []string{"http://localhost:8080"},
+		AllowOrigins:     []string{"*"},
 		AllowHeaders:     []string{"Content-type", "*"},
 		AllowCredentials: true,
 	}))
-
 	router.GET("/api/superadmin", rules.Authenticated(), superadminhandler.GetSuperadminByID)
 	router.GET("/api/superadmins", rules.Authenticated(), superadminhandler.GetSystemSuperadmin)
 
@@ -56,8 +55,8 @@ func Route(
 	router.POST("/api/superadmin/product/new", rules.Authenticated(), rules.Authorized(), producthandler.CreateProductInstance)
 	router.GET("/api/product", producthandler.GetProductByID)
 	router.GET("/api/products", producthandler.GetProducts)
-	router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
-	router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
+	// router.GET("/api/product/subscribe", rules.AuthenticatedSubscriber(), producthandler.SubscribeForProduct)
+	// router.GET("/api/product/unsubscribe", rules.AuthenticatedSubscriber(), producthandler.UnsubscriberForProduct)
 	router.GET("/api/product/search", producthandler.SearchProduct)
 	router.GET("/api/product/units", producthandler.GetProductUnits)
 	router.PUT("/api/infoadmin/product", rules.Authenticated(), rules.Authorized(), producthandler.UpdateProduct)
@@ -68,6 +67,9 @@ func Route(
 
 	// message related end points
 	router.GET("/api/messages", rules.AuthenticatedSubscriber(), messagehandler.GetRecentMessages)
+	router.DELETE("/api/message/:id", rules.Authenticated(), messagehandler.DeleteMessageByID)
+	router.POST("/api/message/new", rules.Authenticated(), messagehandler.SendMessage)
+	router.GET("/api/admins/messages", rules.Authenticated(), messagehandler.GetAllMessages)
 
 	// infoadmin related routes
 	router.POST("/api/superadmin/infoadmin/new", rules.Authenticated(), rules.Authorized(), infoadminhandler.Registerinfoadmin)
@@ -80,6 +82,7 @@ func Route(
 	router.PUT("/api/user/profile/picture", rules.Authenticated(), userhandler.UpdateProfilePicture)
 	router.DELETE("/api/user/profile/picture", rules.Authenticated(), userhandler.DeleteProfilePicture)
 	router.PUT("/api/user", rules.Authenticated(), userhandler.UpdateProfile)
+	router.GET("/api/user/:id", rules.Authenticated(), userhandler.GetUserByID)
 
 	// admin related routes
 	router.POST("/api/superadmin/admin/new/", rules.Authenticated(), rules.Authorized(), adminhandler.RegisterAdmin)
@@ -110,6 +113,7 @@ func Route(
 	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)
 	router.GET("/api/store", rules.Authenticated(), storehandler.GetMerchantByID)
 	router.GET("/api/merchants", rules.Authenticated(), merchanthandler.MerchantsSearch)
+	router.GET("/api/store/merchant/:storeid", rules.Authenticated(), userhandler.GetMerchantByStoreID)
 	router.GET("/api/agents", rules.Authenticated(), agenthandler.AgentsSearch)
 
 	// Crop related routes
@@ -123,7 +127,7 @@ func Route(
 	router.GET("/api/post/:id", rules.Authenticated(), crophandler.GetPostByID)
 
 	router.GET("/post/image/:id", rules.Authenticated(), resourcehandler.GetProductImage)
-	router.GET("/post/image/:id/blurred/", rules.Authenticated(), resourcehandler.GetBlurredImage)
+	router.GET("/post/image/:id/blurred/" /*rules.Authenticated(), */, resourcehandler.GetBlurredImage)
 
 	router.GET("/api/merchant/product/subscribe/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.SubscribeForProduct)
 	router.GET("/api/merchant/product/unsubscribe/:id", rules.Authenticated(), rules.Authorized(), merchanthandler.UnsubscriberForProduct)
@@ -145,10 +149,9 @@ func Route(
 	router.GET("/api/merchant/transaction/buyer/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.BuyerAcceptTransaction)
 	router.GET("/api/cxp/mytransactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyTransactionNotifications)
 	router.GET("/api/cxp/transaction/reactivate/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.ReactivateTransaction)
-
 	router.RouterGroup.Use(FilterDirectory())
 	{
-		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")))
+		router.StaticFS("/images/profile/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"/images/"))
 	}
 	return router
 }

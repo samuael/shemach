@@ -93,13 +93,14 @@ func main() {
 	go otpService.Run()
 	messagerepo := pgx_storage.NewMessageRepo(conn)
 	messageservice := message.NewMessageService(messagerepo)
-	messagehandler := rest.NewMessageHandler(messageservice, subscriberService)
+	broadcastHub := message_broadcast_service.NewMainBroadcastHub(messageservice)
+
+	messagehandler := rest.NewMessageHandler(messageservice, subscriberService, broadcastHub)
 
 	infoadminrepo := pgx_storage.NewInfoadminRepo(conn)
 	infoadminservice := infoadmin.NewInfoadminService(infoadminrepo)
 	infoadminhandler := rest.NewInfoAdminHandler(infoadminservice)
 
-	broadcastHub := message_broadcast_service.NewMainBroadcastHub(messageservice)
 	producthandler := rest.NewProductHandler(productservice, broadcastHub)
 
 	adminrepo := pgx_storage.NewAdminRepo(conn)
@@ -134,12 +135,15 @@ func main() {
 		agentservice, resourceservice)
 
 	transactionrepo := pgx_storage.NewTransactionRepo(conn)
-	transactionservice := transaction.NewTransactionService(transactionrepo, paymentrepo, contractrepo)
+	transactionservice := transaction.NewTransactionService(transactionrepo,
+		paymentrepo, contractrepo)
 	transactionhandler :=
 		rest.NewTransactionHandler(transactionservice, userservice, cropservice,
 			merchantservice, storeservice, paymentservice)
 
-	userhandler := rest.NewUserHandler(templates, userservice, authenticator, adminservice, superadminservice, agentservice, merchantservice, infoadminservice)
+	userhandler := rest.NewUserHandler(templates, userservice, authenticator,
+		adminservice, superadminservice,
+		agentservice, merchantservice, infoadminservice, storeservice)
 
 	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
 		subscriberService,

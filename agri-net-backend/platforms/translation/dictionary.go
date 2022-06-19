@@ -77,8 +77,12 @@ func TranslateIt(sentence string) string {
 		var er error
 		sentence, er = translateText("am", str)
 		if er != nil {
+			println(er.Error())
 			sentence = ""
 		}
+	}
+	if strings.EqualFold(sentence, "") {
+		return str
 	}
 	return sentence
 }

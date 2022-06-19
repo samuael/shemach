@@ -50,6 +50,7 @@ func (repo *StoreRepo) CreateStore(ctx context.Context, store *model.Store) (int
 // GetMerchantStores ...
 func (repo *StoreRepo) GetMerchantStores(ctx context.Context, merchantID uint64) ([]*model.Store, error) {
 	stores := []*model.Store{}
+	println(merchantID)
 	rows, er := repo.DB.Query(ctx, `select store_id,owner_id,address_id,active_products,store_name,active_contracts,created_at,created_by from store where owner_id=$1`, merchantID)
 	if er != nil {
 		return stores, er

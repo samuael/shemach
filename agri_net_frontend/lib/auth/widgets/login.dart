@@ -45,7 +45,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             builder: (contexts, state) {
               if (state is Authenticated) {
                 return Text(
-                  " succesfuly logged in ",
+                  "",
                   style: TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
@@ -54,7 +54,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ),
                 );
               } else if (state is NotAuthenticated) {
-                return  Container(
+                return Container(
                   // width: 40,
                   height: 40,
                   child: Text(
@@ -98,12 +98,12 @@ class _LoginWidgetState extends State<LoginWidget> {
             controller: emailController,
             decoration: InputDecoration(
               labelText: "Email or Phone",
-              fillColor: Colors.lightBlue,
-              hoverColor: Colors.lightBlue,
+              fillColor: Theme.of(context).primaryColorLight,
+              hoverColor: Theme.of(context).primaryColorLight,
               suffixIcon: Icon(Icons.mail_outline),
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.lightBlue,
+                  color: Theme.of(context).primaryColorLight,
                   style: BorderStyle.none,
                 ),
               ),
@@ -147,13 +147,16 @@ class _LoginWidgetState extends State<LoginWidget> {
           child: Stack(children: [
             ElevatedButton.icon(
               style: ButtonStyle(
-                // backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).primaryColor),
                 animationDuration: Duration(seconds: 1),
                 padding: MaterialStateProperty.all<EdgeInsets>(
                   EdgeInsets.symmetric(
                     horizontal: 40,
+                    vertical: 10,
                   ),
                 ),
+                elevation: MaterialStateProperty.all<double>(0),
               ),
               onPressed: () async {
                 // checking the validity of input values
@@ -187,14 +190,16 @@ class _LoginWidgetState extends State<LoginWidget> {
                     dtext = emailController.text.substring(1);
                     dtext = "+251" + dtext;
                   }
+                  //
                   final userSate = await context
                       .read<UserBloc>()
                       .login(UserLoginEvent(dtext, passwordController.text));
                   if (userSate is Authenticated) {
+                    Navigator.of(context).pushNamed(HomeScreen.RouteName);
+                    setState(() {});
                     context
                         .read<UserBloc>()
                         .add(UserLoggedInEvent(userSate.user, userSate.role));
-                    Navigator.of(context).pushNamed(HomeScreen.RouteName);
                   } else if (userSate is NotAuthenticated) {
                     context
                         .read<UserBloc>()
@@ -212,6 +217,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 ),
               ),
             ),
+
             // !(context.watch<AuthBloc>().state is AuthAdminLoginOnProgress)
           ]),
         ),
@@ -230,6 +236,17 @@ class _LoginWidgetState extends State<LoginWidget> {
         //     ),
         //   ),
         // )
+        FlatButton(
+            child: Text(
+              "Confirmation ",
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: Colors.blue,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pushNamed(ConfirmationScreen.RouteName, );
+            }),
       ],
     );
   }

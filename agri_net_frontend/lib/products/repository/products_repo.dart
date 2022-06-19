@@ -9,4 +9,16 @@ class ProductsRepo {
     return this.provider.createProductPost(input);
   }
 
+  Future<ProductsResponse> loadMyProductPosts() async {
+    return this.provider.loadMyProductPosts();
+  }
+
+  Future<ProductsResponse>  loadProducts( int offset, int limit ) async {
+    return this.provider.loadProducts(offset,limit);
+  }
+
+  Future<ProductPostResponse>  getProductPostResponseByID(int id) async {
+    return this.provider.getProductPostResponseByID(id);
+  }
+
 }

@@ -30,7 +30,7 @@ class StoreRepo {
     );
   }
 
-  Future<List<Store>> myStores(int ownerId) async {
+  Future<StoresResponse> myStores(int ownerId) async {
     return await storeProvider.myStores(ownerId);
   }
 }

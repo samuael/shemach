@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,6 +24,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/http/rest/auth"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/merchant"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/superadmin"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/user"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
@@ -36,13 +38,16 @@ type IUserHandler interface {
 	ChangePassword(c *gin.Context)
 	UpdateProfilePicture(c *gin.Context)
 	UpdateProfile(c *gin.Context)
+	GetUserByID(c *gin.Context)
 	DeleteProfilePicture(c *gin.Context)
 	ConfirmTempoCXP(c *gin.Context)
 	ConfirmEmail(c *gin.Context)
+	GetMerchantByStoreID(c *gin.Context)
 }
 
 type UserHandler struct {
 	Service           user.IUserService
+	StoreService      store.IStoreService
 	AgentService      agent.IAgentService
 	MerchantService   merchant.IMerchantService
 	SuperadminService superadmin.ISuperadminService
@@ -61,6 +66,7 @@ func NewUserHandler(
 	agentService agent.IAgentService,
 	merchantService merchant.IMerchantService,
 	infoadminService infoadmin.IInfoadminService,
+	storeService store.IStoreService,
 ) IUserHandler {
 	return &UserHandler{
 		Service:           service,
@@ -71,6 +77,7 @@ func NewUserHandler(
 		AdminService:      adminservice,
 		SuperadminService: superadminService,
 		InfoadminService:  infoadminService,
+		StoreService:      storeService,
 	}
 }
 
@@ -301,7 +308,7 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 			newImage, erro = os.Create(os.Getenv("ASSETS_DIRECTORY") + "/" + newName)
 		}
 		if erro != nil {
-		println(erro.Error())
+			println(erro.Error())
 
 			c.JSON(http.StatusInternalServerError, gin.H{})
 			return
@@ -311,7 +318,7 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 		oldImage = uhandler.Service.GetImageUrl(ctx)
 		_, er := io.Copy(newImage, image)
 		if er != nil {
-		println(er.Error())
+			println(er.Error())
 
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
@@ -334,7 +341,7 @@ func (uhandler *UserHandler) UpdateProfilePicture(c *gin.Context) {
 		} else {
 			er = os.Remove(os.Getenv("ASSETS_DIRECTORY") + "/" + newName)
 		}
-		if er != nil{
+		if er != nil {
 			println(er.Error())
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{})
@@ -645,5 +652,133 @@ func (uhandler *UserHandler) ConfirmTempoCXP(c *gin.Context) {
 	res.Msg = translation.TranslateIt("authenticated")
 	res.StatusCode = http.StatusOK
 	res.User = user
+	c.JSON(res.StatusCode, res)
+}
+
+func (uhandler *UserHandler) GetUserByID(c *gin.Context) {
+	ctx := c.Request.Context()
+	res := &struct {
+		Msg        string            `json:"msg"`
+		Errors     map[string]string `json:"errors"`
+		StatusCode int               `json:"status_code"`
+		User       interface{}       `json:"user,omitempty"`
+		Role       string            `json:"role,omitempty"`
+	}{
+		Errors: map[string]string{},
+	}
+	userid, er := strconv.Atoi(c.Param("id"))
+	if er != nil || userid <= 0 {
+		res.Msg = translation.TranslateIt("bad request! \n invalid user id")
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	// check the existance of the user using his  email only.
+	var user *model.User
+	var role int
+	var status int
+	println(userid)
+	ctx = context.WithValue(ctx, "user_id", uint64(userid))
+	user, role, status, er = uhandler.Service.GetUserByEmailOrID(ctx)
+	var failed = false
+	if status == state.STATUS_DBQUERY_ERROR || er != nil {
+		failed = true
+		res.StatusCode = http.StatusInternalServerError
+		res.Msg = translation.TranslateIt("internal problem, please try again later!")
+	} else if status == state.STATUS_RECORD_NOT_FOUND {
+		failed = true
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("invalid email or password!")
+	}
+	if role == 0 {
+		failed = true
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("user with this account doesn't exist")
+	}
+	if failed {
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	if role == 1 {
+		res.Role = state.SUPERADMIN
+		superadmin, _ := uhandler.SuperadminService.GetSuperadminByID(ctx, int(user.ID))
+		if superadmin == nil {
+			res.User = user
+		} else {
+			res.User = superadmin
+		}
+	} else if role == 2 {
+		res.Role = state.INFO_ADMIN
+		infoadmin, _ := uhandler.InfoadminService.GetInfoadminByID(ctx, user.ID)
+		if infoadmin == nil {
+			res.User = user
+		} else {
+			res.User = infoadmin
+		}
+	} else if role == 3 {
+		res.Role = state.ADMIN
+		admin, _ := uhandler.AdminService.GetAdminByID(ctx, user.ID)
+		if admin == nil {
+			res.User = user
+		} else {
+			res.User = admin
+		}
+	} else if role == 4 {
+		res.Role = state.MERCHANT
+		merchant, _ := uhandler.MerchantService.GetMerchantByID(ctx, int(user.ID))
+		if merchant == nil {
+			res.User = user
+		} else {
+			res.User = merchant
+		}
+	} else if role == 5 {
+		res.Role = state.AGENT
+		agent, _ := uhandler.AgentService.GetAgentByID(ctx, int(user.ID))
+		if agent == nil {
+			res.User = user
+		} else {
+			res.User = agent
+		}
+	}
+	res.Msg = translation.TranslateIt("user found")
+	res.StatusCode = http.StatusOK
+	c.JSON(res.StatusCode, res)
+}
+
+func (uhandler *UserHandler) GetMerchantByStoreID(c *gin.Context) {
+	ctx := c.Request.Context()
+	res := &struct {
+		Msg        string      `json:"msg"`
+		StatusCode int         `json:"status_code"`
+		User       interface{} `json:"user,omitempty"`
+		Role       string      `json:"role,omitempty"`
+	}{}
+	storeid, ers := strconv.Atoi(c.Param("storeid"))
+	if ers != nil || storeid <= 0 {
+		res.Msg = translation.TranslateIt("bad request! \n invalid user id")
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	var store *model.Store
+	var merchant *model.Merchant
+	store, ers = uhandler.StoreService.GetStoreByID(ctx, uint64(storeid))
+	if store == nil || ers != nil {
+		res.Msg = translation.TranslateIt("store with this id does not exist")
+		res.StatusCode = http.StatusBadRequest
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	merchant, ers = uhandler.MerchantService.GetMerchantByID(ctx, int(store.OwnerID))
+	if merchant == nil || ers != nil {
+		res.StatusCode = http.StatusNotFound
+		res.Msg = translation.TranslateIt("user with this account doesn't exist")
+		c.JSON(res.StatusCode, res)
+		return
+	}
+	res.Msg = translation.TranslateIt("user found")
+	res.StatusCode = http.StatusOK
+	res.User = merchant
+	res.Role = state.MERCHANT
 	c.JSON(res.StatusCode, res)
 }

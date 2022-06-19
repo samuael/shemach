@@ -10,6 +10,11 @@ class _UserAccountePageState extends State<UserAccountePage> {
   Widget build(BuildContext context) {
     final UserBloc _userBloc = BlocProvider.of<UserBloc>(context);
     User theUser = (_userBloc.state as Authenticated).user;
+    if (theUser is Merchant) {
+      BlocProvider.of<StoreBloc>(context)
+          .add(LoadMyStoresEvent(ownerId: theUser.id));
+    }
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: InkWell(

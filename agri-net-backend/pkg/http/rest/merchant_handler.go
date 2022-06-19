@@ -117,23 +117,23 @@ func (mhandler *MerchantHandler) RegisterMerchant(c *gin.Context) {
 			return
 		}
 		// chech payment for the
-		_, er := mhandler.PaymentService.ValidateInvoice(ctx, &model.HellocashInvoiceRequest{
-			Amount:      50,
-			Description: "Please complete this payment to continue to the transaction!",
-			From:        input.Phone,
-			Currency:    "ETB",
-		})
-		if er != nil && !strings.Contains(er.Error(), "undefined account") {
-			resp.StatusCode = http.StatusInternalServerError
-			resp.Msg = translation.Translate(input.Lang, "internal problem, please try again later!")
-			c.JSON(resp.StatusCode, resp)
-			return
-		} else if er != nil && strings.Contains(er.Error(), "undefined account") {
-			resp.StatusCode = http.StatusExpectationFailed
-			resp.Msg = translation.Translate(input.Lang, "there is no valid account with this phone number")
-			c.JSON(resp.StatusCode, resp)
-			return
-		}
+		// _, er := mhandler.PaymentService.ValidateInvoice(ctx, &model.HellocashInvoiceRequest{
+		// 	Amount:      50,
+		// 	Description: "Please complete this payment to continue to the transaction!",
+		// 	From:        input.Phone,
+		// 	Currency:    "ETB",
+		// })
+		// if er != nil && !strings.Contains(er.Error(), "undefined account") {
+		// 	resp.StatusCode = http.StatusInternalServerError
+		// 	resp.Msg = translation.Translate(input.Lang, "internal problem, please try again later!")
+		// 	c.JSON(resp.StatusCode, resp)
+		// 	return
+		// } else if er != nil && strings.Contains(er.Error(), "undefined account") {
+		// 	resp.StatusCode = http.StatusExpectationFailed
+		// 	resp.Msg = translation.Translate(input.Lang, "there is no valid payment account with this phone number")
+		// 	c.JSON(resp.StatusCode, resp)
+		// 	return
+		// }
 		ctx, _ = context.WithTimeout(ctx, time.Second*15)
 		tempo := &model.TempoCXP{
 			CreatedAt: uint64(time.Now().Unix()),

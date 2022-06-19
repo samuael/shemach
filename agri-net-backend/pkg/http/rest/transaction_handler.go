@@ -519,7 +519,9 @@ func (thandler *TransactionHandler) RequestKebdRequestAmendment(c *gin.Context) 
 		Msg        string                   `json:"msg"`
 		Errors     map[string]string        `json:"errors,omitempty"`
 		Kebd       *model.KebdAmountRequest `json:"kebd_request,omitempty"`
-	}{}
+	}{
+		Errors: map[string]string{},
+	}
 	jdecode := json.NewDecoder(c.Request.Body)
 	er := jdecode.Decode(input)
 	if er != nil || input.KebdAmount <= 0 || input.Deadline <= 0 || input.TransactionID <= 0 {
@@ -616,7 +618,9 @@ func (thandler *TransactionHandler) AmendKebdRequest(c *gin.Context) {
 		Msg        string                   `json:"msg"`
 		Errors     map[string]string        `json:"errors,omitempty"`
 		Kebd       *model.KebdAmountRequest `json:"kebd_request,omitempty"`
-	}{}
+	}{
+		Errors: map[string]string{},
+	}
 	jdecode := json.NewDecoder(c.Request.Body)
 	er := jdecode.Decode(input)
 	if er != nil || input.KebdAmount <= 0 || input.Deadline <= 0 || input.TransactionID <= 0 {

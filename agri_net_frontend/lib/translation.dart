@@ -119,11 +119,6 @@ final dictionary = {
     "oro": "wta",
     "tig": "wtaa",
   },
-  "production area": {
-    "amh": "ውጣ",
-    "oro": "wta",
-    "tig": "wtaa",
-  },
   "no product available": {
     "amh": "ምንም ምርት አይገኝም",
     "oro": "mnm mrt ayigegnm",

@@ -8,6 +8,12 @@ class UserLoginEvent extends UserEvent {
   UserLoginEvent(this.email, this.password);
 }
 
+class UserConfirmationEvent extends UserEvent {
+  String phone;
+  String password;
+  UserConfirmationEvent(this.phone, this.password);
+}
+
 class UserForgotPasswordEvent extends UserEvent {
   String email;
   UserForgotPasswordEvent(this.email);

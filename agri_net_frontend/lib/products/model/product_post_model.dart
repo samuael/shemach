@@ -29,17 +29,21 @@ class ProductPost {
       required this.storeOwned});
 
   factory ProductPost.fromJson(Map<String, dynamic> json) {
+    print(json['images']);
     return ProductPost(
       id: json['id'],
       typeId: json['type_id'],
       remainingQuantity: json['remaining_quantity'],
       description: json['description'],
       negotiable: json['negotiable'],
-      sellingPrice: json['selling_price'],
+      sellingPrice: double.parse("${json['selling_price']}"),
       address: json['address'] != null
           ? new Address.fromJson(json['address'])
           : Address.zeroAddress(),
-      images: json['images']??[],
+      images: (json['images'] ?? []).map<int>((e) {
+            return (e as int);
+          }).toList() ??
+          [],
       createdAt: json['created_at'],
       storeId: json['store_id'],
       agentId: json['agent_id'],
@@ -56,7 +60,7 @@ class ProductPost {
     data['negotiable'] = this.negotiable;
     data['selling_price'] = this.sellingPrice;
     if (this.address != null) {
-      data['address'] = this.address!.toJson();
+      data['address'] = this.address.toJson();
     }
     data['images'] = this.images;
     data['created_at'] = this.createdAt;
@@ -65,4 +69,5 @@ class ProductPost {
     data['store_owned'] = this.storeOwned;
     return data;
   }
+  
 }
