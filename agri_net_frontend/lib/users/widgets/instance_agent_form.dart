@@ -27,6 +27,7 @@ class _AgentInstanceFormState extends State<AgentInstanceForm> {
   String message = "";
   Color messageColor = Colors.white;
   bool onProgress = false;
+
   final _formKey = GlobalKey<FormState>();
 
   CameraPosition cameraPosition = const CameraPosition(
@@ -344,8 +345,9 @@ class _AgentInstanceFormState extends State<AgentInstanceForm> {
                                           onProgress = false;
                                           message = "Successfully Created";
                                         });
-
-                                        Navigator.pop(context);
+                                        context.read<AgentsBloc>().add(
+                                            LoadMyAgentsEvent(
+                                                adminID: StaticDataStore.ID));
                                       } else {
                                         setState(() {
                                           onProgress = false;

@@ -195,7 +195,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         storesState.myStores[widget.requestedUser.id] != null) {
       final myStores = storesState.myStores[widget.requestedUser.id];
       return Container(
-        height: MediaQuery.of(context).size.height * 0.5 - 50,
+        height: MediaQuery.of(context).size.height * 0.5 - 65,
         child: Expanded(
           child: SingleChildScrollView(
             child: ListView.builder(

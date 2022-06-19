@@ -103,27 +103,4 @@ class AdminProvider {
     return UserRegisterResponse(
         statusCode: respo.statusCode, msg: jsonDecode(respo.body)["msg"]);
   }
-
-  Future<DeleteUserResponse> deleteUser(int id) async {
-    try {
-      var respo = await client.delete(Uri(
-          scheme: StaticDataStore.SCHEME,
-          host: StaticDataStore.HOST,
-          port: StaticDataStore.PORT,
-          path: "/api/superadmin/admin",
-          queryParameters: {"id": id}));
-      if (respo.statusCode == 200 || respo.statusCode == 201) {
-        var json = jsonDecode(respo.body);
-        return DeleteUserResponse.fromJson(json);
-      } else {
-        return DeleteUserResponse(
-            statusCode: respo.statusCode,
-            msg: STATUS_CODES[respo.statusCode] ?? "",
-            errors: {});
-      }
-    } catch (e, a) {
-      return DeleteUserResponse(
-          statusCode: 999, msg: STATUS_CODES[999] ?? "", errors: {});
-    }
-  }
 }

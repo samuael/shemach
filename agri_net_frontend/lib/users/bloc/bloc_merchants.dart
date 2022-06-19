@@ -25,6 +25,22 @@ class MercahntsBloc extends Bloc<MerchantsEvent, MerchantsState>
             statusCode: response.statusCode, msg: response.msg));
       }
     });
+    on<DeleteMerchantEvent>((event, emit) async {
+      final response = await merchantRepo.deleteMerchant(event.userID);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        var merchants = (this.state as MerchantsLoadedState).merchants;
+        for (int i = 0; i < merchants.length; i++) {
+          if (merchants[i].id == event.userID) {
+            merchants.remove(merchants[i]);
+          }
+        }
+        emit(MerchantsLoadedState(merchants: merchants));
+      } else {
+        emit(MerchantDeleteFailed(
+            statusCode: response.statusCode, msg: response.msg));
+      }
+    });
   }
 
   Future<UserRegisterResponse> registerMerchant(

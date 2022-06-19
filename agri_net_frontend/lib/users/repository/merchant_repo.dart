@@ -36,4 +36,8 @@ class MerchantRepo {
         latitude,
         longitude);
   }
+
+  Future<DeleteUserResponse> deleteMerchant(int id) async {
+    return await merchantProvider.deleteMerchant(id);
+  }
 }
