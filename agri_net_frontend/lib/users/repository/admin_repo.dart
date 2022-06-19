@@ -37,4 +37,8 @@ class AdminsRepo {
       longitude,
     );
   }
+
+  Future<DeleteUserResponse> deleteUser(int id) async {
+    return await adminsProvider.deleteUser(id);
+  }
 }

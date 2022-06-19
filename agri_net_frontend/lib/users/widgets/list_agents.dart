@@ -1,14 +1,13 @@
 import '../../libs.dart';
 
-class RegisteredAgentsScreen extends StatefulWidget {
-  static String RouteName = "agents";
-  const RegisteredAgentsScreen({Key? key}) : super(key: key);
+class AgentsList extends StatefulWidget {
+  const AgentsList({Key? key}) : super(key: key);
 
   @override
-  State<RegisteredAgentsScreen> createState() => _RegisteredAgentsScreenState();
+  State<AgentsList> createState() => _AgentsListState();
 }
 
-class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
+class _AgentsListState extends State<AgentsList> {
   @override
   void initState() {
     super.initState();
@@ -17,119 +16,81 @@ class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Theme.of(context).canvasColor,
-          toolbarHeight: MediaQuery.of(context).size.height / 13,
-          leading: IconButton(
-            color: Colors.black,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: BackButton(),
-          ),
-          title: Text(
-            " Agents ",
-            style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-          centerTitle: true,
-        ),
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: ClipRRect(
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            vertical: 3,
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Theme.of(context).primaryColorLight,
+            ),
             borderRadius: BorderRadius.circular(10),
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Theme.of(context).primaryColorLight,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Stack(
-                children: [
-                  BlocBuilder<AgentsBloc, AgentsState>(
-                      builder: (context, state) {
-                    if (state is AgentsLoadingState) {
-                      print("AgentsLoadingState");
-                      return Center(
+          ),
+          child: Stack(
+            children: [
+              BlocBuilder<AgentsBloc, AgentsState>(builder: (context, state) {
+                if (state is AgentsLoadingState) {
+                  print("AgentsLoadingState");
+                  return Center(
+                    child: Column(
+                      children: [
+                        CircularProgressIndicator(
+                          strokeWidth: 3,
+                        ),
+                        Text(
+                          translate(lang, "loading ..."),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }
+                if (state is AgentsLoadedState) {
+                  print("AgentsLoadedState");
+                  return Column(
+                    children: [
+                      Flexible(
                         child: Column(
                           children: [
-                            CircularProgressIndicator(
-                              strokeWidth: 3,
-                            ),
-                            Text(
-                              translate(lang, "loading ..."),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.italic,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            )
+                            agentRow(state.agentsList),
                           ],
                         ),
-                      );
-                    }
-                    if (state is AgentsLoadedState) {
-                      print("AgentsLoadedState");
-                      return Column(
-                        children: [
-                          Flexible(
-                            child: Column(
-                              children: [
-                                agentRow(state.agentsList),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    print("No Agents Instance found");
-                    return Center(
-                      child: Column(
-                        children: [
-                          Text("No Agents Instance found"),
-                          IconButton(
-                            icon: Icon(
-                              Icons.replay,
-                              color: Colors.blue,
-                            ),
-                            onPressed: () {
-                              context.read<AgentsBloc>().add(LoadMyAgentsEvent(
-                                  adminID: StaticDataStore.ID));
-                            },
-                          )
-                        ],
                       ),
-                    );
-                  }),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: FloatingActionButton(
-                      backgroundColor: Theme.of(context).canvasColor,
-                      elevation: 5.0,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterAgentForm()),
-                        );
-                      },
-                      child: Icon(
-                        Icons.add,
-                        color: Theme.of(context).primaryColor,
-                        size: 50,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+                    ],
+                  );
+                }
+                print("No Agents Instance found");
+                return Center(
+                  child: Column(
+                    children: [
+                      Text("No Agents Instance found"),
+                      IconButton(
+                        icon: Icon(
+                          Icons.replay,
+                          color: Colors.blue,
+                        ),
+                        onPressed: () {
+                          context.read<AgentsBloc>().add(
+                              LoadMyAgentsEvent(adminID: StaticDataStore.ID));
+                        },
+                      )
+                    ],
+                  ),
+                );
+              }),
+            ],
           ),
-        ));
+        ),
+      ),
+    ));
   }
 
   Widget searchBar() {
@@ -311,7 +272,11 @@ class _RegisteredAgentsScreenState extends State<RegisteredAgentsScreen> {
                       ),
                       elevation: MaterialStateProperty.all<double>(0),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      context
+                          .read<AdminsBloc>()
+                          .add(DeleteUserEvent(userID: agentId));
+                    },
                     child: Text("Delete"))
               ],
             )
