@@ -1,4 +1,4 @@
-import '../libs.dart';
+import 'package:agri_net_frontend/libs.dart';
 
 enum AdminActionType {
   registration,
@@ -66,7 +66,7 @@ List<NavigationModel> adminSideBarItems = [
     Icons.home,
     path: ProductScreen.RouteName,
   ),
-  NavigationModel("Merchants", Icons.store,
+  NavigationModel("Merchants", Icons.person,
       path: RegisteredMerchantsScreen.RouteName),
   NavigationModel("Agents", Icons.person,
       path: RegisteredAgentsScreen.RouteName),
