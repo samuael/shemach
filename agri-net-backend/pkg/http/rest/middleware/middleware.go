@@ -60,8 +60,6 @@ func (m rules) AuthenticatedSubscriber() gin.HandlerFunc {
 		if err != nil || t == nil {
 			if err != nil {
 				println(err.Error())
-			} else {
-				println("The session is nil")
 			}
 			http.Error(c.Writer, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			c.Abort()

@@ -70,12 +70,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       SizedBox(
                         width: 5,
                       ),
-                      Icon(
-                        Icons.transfer_within_a_station_rounded,
-                        color: selectedIndex == 0
-                            ? Theme.of(context).primaryColor
-                            : Colors.white,
-                      ),
+                      (context.watch<NotificationsBloc>().state
+                              is NotificationsLoadSuccess)
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10), 
+
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                color: Colors.white,
+                                child: Text(
+                                    "${(context.watch<NotificationsBloc>().state as NotificationsLoadSuccess).transactions.length}"),
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -120,12 +128,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       SizedBox(
                         width: 5,
                       ),
-                      Icon(
-                        Icons.translate,
-                        color: selectedIndex == 1
-                            ? Theme.of(context).primaryColor
-                            : Colors.white,
-                      ),
+                      (context.watch<NotificationsBloc>().state
+                              is NotificationsLoadSuccess)
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10), 
+
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                color: Colors.white,
+                                child: Text(
+                                  "${(context.watch<NotificationsBloc>().state as NotificationsLoadSuccess).transaction_notifications}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -170,12 +190,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       SizedBox(
                         width: 5,
                       ),
-                      Icon(
-                        Icons.transfer_within_a_station_rounded,
-                        color: selectedIndex == 2
-                            ? Theme.of(context).primaryColor
-                            : Colors.white,
-                      ),
+                      (context.watch<NotificationsBloc>().state
+                              is NotificationsLoadSuccess)
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10), 
+
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                color: Colors.white,
+                                child: Text(
+                                  "${(context.watch<NotificationsBloc>().state as NotificationsLoadSuccess).kebd_notifications}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -220,12 +252,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       SizedBox(
                         width: 5,
                       ),
-                      Icon(
-                        Icons.transfer_within_a_station_rounded,
-                        color: selectedIndex == 3
-                            ? Theme.of(context).primaryColor
-                            : Colors.white,
-                      ),
+                      (context.watch<NotificationsBloc>().state
+                              is NotificationsLoadSuccess)
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10), 
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 5),
+                                color: Colors.white,
+                                child: Text(
+                                  "${(context.watch<NotificationsBloc>().state as NotificationsLoadSuccess).guarantee_notifications}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -236,7 +279,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ),
       // ---------------------------------------
 
-      selectedIndex == 0 ? TransactionsList() : SizedBox()
+      selectedIndex == 0
+          ? TransactionsList()
+          : (selectedIndex == 1
+              ? TransactionNotificationView()
+              : (selectedIndex == 2
+                  ? KebdNotificationView()
+                  : GuaranteeNotificationView()))
     ]));
   }
 }

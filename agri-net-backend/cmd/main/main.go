@@ -93,13 +93,14 @@ func main() {
 	go otpService.Run()
 	messagerepo := pgx_storage.NewMessageRepo(conn)
 	messageservice := message.NewMessageService(messagerepo)
-	messagehandler := rest.NewMessageHandler(messageservice, subscriberService)
+	broadcastHub := message_broadcast_service.NewMainBroadcastHub(messageservice)
+
+	messagehandler := rest.NewMessageHandler(messageservice, subscriberService, broadcastHub)
 
 	infoadminrepo := pgx_storage.NewInfoadminRepo(conn)
 	infoadminservice := infoadmin.NewInfoadminService(infoadminrepo)
 	infoadminhandler := rest.NewInfoAdminHandler(infoadminservice)
 
-	broadcastHub := message_broadcast_service.NewMainBroadcastHub(messageservice)
 	producthandler := rest.NewProductHandler(productservice, broadcastHub)
 
 	adminrepo := pgx_storage.NewAdminRepo(conn)

@@ -38,7 +38,7 @@ class _ProductPostImageItemState extends State<ProductPostSingleImageItem> {
             Image.network(
               url,
               headers: {
-                "authorization": StaticDataStore.HEADERS["authorization"]!
+                "authorization": "Bearer ${StaticDataStore.USER_TOKEN}"
               },
               errorBuilder: (context, _, er) {
                 return Stack(

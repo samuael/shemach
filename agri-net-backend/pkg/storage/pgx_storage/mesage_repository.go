@@ -85,3 +85,37 @@ func (repo *MessageRepo) GetRecentMessages(ctx context.Context) ([]*model.Messag
 	}
 	return messages, state.STATUS_OK, nil
 }
+
+func (repo MessageRepo) GetMessages(ctx context.Context, offset, limit int) ([]*model.Message, error) {
+	messages := []*model.Message{}
+	rows, er := repo.DB.Query(ctx, `select id,targets,lang,data,created_by,created_at from messages ORDER BY id DESC  offset $1 limit $2 `, offset, limit)
+	if er != nil || rows == nil {
+		if er != nil {
+			println(er.Error())
+		}
+		return messages, er
+	}
+	for rows.Next() {
+		message := &model.Message{}
+		erf := rows.Scan(&(message.ID), &(message.Targets), &(message.Lang), &(message.Data), &(message.CreatedBy), &(message.CreatedAt))
+		if erf != nil {
+			continue
+		}
+		messages = append(messages, message)
+	}
+	if len(messages) == 0 {
+		return messages, errors.New("no message instance was fetched")
+	}
+	return messages, nil
+}
+
+func (repo MessageRepo) DeleteMessageBYID(ctx context.Context, messageid uint) error {
+	cmd, er := repo.DB.Exec(ctx, "DELETE FROM messages WHERE id=$1", messageid)
+	if cmd.RowsAffected() == 0 || er != nil {
+		if er != nil {
+			println(er.Error())
+		}
+		return errors.New("no message is deleted")
+	}
+	return er
+}

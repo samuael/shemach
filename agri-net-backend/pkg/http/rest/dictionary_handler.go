@@ -54,7 +54,7 @@ func (dhandler *DictionaryHandler) CreateDictionary(c *gin.Context) {
 		return
 	}
 	res.StatusCode = http.StatusOK
-	res.Msg = translation.TranslateIt("created")
+	res.Msg = "Created succesfuly"
 	res.Dictionary = input
 	c.JSON(res.StatusCode, res)
 }
@@ -115,8 +115,8 @@ func (dhandler *DictionaryHandler) DeleteDictionary(c *gin.Context) {
 		if er != nil {
 			println(er.Error())
 		}
-		res.StatusCode = http.StatusNotFound
-		res.Msg = translation.TranslateIt("no record was deleted")
+		res.StatusCode = http.StatusOK
+		res.Msg = translation.TranslateIt("record deleted succesfuly")
 		c.JSON(res.StatusCode, res)
 		return
 	}
@@ -130,9 +130,9 @@ func (dhandler *DictionaryHandler) Translate(c *gin.Context) {
 	ctx := c.Request.Context()
 	input := &model.Dictionary{}
 	res := &struct {
-		Msg        string            `json:"msg,omitempty"`
-		StatusCode int               `json:"status_code"`
-		Dictionary *model.Dictionary `json:"dictionary"`
+		Msg        string              `json:"msg,omitempty"`
+		StatusCode int                 `json:"status_code"`
+		Dictionary []*model.Dictionary `json:"dictionary"`
 	}{}
 	jdec := json.NewDecoder(c.Request.Body)
 	er := jdec.Decode(input)
@@ -150,7 +150,7 @@ func (dhandler *DictionaryHandler) Translate(c *gin.Context) {
 		return
 	}
 	res.StatusCode = http.StatusOK
-	res.Dictionary = input
+	res.Dictionary = []*model.Dictionary{input}
 	c.JSON(res.StatusCode, res)
 }
 

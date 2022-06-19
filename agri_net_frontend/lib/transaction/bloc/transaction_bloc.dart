@@ -11,7 +11,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         final transactionsResponse = await this.repo.getMyTransactions();
         if (transactionsResponse.statusCode == 200) {
           emit(TransactionsLoaded(transactionsResponse.transactions));
-        } else {
+        } else if (!(this.state is TransactionsLoaded)) {
           emit(TransactionsLoadingFailed(transactionsResponse.statusCode, ""));
         }
       },

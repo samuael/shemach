@@ -85,6 +85,7 @@ func (rhandler *ResourceHandler) GetProductImage(c *gin.Context) {
 
 // GetBlurredImage
 func (rhandler *ResourceHandler) GetBlurredImage(c *gin.Context) {
+	println("Get Blurred Image get called.")
 	id, er := strconv.Atoi(c.Param("id"))
 	ctx := c.Request.Context()
 	if id <= 0 || er != nil {
@@ -104,6 +105,7 @@ func (rhandler *ResourceHandler) GetBlurredImage(c *gin.Context) {
 	var f *os.File
 	var err error
 	if !diabledImageServer {
+		println("The Image Reference " + imgres.BlurredRe)
 		f, err = os.Open(os.Getenv("ASSETS_DIRECTORY") + imgres.BlurredRe)
 	} else {
 		f, err = os.Open("../../templates/dummy_img/C2Dtn6_shJ.jpg")

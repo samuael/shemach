@@ -77,8 +77,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 child: Container(
                   height: MediaQuery.of(context).size.width * 0.7,
                   width: MediaQuery.of(context).size.width * 0.7,
+                  padding : EdgeInsets.symmetric(
+                    vertical: 5,
+                    horizontal: 50 , 
+                  ),
                   margin: EdgeInsets.symmetric(
                     vertical: 5,
+                    horizontal: 50 , 
                   ),
                   child: Center(
                     child: Stack(
@@ -87,6 +92,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                           height: MediaQuery.of(context).size.width * 0.2,
                           width: MediaQuery.of(context).size.width * 0.2,
                           child: Center(
+                            
                             child: Text(
                               "${duration.inMinutes}:${duration.inSeconds % 60}",
                               style: TextStyle(

@@ -7,7 +7,7 @@ class TransactionsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(left: 45),
-        height: MediaQuery.of(context).size.height * 0.85,
+        height: MediaQuery.of(context).size.height * 0.8,
         child: BlocBuilder<TransactionBloc, TransactionState>(
             builder: (context, state) {
           if (state is TransactionsLoaded) {

@@ -11,6 +11,16 @@ class TransactionsLoaded extends TransactionState {
   TransactionsLoaded(
     this.transactions,
   );
+
+
+  Transaction? getTransactionByID(int id) {
+    for (final transaction in this.transactions){
+      if (transaction.transactionId == id){
+        return transaction;
+      }
+    }
+    return null;
+  }
 }
 
 class TransactionsLoadingFailed extends TransactionState {

@@ -11,7 +11,6 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/infoadmin"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/form"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/helper"
-	"github.com/samuael/agri-net/agri-net-backend/platforms/mail"
 	"github.com/samuael/agri-net/agri-net-backend/platforms/translation"
 )
 
@@ -89,28 +88,28 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 			admin.CreatedAt = uint64(time.Now().Unix())
 			admin.Password = hashed
 			// Send Email for the password if this doesn't work raise internal server error
-			if success := mail.SendPasswordEmailSMTP([]string{admin.Email}, random, true, admin.Firstname+" "+admin.Lastname, c.Request.Host); success {
-				ctx = c.Request.Context()
-				ctx = context.WithValue(ctx, "info_admin", admin)
-				if admin, er = ihandler.Service.CreateInfoadmin(ctx); admin != nil && er == nil {
-					resp.Msg = " Info admin  created succesfully!"
-					resp.Infoadmin = admin
-					c.JSON(http.StatusOK, resp)
-					return
-				} else {
-					if admin != nil && er != nil {
-						resp.Msg = er.Error()
-					} else {
-						resp.Msg = "Internal server error!"
-					}
-					c.JSON(http.StatusInternalServerError, resp)
-					return
-				}
+			// if success := mail.SendPasswordEmailSMTP([]string{admin.Email}, random, true, admin.Firstname+" "+admin.Lastname, c.Request.Host); success {
+			ctx = c.Request.Context()
+			ctx = context.WithValue(ctx, "info_admin", admin)
+			if admin, er = ihandler.Service.CreateInfoadmin(ctx); admin != nil && er == nil {
+				resp.Msg = " Info admin  created succesfully!"
+				resp.Infoadmin = admin
+				c.JSON(http.StatusOK, resp)
+				return
 			} else {
-				resp.Msg = "Internal server error!"
+				if admin != nil && er != nil {
+					resp.Msg = er.Error()
+				} else {
+					resp.Msg = "Internal server error!"
+				}
 				c.JSON(http.StatusInternalServerError, resp)
 				return
 			}
+			// } else {
+			// 	resp.Msg = "Internal server error!"
+			// 	c.JSON(http.StatusInternalServerError, resp)
+			// 	return
+			// }
 		}
 	}
 	c.JSON(http.StatusBadRequest, resp)

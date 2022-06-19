@@ -12,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   TransactionBloc? transactionProvider;
+  NotificationsBloc? notificationProvider;
   @override
   Widget build(BuildContext context) {
     final productTypeProvider = BlocProvider.of<ProductTypeBloc>(context);
@@ -64,6 +65,10 @@ class HomeScreenState extends State<HomeScreen> {
       transactionProvider = BlocProvider.of<TransactionBloc>(context);
       transactionProvider?.add(TransactionLoadEvent());
       transactionProvider?.startLoadTransactionsLoop();
+
+      notificationProvider = BlocProvider.of<NotificationsBloc>(context);
+      notificationProvider?.add(NotificationsLoadEvent());
+      notificationProvider?.startLoadTransactionNotificationsLoop();
     }
 
     return Scaffold(
@@ -89,6 +94,9 @@ class HomeScreenState extends State<HomeScreen> {
     super.dispose();
     if (this.transactionProvider != null) {
       this.transactionProvider!.stopLoop();
+    }
+    if (this.notificationProvider != null) {
+      this.notificationProvider!.stopTransactionNotificationsLoop();
     }
   }
 }
