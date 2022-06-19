@@ -86,4 +86,33 @@ class MerchantProvider {
           statusCode: respo.statusCode, msg: jsonDecode(respo.body)["msg"]);
     }
   }
+
+  Future<DeleteUserResponse> deleteMerchant(int id) async {
+    print(id);
+    try {
+      var respo = await client.delete(
+          Uri(
+              scheme: "http",
+              host: StaticDataStore.HOST,
+              port: StaticDataStore.PORT,
+              path: "/api/admin/merchant/$id"),
+          headers: {"Authorization": "Bearer ${StaticDataStore.USER_TOKEN}"});
+      print(respo.body);
+      print(respo.statusCode);
+      if (respo.statusCode == 200 || respo.statusCode == 201) {
+        var json = jsonDecode(respo.body);
+        return DeleteUserResponse.fromJson(json);
+      } else {
+        return DeleteUserResponse(
+            statusCode: respo.statusCode,
+            msg: STATUS_CODES[respo.statusCode] ?? "",
+            errors: {});
+      }
+    } catch (e, a) {
+      print("Cached");
+      print(e);
+      return DeleteUserResponse(
+          statusCode: 999, msg: STATUS_CODES[999] ?? "", errors: {});
+    }
+  }
 }

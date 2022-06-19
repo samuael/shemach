@@ -17,15 +17,3 @@ class AdminsLoadingFailed extends AdminsState {
   String msg;
   AdminsLoadingFailed({required this.statusCode, required this.msg});
 }
-
-class UserDeleteSuccess extends AdminsState {
-  int statusCode;
-  String msg;
-  UserDeleteSuccess({required this.statusCode, required this.msg});
-}
-
-class UserDeleteFailed extends AdminsState {
-  int statusCode;
-  String msg;
-  UserDeleteFailed({required this.statusCode, required this.msg});
-}

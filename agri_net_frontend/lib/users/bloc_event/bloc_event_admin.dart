@@ -66,8 +66,3 @@ class CreatNewMerchantEvent extends AdminsEvent {
       required this.latitude,
       required this.longitude});
 }
-
-class DeleteUserEvent extends AdminsEvent {
-  int userID;
-  DeleteUserEvent({required this.userID});
-}

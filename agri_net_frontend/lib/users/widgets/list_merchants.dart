@@ -9,7 +9,8 @@ class MerchantsList extends StatefulWidget {
 
 class _MerchantsListState extends State<MerchantsList> {
   TextEditingController searchController = TextEditingController();
-
+  bool editFlag = false;
+  int selectedMerchantId = -1;
   @override
   void initState() {
     super.initState();
@@ -64,9 +65,109 @@ class _MerchantsListState extends State<MerchantsList> {
                     }
                   }
                   return Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // topBarOfMerchantsList(context),
-                      Expanded(child: merchantRow(state.merchants)),
+                      Flexible(child: merchantRow(state.merchants)),
+                      (editFlag == true)
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Theme.of(context).primaryColor),
+                                        animationDuration: Duration(seconds: 1),
+                                        padding: MaterialStateProperty.all<
+                                            EdgeInsets>(
+                                          EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 10,
+                                          ),
+                                        ),
+                                        elevation:
+                                            MaterialStateProperty.all<double>(
+                                                0),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return NewStoreForm(
+                                              ownerID: selectedMerchantId);
+                                        }));
+                                      },
+                                      child: Text(
+                                        "Add Store",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                  SizedBox(
+                                    width: 30,
+                                  ),
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Theme.of(context).primaryColor),
+                                        animationDuration: Duration(seconds: 1),
+                                        padding: MaterialStateProperty.all<
+                                            EdgeInsets>(
+                                          EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 10,
+                                          ),
+                                        ),
+                                        elevation:
+                                            MaterialStateProperty.all<double>(
+                                                0),
+                                      ),
+                                      onPressed: () {
+                                        showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (BuildContext cxt) {
+                                            return Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  0, 50, 0, 10),
+                                              child: Dialog(
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomLeft: Radius
+                                                                  .circular(10),
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          10),
+                                                              topLeft: Radius
+                                                                  .circular(10),
+                                                              topRight: Radius
+                                                                  .circular(
+                                                                      10))),
+                                                  child: deleteMerchantDialog(
+                                                      selectedMerchantId)),
+                                            );
+                                          },
+                                        );
+
+                                        setState(() {
+                                          editFlag = false;
+                                        });
+                                      },
+                                      child: Text(
+                                        "Remove",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ))
+                                ],
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   );
                 }
@@ -243,27 +344,12 @@ class _MerchantsListState extends State<MerchantsList> {
                           ),
                           IconButton(
                               onPressed: () {
-                                showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (BuildContext cxt) {
-                                    return Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(0, 50, 0, 10),
-                                      child: Dialog(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.only(
-                                                bottomLeft: Radius.circular(10),
-                                                bottomRight:
-                                                    Radius.circular(10),
-                                                topLeft: Radius.circular(10),
-                                                topRight: Radius.circular(10))),
-                                        child: editMerchantDialog(
-                                            merchants[counter].id),
-                                      ),
-                                    );
-                                  },
-                                );
+                                setState(() {
+                                  print(selectedMerchantId);
+                                  print(merchants[counter].id);
+                                  editFlag = true;
+                                  selectedMerchantId = merchants[counter].id;
+                                });
                               },
                               icon: Icon(
                                 Icons.edit,
@@ -305,8 +391,7 @@ class _MerchantsListState extends State<MerchantsList> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               onTap: () {
-                Navigator.pop(context, true);
-                deleteAgentDialog(merchantId);
+                deleteMerchantDialog(merchantId);
               },
             ),
           ],
@@ -315,7 +400,7 @@ class _MerchantsListState extends State<MerchantsList> {
     );
   }
 
-  Widget deleteAgentDialog(int merchantID) {
+  Widget deleteMerchantDialog(int merchantID) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.15,
       height: MediaQuery.of(context).size.height * 0.15,
@@ -364,7 +449,17 @@ class _MerchantsListState extends State<MerchantsList> {
                       ),
                       elevation: MaterialStateProperty.all<double>(0),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        editFlag = false;
+                      });
+                      context
+                          .read<MercahntsBloc>()
+                          .add(DeleteMerchantEvent(userID: merchantID));
+
+                      context.read<MercahntsBloc>().add(
+                          LoadMyMerchantsEvent(adminID: StaticDataStore.ID));
+                    },
                     child: Text("Delete"))
               ],
             )

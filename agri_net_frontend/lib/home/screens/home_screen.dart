@@ -54,17 +54,17 @@ class HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    final productsPostProvider = BlocProvider.of<ProductsBloc>(context);
-    if (!(productsPostProvider.state is ProductsLoadSuccess)) {
-      productsPostProvider.add(LoadProductsEvent());
-    }
+    // final productsPostProvider = BlocProvider.of<ProductsBloc>(context);
+    // if (!(productsPostProvider.state is ProductsLoadSuccess)) {
+    //   productsPostProvider.add(LoadProductsEvent());
+    // }
 
-    if (StaticDataStore.ROLE == ROLE_MERCHANT ||
-        StaticDataStore.ROLE == ROLE_AGENT) {
-      transactionProvider = BlocProvider.of<TransactionBloc>(context);
-      transactionProvider?.add(TransactionLoadEvent());
-      transactionProvider?.startLoadTransactionsLoop();
-    }
+    // if (StaticDataStore.ROLE == ROLE_MERCHANT ||
+    //     StaticDataStore.ROLE == ROLE_AGENT) {
+    //   transactionProvider = BlocProvider.of<TransactionBloc>(context);
+    //   transactionProvider?.add(TransactionLoadEvent());
+    //   transactionProvider?.startLoadTransactionsLoop();
+    // }
 
     return Scaffold(
       appBar: AppBar(

@@ -152,8 +152,8 @@ class AdminsListView extends StatelessWidget {
                     ),
                     onPressed: () {
                       context
-                          .read<AdminsBloc>()
-                          .add(DeleteUserEvent(userID: adminID));
+                          .read<MercahntsBloc>()
+                          .add(DeleteMerchantEvent(userID: adminID));
                     },
                     child: Text("Delete"))
               ],

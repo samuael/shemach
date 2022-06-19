@@ -273,9 +273,10 @@ class _AgentsListState extends State<AgentsList> {
                       elevation: MaterialStateProperty.all<double>(0),
                     ),
                     onPressed: () {
+                      print("Deleting user");
                       context
-                          .read<AdminsBloc>()
-                          .add(DeleteUserEvent(userID: agentId));
+                          .read<MercahntsBloc>()
+                          .add(DeleteMerchantEvent(userID: agentId));
                     },
                     child: Text("Delete"))
               ],

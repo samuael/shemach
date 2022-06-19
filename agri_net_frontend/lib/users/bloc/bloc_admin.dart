@@ -22,16 +22,6 @@ class AdminsBloc extends Bloc<AdminsEvent, AdminsState>
             statusCode: response.statusCode, msg: response.msg));
       }
     });
-    on<DeleteUserEvent>((event, emit) async {
-      final response = await adminsRepo.deleteUser(event.userID);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        emit(UserDeleteSuccess(
-            statusCode: response.statusCode, msg: response.msg));
-      } else {
-        emit(UserDeleteFailed(
-            statusCode: response.statusCode, msg: response.msg));
-      }
-    });
   }
 
   Future<UserRegisterResponse> registerAdmin(
