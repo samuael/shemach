@@ -29,8 +29,10 @@ func NewStorage(username, password, host, dbname string) (*pgxpool.Pool, error) 
 			select {
 			case <-ticker.C:
 				{
-					err := conn.Ping(context.Background())
-					if err != nil {
+					if conn != nil {
+						err = conn.Ping(context.Background())
+					}
+					if err != nil || conn == nil {
 						tm.Println(tm.Color("DB Connection: Trying to reconnect ...", tm.RED))
 						i := 0
 						for ; i <= 100; i++ {

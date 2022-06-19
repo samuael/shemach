@@ -6,3 +6,4 @@ export "Product_images.dart";
 export "product_post_single_image_item.dart";
 export "product_post_large_images.dart";
 export "main_product_posts_list.dart";
+export "product_post_item_small_view.dart";

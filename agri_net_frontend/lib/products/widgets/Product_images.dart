@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import "../../libs.dart";
 
 class ProductPostImages extends StatefulWidget {
@@ -19,34 +18,37 @@ class _ProductPostImagesState extends State<ProductPostImages> {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Theme.of(context).primaryColorLight),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.67,
-                  child: widget.imageIds.length == 1
-                      ? ProductPostSingleImageItem(widget.imageIds[0])
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ProductPostSingleImageItem(widget.imageIds[0]),
-                          ],
-                        ),
-                ),
-                widget.imageIds.length <= 1
-                    ? SizedBox()
-                    : Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: widget.imageIds
-                              .sublist(1, widget.imageIds.length)
-                              .map<ProductPostSingleImageItem>((id) {
-                            return ProductPostSingleImageItem(id);
-                          }).toList(),
-                        ),
-                      )
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: widget.imageIds.length == 1
+                        ? ProductPostSingleImageItem(widget.imageIds[0])
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              ProductPostSingleImageItem(widget.imageIds[0]),
+                            ],
+                          ),
+                  ),
+                  widget.imageIds.length <= 1
+                      ? SizedBox()
+                      : Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: widget.imageIds
+                                .sublist(1, widget.imageIds.length)
+                                .map<ProductPostSingleImageItem>((id) {
+                              return ProductPostSingleImageItem(id);
+                            }).toList(),
+                          ),
+                        )
+                ],
+              ),
             ),
           );
   }

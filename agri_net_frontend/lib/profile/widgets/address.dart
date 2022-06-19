@@ -137,7 +137,7 @@ class _AddressViewState extends State<AddressView> {
                                         topRight: Radius.circular(10))),
                                 child: Stack(
                                   children: <Widget>[
-                                    MapView(lat, lon),
+                                    MapView(lat, lon, title : "Address"),
                                     Positioned.fill(
                                       right: 0.0,
                                       child: Align(

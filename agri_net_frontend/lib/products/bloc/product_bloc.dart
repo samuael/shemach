@@ -10,7 +10,7 @@ class ProductsBloc extends Bloc<ProductEvent, ProductState>
       if (this.state is ProductsLoadSuccess) {
         offset = (this.state as ProductsLoadSuccess).posts.length;
         limit = offset + 20;
-      }else {
+      } else {
         emit(ProductsLoading());
       }
       final response = await this.repo.loadProducts(offset, limit);
@@ -34,9 +34,36 @@ class ProductsBloc extends Bloc<ProductEvent, ProductState>
         }
       }
     });
+
+    on<AddProduct>((event, emit) {
+      if (this.state is ProductsLoadSuccess) {
+        (this.state as ProductsLoadSuccess).posts.add(event.post);
+        emit(this.state);
+      } else {
+        emit(ProductsLoadSuccess([event.post]));
+      }
+    });
   }
 
   Future<ProductPostResponse> createProductPost(ProductPostInput input) async {
     return await this.repo.createProductPost(input);
+  }
+
+  ProductPost? getProductPostByID(int id) {
+    if (state is ProductsLoadSuccess) {
+      for (final post in (state as ProductsLoadSuccess).posts) {
+        if (post.id == id) {
+          return post;
+        }
+      }
+    }
+    
+    this.repo.getProductPostResponseByID(id).then((productPostGetResponse) {
+      if (productPostGetResponse.crop != null &&
+          productPostGetResponse.statusCode == 200) {
+        this.add(AddProduct(productPostGetResponse.crop!));
+      }
+    });
+    return null;
   }
 }

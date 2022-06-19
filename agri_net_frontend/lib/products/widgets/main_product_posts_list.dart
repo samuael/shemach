@@ -12,8 +12,11 @@ class ProductPostsListState extends State<ProductPostsList> {
   Widget build(BuildContext context) {
     return Flexible(
       child: Container(
+        margin: EdgeInsets.only(
+          left: 45,
+        ),
         child: SingleChildScrollView(
-          child: Column(children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             Container(
               margin: EdgeInsets.symmetric(
                 horizontal: 20,

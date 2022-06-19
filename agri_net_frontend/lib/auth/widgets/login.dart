@@ -45,7 +45,7 @@ class _LoginWidgetState extends State<LoginWidget> {
             builder: (contexts, state) {
               if (state is Authenticated) {
                 return Text(
-                  " succesfuly logged in ",
+                  "",
                   style: TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
@@ -196,6 +196,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                       .login(UserLoginEvent(dtext, passwordController.text));
                   if (userSate is Authenticated) {
                     Navigator.of(context).pushNamed(HomeScreen.RouteName);
+                    setState(() {});
                     context
                         .read<UserBloc>()
                         .add(UserLoggedInEvent(userSate.user, userSate.role));
@@ -216,6 +217,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 ),
               ),
             ),
+
             // !(context.watch<AuthBloc>().state is AuthAdminLoginOnProgress)
           ]),
         ),
@@ -234,6 +236,17 @@ class _LoginWidgetState extends State<LoginWidget> {
         //     ),
         //   ),
         // )
+        FlatButton(
+            child: Text(
+              "Confirmation ",
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: Colors.blue,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pushNamed(ConfirmationScreen.RouteName, );
+            }),
       ],
     );
   }

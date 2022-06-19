@@ -40,8 +40,11 @@ func (repo *UserRepo) GetUserByEmailOrID(ctx context.Context) (user *model.User,
 		return nil, 0, state.STATUS_DBQUERY_ERROR, er
 	}
 	user = &model.User{}
-	er = repo.DB.QueryRow(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,password,lang from users where id=$1 or email=$2", id, email).
-		Scan(&(user.ID), &(user.Firstname), &(user.Lastname), &(user.Phone), &(user.Email), &(user.Imgurl), &(user.CreatedAt), &(user.Password), &(user.Lang))
+	if id > 0 {
+		er = repo.DB.QueryRow(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,password,lang from users where id=$1", id).Scan(&(user.ID), &(user.Firstname), &(user.Lastname), &(user.Phone), &(user.Email), &(user.Imgurl), &(user.CreatedAt), &(user.Password), &(user.Lang))
+	} else {
+		er = repo.DB.QueryRow(ctx, "select id,firstname,lastname,phone,email,imageurl,created_at,password,lang from users where email=$1", email).Scan(&(user.ID), &(user.Firstname), &(user.Lastname), &(user.Phone), &(user.Email), &(user.Imgurl), &(user.CreatedAt), &(user.Password), &(user.Lang))
+	}
 	if er != nil {
 		return nil, role, state.STATUS_DBQUERY_ERROR, er
 	}

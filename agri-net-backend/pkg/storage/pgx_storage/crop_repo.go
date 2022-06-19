@@ -178,8 +178,11 @@ func (repo *CropRepo) GetMerchantPosts(ctx context.Context, storeIDS []uint64, o
 			} else {
 				storeIdsString += " or " + "store_id=" + strconv.Itoa(int(storeIDS[x]))
 			}
+		} else {
+			storeIdsString = "store_id=-1"
 		}
 	}
+	println(storeIdsString)
 	rows, er := repo.DB.Query(ctx, "select crop_id,type_id,description,negotiable,remaining_quantity,selling_price,address_id,images,created_at,store_id,agent_id,store_owned,closed from crop Where "+storeIdsString+" LIMIT "+strconv.Itoa(int(limit))+"  OFFSET "+strconv.Itoa(int(offset)))
 	if er != nil {
 		return nil, er

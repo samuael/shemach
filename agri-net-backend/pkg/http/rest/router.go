@@ -36,7 +36,7 @@ func Route(
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "OPTIONS"},
-		AllowOrigins:     []string{"http://localhost:8080"},
+		AllowOrigins:     []string{"*"},
 		AllowHeaders:     []string{"Content-type", "*"},
 		AllowCredentials: true,
 	}))
@@ -111,6 +111,7 @@ func Route(
 	router.GET("/api/merchant/stores", rules.Authenticated(), storehandler.GetMerchantStores)
 	router.GET("/api/store", rules.Authenticated(), storehandler.GetMerchantByID)
 	router.GET("/api/merchants", rules.Authenticated(), merchanthandler.MerchantsSearch)
+	router.GET("/api/store/merchant/:storeid", rules.Authenticated(), userhandler.GetMerchantByStoreID)
 	router.GET("/api/agents", rules.Authenticated(), agenthandler.AgentsSearch)
 
 	// Crop related routes

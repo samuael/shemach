@@ -43,7 +43,9 @@ class ProductPostResponse {
     return ProductPostResponse(
       statusCode: json["status_code"] ?? 999,
       msg: json["msg"] ?? "",
-      crop: json["crop"] != null ? ProductPost.fromJson(json["crop"]) : null,
+      crop: (json["crop"] ?? json["post"]) != null
+          ? ProductPost.fromJson(json["crop"])
+          : null,
     );
   }
 }

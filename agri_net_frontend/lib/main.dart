@@ -1,44 +1,86 @@
-import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 
 import 'libs.dart';
 
 void main() {
-  runApp(MultiBlocProvider(providers: [
-    BlocProvider<UserBloc>(
-      create: (context) => UserBloc(repo: UserRepo(provider: AuthProvider())),
-    ),
-    BlocProvider(create: (context) {
-      return AdminsBloc(
-          adminsRepo: AdminsRepo(adminsProvider: AdminProvider()));
-    }),
-    BlocProvider(create: (context) {
-      return AgentsBloc(agentRepo: AgentRepo(agentProvider: AgentProvider()));
-    }),
-    BlocProvider(create: (context) {
-      return MercahntsBloc(
-          merchantRepo: MerchantRepo(merchantProvider: MerchantProvider()));
-    }),
-    BlocProvider(create: (context) {
-      return ProductTypeBloc(
-        ProductTypesRepository(ProductTypesProvider()),
-      );
-    }),
-    BlocProvider(
-      create: (context) {
-        return StoreBloc(storeRepo: StoreRepo(storeProvider: StoreProvider()));
-      },
-    ),
-    BlocProvider(create: (context) {
-      return MyProductsBloc(
-        ProductsRepo(
-          ProductProvider(),
+  WidgetsFlutterBinding.ensureInitialized();
+  // Step 3
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((value) => runApp(MultiBlocProvider(providers: [
+        BlocProvider<UserBloc>(
+          create: (context) =>
+              UserBloc(repo: UserRepo(provider: AuthProvider())),
         ),
-      );
-    }),
-    BlocProvider(create: (context) {
-      return ProductsBloc(repo: ProductsRepo(ProductProvider()));
-    }),
-  ], child: MyHomePage()));
+        BlocProvider(create: (context) {
+          return AdminsBloc(
+              adminsRepo: AdminsRepo(adminsProvider: AdminProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return ProductTypeBloc(
+            ProductTypesRepository(ProductTypesProvider()),
+          );
+        }),
+        BlocProvider(
+          create: (context) {
+            return StoreBloc(
+                storeRepo: StoreRepo(storeProvider: StoreProvider()));
+          },
+        ),
+        BlocProvider(create: (context) {
+          return MyProductsBloc(
+            ProductsRepo(
+              ProductProvider(),
+            ),
+          );
+        }),
+        BlocProvider(create: (context) {
+          return IndexBloc();
+        }),
+        BlocProvider(create: (context) {
+          return ProductsBloc(repo: ProductsRepo(ProductProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return UsersBloc(UsersRepo(UsersProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return TransactionBloc(TransactionRepo(TransactionProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return AdminsBloc(
+              adminsRepo: AdminsRepo(adminsProvider: AdminProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return AgentsBloc(
+              agentRepo: AgentRepo(agentProvider: AgentProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return MercahntsBloc(
+              merchantRepo: MerchantRepo(merchantProvider: MerchantProvider()));
+        }),
+        BlocProvider(create: (context) {
+          return ProductTypeBloc(
+            ProductTypesRepository(ProductTypesProvider()),
+          );
+        }),
+        BlocProvider(
+          create: (context) {
+            return StoreBloc(
+                storeRepo: StoreRepo(storeProvider: StoreProvider()));
+          },
+        ),
+        BlocProvider(create: (context) {
+          return MyProductsBloc(
+            ProductsRepo(
+              ProductProvider(),
+            ),
+          );
+        }),
+        BlocProvider(create: (context) {
+          return ProductsBloc(repo: ProductsRepo(ProductProvider()));
+        }),
+      ], child: MyHomePage())));
 }
 
 class MyHomePage extends StatefulWidget {
@@ -85,9 +127,29 @@ class MyHomePageState extends State<MyHomePage> {
             return MaterialPageRoute(builder: (context) {
               return AdminsScreen();
             });
+          } else if (route == TransactionDetailScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              Transaction transaction = ((setting.arguments
+                  as Map<String, Transaction>)["transaction"] as Transaction);
+              return TransactionDetailScreen(transaction);
+            });
+          } else if (route == CreateTransactionScreen.RouteName) {
+            ProductPost post =
+                (setting.arguments as Map<String, ProductPost>)["post"]!;
+            return MaterialPageRoute(builder: (context) {
+              return CreateTransactionScreen(post);
+            });
           } else if (route == RegisterAdminPage.RouteName) {
             return MaterialPageRoute(builder: (context) {
               return RegisterAdminPage();
+            });
+          } else if (route == ConfirmationScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return ConfirmationScreen();
+            });
+          } else if (route == NotificationsScreen.RouteName) {
+            return MaterialPageRoute(builder: (context) {
+              return NotificationsScreen();
             });
           } else if (route == UserProfileScreen.RouteName) {
             User args = setting.arguments as User;
@@ -95,6 +157,12 @@ class MyHomePageState extends State<MyHomePage> {
               return UserProfileScreen(
                 requestedUser: args,
               );
+            });
+          } else if (route == UploadProductPostImages.RouteName) {
+            ProductPost post =
+                (setting.arguments as Map<String, dynamic>)["post"];
+            return MaterialPageRoute(builder: (context) {
+              return UploadProductPostImages(post);
             });
           } else if (route == StoreSelectionScreen.RouteName) {
             final arguments = setting.arguments as Map<String, dynamic>;

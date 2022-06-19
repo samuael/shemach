@@ -34,7 +34,12 @@ final dictionary = {
     "oro": "yetemezegebu wekiloch",
     "tig": "yetemezegebu wekiloch",
   },
-  "Phone": {
+  "don't recieve the code?" : {
+    "amh" : "" , 
+    "oro" : "" , 
+    "tig" : "" , 
+  },
+  "phone": {
     "amh": "ስልክ",
     "oro": "billbila",
     "tig": "slk",

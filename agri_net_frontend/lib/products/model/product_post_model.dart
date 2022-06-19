@@ -69,4 +69,5 @@ class ProductPost {
     data['store_owned'] = this.storeOwned;
     return data;
   }
+  
 }

@@ -18,6 +18,10 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final myStoresProvider = BlocProvider.of<StoreBloc>(context);
+    if (!(myStoresProvider.state is MyStoresInit)) {
+      myStoresProvider.add(LoadMyStoresEvent(ownerId: StaticDataStore.ID));
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,

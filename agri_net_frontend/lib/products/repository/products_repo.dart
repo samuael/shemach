@@ -17,4 +17,8 @@ class ProductsRepo {
     return this.provider.loadProducts(offset,limit);
   }
 
+  Future<ProductPostResponse>  getProductPostResponseByID(int id) async {
+    return this.provider.getProductPostResponseByID(id);
+  }
+
 }

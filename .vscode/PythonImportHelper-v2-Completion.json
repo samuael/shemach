@@ -1,0 +1,73 @@
+[
+    {
+        "label": "print_function",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "cbor,",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "cbor.",
+        "description": "cbor.",
+        "detail": "cbor.",
+        "documentation": {}
+    },
+    {
+        "label": "get_test_data_list",
+        "kind": 2,
+        "importPath": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "description": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "peekOfCode": "def get_test_data_list():\n    # get list with all primitive types, and a combo type\n    l0 = [ \n        -8,\n         -1616,\n         -32323232,\n         -6464646464646464,\n         192,\n         1616,\n         32323232,",
+        "detail": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "documentation": {}
+    },
+    {
+        "label": "build_test_data",
+        "kind": 2,
+        "importPath": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "description": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "peekOfCode": "def build_test_data(destdir):\n    l = get_test_data_list()\n    for i in range(len(l)):\n        # packer = msgpack.Packer()\n        serialized = msgpack.dumps(l[i])\n        with open(os.path.join(destdir, str(i) + '.msgpack.golden'), 'wb') as f:\n            f.write(serialized)\n        serialized = cbor.dumps(l[i])\n        with open(os.path.join(destdir, str(i) + '.cbor.golden'), 'wb') as f:\n            f.write(serialized)",
+        "detail": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "documentation": {}
+    },
+    {
+        "label": "doRpcServer",
+        "kind": 2,
+        "importPath": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "description": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "peekOfCode": "def doRpcServer(port, stopTimeSec):\n    class EchoHandler(object):\n        def Echo123(self, msg1, msg2, msg3):\n            return (\"1:%s 2:%s 3:%s\" % (msg1.decode(\"utf-8\"), msg2.decode(\"utf-8\"), msg3.decode(\"utf-8\")))\n        def EchoStruct(self, msg):\n            return (\"%s\" % msg)\n    addr = msgpackrpc.Address(mylocaladdr, port)\n    server = msgpackrpc.Server(EchoHandler())\n    server.listen(addr)\n    # run thread to stop it after stopTimeSec seconds if > 0",
+        "detail": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "documentation": {}
+    },
+    {
+        "label": "doRpcClientToPythonSvc",
+        "kind": 2,
+        "importPath": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "description": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "peekOfCode": "def doRpcClientToPythonSvc(port):\n    address = msgpackrpc.Address(mylocaladdr, port)\n    client = msgpackrpc.Client(address, unpack_encoding='utf-8')\n    print(client.call(\"Echo123\", \"A1\", \"B2\", \"C3\"))\n    print(client.call(\"EchoStruct\", {\"A\" :\"Aa\", \"B\":\"Bb\", \"C\":\"Cc\"}))\n# def doCheckSocket(port):\n#     print(\">>>> port: \", port, \" <<<<<\")\n#     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n#     result = sock.connect_ex(('127.0.0.1', port))\n#     if result == 0:",
+        "detail": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "documentation": {}
+    },
+    {
+        "label": "doRpcClientToGoSvc",
+        "kind": 2,
+        "importPath": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "description": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "peekOfCode": "def doRpcClientToGoSvc(port):\n    # doCheckSocket(port)\n    address = msgpackrpc.Address(mylocaladdr, port)\n    client = msgpackrpc.Client(address, unpack_encoding='utf-8')\n    print(client.call(\"TestRpcInt.Echo123\", [\"A1\", \"B2\", \"C3\"]))\n    print(client.call(\"TestRpcInt.EchoStruct\", {\"A\" :\"Aa\", \"B\":\"Bb\", \"C\":\"Cc\"}))\ndef doMain(args):\n    if len(args) == 2 and args[0] == \"testdata\":\n        build_test_data(args[1])\n    elif len(args) == 3 and args[0] == \"rpc-server\":",
+        "detail": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "documentation": {}
+    },
+    {
+        "label": "doMain",
+        "kind": 2,
+        "importPath": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "description": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "peekOfCode": "def doMain(args):\n    if len(args) == 2 and args[0] == \"testdata\":\n        build_test_data(args[1])\n    elif len(args) == 3 and args[0] == \"rpc-server\":\n        doRpcServer(int(args[1]), int(args[2]))\n    elif len(args) == 2 and args[0] == \"rpc-client-python-service\":\n        doRpcClientToPythonSvc(int(args[1]))\n    elif len(args) == 2 and args[0] == \"rpc-client-go-service\":\n        doRpcClientToGoSvc(int(args[1]))\n    else:",
+        "detail": "agri-net-backend.vendor.github.com.ugorji.go.codec.test",
+        "documentation": {}
+    }
+]
