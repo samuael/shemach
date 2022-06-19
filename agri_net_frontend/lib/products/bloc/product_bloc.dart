@@ -57,7 +57,6 @@ class ProductsBloc extends Bloc<ProductEvent, ProductState>
         }
       }
     }
-    
     this.repo.getProductPostResponseByID(id).then((productPostGetResponse) {
       if (productPostGetResponse.crop != null &&
           productPostGetResponse.statusCode == 200) {

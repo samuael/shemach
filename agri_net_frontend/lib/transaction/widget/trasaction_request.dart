@@ -114,9 +114,9 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                               .getProductUnit()
                                               .long
                                           : "Unknown"),
-                                          style: TextStyle(
-                                  fontStyle : FontStyle.italic ,
-                                    color: Theme.of(context).primaryColor),
+                                  style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Theme.of(context).primaryColor),
                                 )),
                           ),
                         ),
@@ -164,7 +164,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                               suffixIcon: Text(
                                 translate(lang, "Birr"),
                                 style: TextStyle(
-                                  fontStyle : FontStyle.italic ,
+                                    fontStyle: FontStyle.italic,
                                     color: Theme.of(context).primaryColor),
                               ),
                             ),
@@ -265,9 +265,9 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     message = translate(lang, transactionResponse.msg);
                     messageColor = Colors.green;
                   });
-                  priceController.text="";
-                  descriptionController.text ="";
-                  quantityController.text="";
+                  priceController.text = "";
+                  descriptionController.text = "";
+                  quantityController.text = "";
                 } else {
                   setState(() {
                     message = translate(lang, transactionResponse.msg);

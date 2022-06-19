@@ -1,4 +1,4 @@
-import 'package:agri_net_frontend/libs.dart';
+import '../libs.dart';
 
 enum AdminActionType {
   registration,

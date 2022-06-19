@@ -4,7 +4,6 @@ import '../../libs.dart';
 
 class MyStoresScreen extends StatefulWidget {
   static String RouteName = "/stores";
-
   MyStoresScreen();
 
   @override
@@ -37,26 +36,65 @@ class _MyStoresScreenState extends State<MyStoresScreen> {
           padding: EdgeInsets.all(10),
           child: BlocBuilder<StoreBloc, StoreState>(
             builder: (context, state) {
-              if (context.watch<StoreBloc>().state is MyStoresLoadedState) {
+              if (state is LoadingMyStoresState) {
+                return Center(
+                  child: Column(
+                    children: [
+                      CircularProgressIndicator(
+                        strokeWidth: 3,
+                      ),
+                      Text(
+                        translate(lang, "loading ..."),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              }
+              if (state is MyStoresLoadedState) {
+                if ((state.myStores[StaticDataStore.ID]) != null &&
+                    (state.myStores[StaticDataStore.ID])!.length > 0) {
+                  final stores = state.myStores[StaticDataStore.ID];
+                  return Flexible(
+                      child: ListView.builder(
+                          itemCount: stores!.length,
+                          itemBuilder: (context, counter) {
+                            return StoreView(stores[counter]);
+                          }));
+                }
                 return Flexible(
-                    child: (context.watch<StoreBloc>().state
-                                    as MyStoresLoadedState)
-                                .myStores[StaticDataStore.ID] !=
-                            null
+                    child: (state.myStores[StaticDataStore.ID]) != null
                         ? ListView.builder(
-                            itemCount: (context.watch<StoreBloc>().state
-                                    as MyStoresLoadedState)
-                                .myStores[StaticDataStore.ID]!
-                                .length,
+                            itemCount:
+                                state.myStores[StaticDataStore.ID]!.length,
                             itemBuilder: (context, counter) {
-                              return StoreView((context.watch<StoreBloc>().state
-                                      as MyStoresLoadedState)
-                                  .myStores[StaticDataStore.ID]![counter]);
+                              return StoreView(
+                                  state.myStores[StaticDataStore.ID]![counter]);
                             })
                         : Center());
               }
 
-              return Container();
+              return Center(
+                child: Column(
+                  children: [
+                    Text("No Store Instance found"),
+                    IconButton(
+                      icon: Icon(
+                        Icons.replay,
+                        color: Colors.blue,
+                      ),
+                      onPressed: () {
+                        context.read<StoreBloc>().add(
+                            LoadMyStoresEvent(ownerId: StaticDataStore.ID));
+                      },
+                    )
+                  ],
+                ),
+              );
             },
           ),
         ),
