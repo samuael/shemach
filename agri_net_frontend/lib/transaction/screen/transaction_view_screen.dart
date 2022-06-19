@@ -28,31 +28,33 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: Column(
-                children: [
-                  TransactionItem(widget.transaction),
-                  UserSmallViewItem(
-                    userid: (this.widget.transaction.requesterId ==
-                            StaticDataStore.ID)
-                        ? this.widget.transaction.sellerId
-                        : this.widget.transaction.requesterId,
-                  ),
-                ],
+              height: MediaQuery.of(context).size.height * 0.8,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TransactionItem(widget.transaction),
+                    UserSmallViewItem(
+                      userid: (this.widget.transaction.requesterId ==
+                              StaticDataStore.ID)
+                          ? this.widget.transaction.sellerId
+                          : this.widget.transaction.requesterId,
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: (widget.transaction.sellerId == StaticDataStore.ID)
-                  ? SellerTransactionAmendRequest(widget.transaction)
-                  : SizedBox(),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              child: (widget.transaction.requesterId == StaticDataStore.ID)
-                  ? BuyerTransactionAmendRequest(widget.transaction)
-                  : SizedBox(),
-            )
+            // Container(
+            //   height: MediaQuery.of(context).size.height * 0.4,
+            //   child: (widget.transaction.sellerId == StaticDataStore.ID)
+            //       ? SellerTransactionAmendRequest(widget.transaction)
+            //       : SizedBox(),
+            // ),
+            // Container(
+            //   height: MediaQuery.of(context).size.height * 0.4,
+            //   child: (widget.transaction.requesterId == StaticDataStore.ID)
+            //       ? BuyerTransactionAmendRequest(widget.transaction)
+            //       : SizedBox(),
+            // )
           ],
         ),
       ),

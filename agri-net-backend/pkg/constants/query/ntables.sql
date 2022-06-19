@@ -268,3 +268,16 @@ $$ language plpgsql;
 CREATE TRIGGER updateTrasactionPaymentStatus 
 AFTER DELETE ON transaction_payment_info FOR EACH 
 ROW EXECUTE PROCEDURE updateTransactionPaymentInformationTime();
+
+
+create table session (
+    id serial primary key,
+    userid integer unique not null, 
+    token text not null
+);  
+
+create table subscriber_session (
+    id serial primary key,
+    subscriberid integer unique not null ,
+    token text not null
+);

@@ -16,6 +16,7 @@ class TransactionNotificationItem extends StatefulWidget {
 
 class _TransactionNotificationItemState
     extends State<TransactionNotificationItem> {
+  bool expand = false;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -165,52 +166,109 @@ class _TransactionNotificationItemState
                 ),
               ),
             ),
-            widget.transactionReq.state != 0
-                ? GestureDetector(
-                    onTap: () {
-                      //
-                    },
-                    child: Card(
-                      elevation: 3,
-                      child: Container(
-                          // width: 200,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            color: Theme.of(context).primaryColorLight,
-                          ),
-                          child: Row(children: [
-                            Text(
-                              transaction_states_name[
-                                          widget.transactionReq.state] !=
-                                      null
-                                  ? transaction_states_name[
-                                      widget.transactionReq.state]!
-                                  : "Unknown",
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 25,
-                            ),
-                            Icon(Icons.arrow_right_alt_rounded,
-                                color: Theme.of(context).primaryColor),
-                          ])),
+            widget.transaction.state != 0
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: Colors.white,
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        expand ? Icons.expand_less : Icons.expand_more,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          expand = !expand;
+                        });
+                      },
                     ),
                   )
                 : SizedBox(),
+            widget.transaction.state != 0 && expand
+                ? ((widget.transaction.state ==
+                                TRANSACTION_STATES.TS_CREATED.index ||
+                            widget.transaction.state ==
+                                TRANSACTION_STATES.TS_AMENDED.index ||
+                            widget.transaction.state ==
+                                TRANSACTION_STATES
+                                    .TS_AMENDMENT_REQUESTED.index) &&
+                        widget.transaction.sellerId == StaticDataStore.ID
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DeclineTransaction(),
+                          RequestAmendment(),
+                          RequestKebd(),
+                        ],
+                      )
+                    : ((widget.transaction.state ==
+                                TRANSACTION_STATES.TS_CREATED.index ||
+                            widget.transaction.state ==
+                                TRANSACTION_STATES.TS_AMENDED.index)
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [DeclineTransaction()],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              DeclineTransaction(),
+                              // RequestAmendment(),
+                              // RequestKebd(),
+                              AmendTransaction(),
+                              BuyerAcceptTransactionAmendment(),
+                            ],
+                          )))
+                : SizedBox(),
+            // widget.transactionReq.state != 0
+            //     ? GestureDetector(
+            //         onTap: () {
+            //           //
+            //         },
+            //         child: Card(
+            //           elevation: 3,
+            //           child: Container(
+            //               // width: 200,
+            //               padding: EdgeInsets.symmetric(
+            //                 horizontal: 8,
+            //                 vertical: 3,
+            //               ),
+            //               margin: EdgeInsets.symmetric(
+            //                 horizontal: 8,
+            //                 vertical: 10,
+            //               ),
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(5),
+            //                 border: Border.all(
+            //                   color: Theme.of(context).primaryColor,
+            //                 ),
+            //                 color: Theme.of(context).primaryColorLight,
+            //               ),
+            //               child: Row(children: [
+            //                 Text(
+            //                   transaction_states_name[
+            //                               widget.transactionReq.state] !=
+            //                           null
+            //                       ? transaction_states_name[
+            //                           widget.transactionReq.state]!
+            //                       : "Unknown",
+            //                   style: TextStyle(
+            //                     color: Theme.of(context).primaryColor,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),
+            //                 ),
+            //                 SizedBox(
+            //                   width: 25,
+            //                 ),
+            //                 Icon(Icons.arrow_right_alt_rounded,
+            //                     color: Theme.of(context).primaryColor),
+            //               ])),
+            //         ),
+            //       )
+            //     : SizedBox(),
           ],
         ),
       ),

@@ -14,6 +14,7 @@ class GuaranteeNotificationItem extends StatefulWidget {
 }
 
 class _GuaranteeNotificationItemState extends State<GuaranteeNotificationItem> {
+  bool expand = false;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -132,59 +133,122 @@ class _GuaranteeNotificationItemState extends State<GuaranteeNotificationItem> {
                     : Colors.red,
               ),
               child: Text(
-                transaction_states_name[widget.guarantee.state] != null
-                    ? transaction_states_name[widget.guarantee.state]!
+                transaction_states_name[widget.transaction.state] != null
+                    ? transaction_states_name[widget.transaction.state]!
                     : "Unknown",
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
             ),
-            widget.guarantee.state != 0
-                ? GestureDetector(
-                    onTap: () {
-                      //
-                    },
-                    child: Card(
-                      elevation: 3,
-                      child: Container(
-                          // width: 200,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            color: Colors.white,
-                          ),
-                          child: Row(children: [
-                            Text(
-                              transaction_states_name[widget.guarantee.state] !=
-                                      null
-                                  ? transaction_states_name[
-                                      widget.guarantee.state]!
-                                  : "Unknown",
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 25,
-                            ),
-                            Icon(Icons.arrow_right_alt_rounded,
-                                color: Theme.of(context).primaryColor),
-                          ])),
+            widget.transaction.state != 0
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: Colors.white,
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        expand ? Icons.expand_less : Icons.expand_more,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          expand = !expand;
+                        });
+                      },
                     ),
                   )
                 : SizedBox(),
+            widget.transaction.state != 0 && expand
+                ? ((TRANSACTION_STATES.TS_GUARANTEE_AMOUNT_REQUEST_SENT.index ==
+                            widget.transaction.state &&
+                        StaticDataStore.ID == widget.transaction.sellerId)
+                    ? Column(
+                        children: [
+                          DeclineTransaction(),
+                          SellerAcceptTransaction(),
+                        ],
+                      )
+                    : ((TRANSACTION_STATES.TS_SELLER_ACCEPTED.index ==
+                                widget.transaction.state &&
+                            StaticDataStore.ID ==
+                                widget.transaction.requesterId)
+                        ? Column(
+                            children: [
+                              DeclineTransaction(),
+                              BuyerAcceptTransaction(),
+                            ],
+                          )
+                        : ((TRANSACTION_STATES.TS_GUARANTEE_AMOUNT_REQUEST_SENT
+                                        .index ==
+                                    widget.transaction.state &&
+                                StaticDataStore.ID ==
+                                    widget.transaction.sellerId)
+                            ? Column(children: [
+                                DeclineTransaction(),
+                                SellerAcceptTransaction(),
+                              ])
+                            : (TRANSACTION_STATES
+                                            .TS_GUARANTEE_AMOUNT_REQUEST_SENT
+                                            .index ==
+                                        widget.transaction.state &&
+                                    StaticDataStore.ID ==
+                                        widget.transaction.requesterId
+                                ? Column(
+                                    children: [
+                                      DeclineTransaction(),
+                                    ],
+                                  )
+                                : SizedBox()))))
+                : SizedBox(),
+            // widget.guarantee.state != 0
+            //     ? GestureDetector(
+            //         onTap: () {
+            //           //
+            //         },
+            //         child: Card(
+            //           elevation: 3,
+            //           child: Container(
+            //               // width: 200,
+            //               padding: EdgeInsets.symmetric(
+            //                 horizontal: 8,
+            //                 vertical: 3,
+            //               ),
+            //               margin: EdgeInsets.symmetric(
+            //                 horizontal: 8,
+            //                 vertical: 10,
+            //               ),
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(5),
+            //                 border: Border.all(
+            //                   color: Theme.of(context).primaryColor,
+            //                 ),
+            //                 color: Colors.white,
+            //               ),
+            //               child: Row(children: [
+            //                 Text(
+            //                   transaction_states_name[widget.guarantee.state] !=
+            //                           null
+            //                       ? transaction_states_name[
+            //                           widget.guarantee.state]!
+            //                       : "Unknown",
+            //                   style: TextStyle(
+            //                     color: Theme.of(context).primaryColor,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),
+            //                 ),
+            //                 SizedBox(
+            //                   width: 25,
+            //                 ),
+            //                 Icon(Icons.arrow_right_alt_rounded,
+            //                     color: Theme.of(context).primaryColor),
+            //               ])),
+            //         ),
+            //       )
+            //     : SizedBox(),
           ],
         ),
       ),

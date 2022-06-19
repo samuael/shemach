@@ -7,11 +7,14 @@ class NotificationsBloc extends Bloc<NotificationEvent, NotificationState> {
       final response = await this.repo.getMyTransactionNotifications();
       hoolders -= 1;
       if (response.statusCode == 200) {
-        final dstate = NotificationsLoadSuccess(response.transactionNotifications);
+        final dstate =
+            NotificationsLoadSuccess(response.transactionNotifications);
         dstate.generateCount();
         emit(dstate);
       } else {
-        emit(NotificationsLoadFailure());
+        if (!(this.state is NotificationsLoadSuccess)) {
+          emit(NotificationsLoadFailure());
+        }
       }
     });
   }
