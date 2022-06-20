@@ -166,7 +166,7 @@ class _KebdNotificationItemState extends State<KebdNotificationItem> {
                             widget.transaction.state &&
                         StaticDataStore.ID == widget.transaction.sellerId)
                     ? (Column(children: [
-                        DeclineTransaction(),
+                        DeclineTransaction(widget.transaction),
                         RequestKebd(),
                       ]))
                     : ((TRANSACTION_STATES.TS_KEBD_AMENDED.index ==
@@ -177,7 +177,7 @@ class _KebdNotificationItemState extends State<KebdNotificationItem> {
                             StaticDataStore.ID == widget.transaction.sellerId)
                         ? Column(
                             children: [
-                              DeclineTransaction(),
+                              DeclineTransaction(widget.transaction),
                               AmendKebd(),
                             ],
                           )
@@ -189,7 +189,7 @@ class _KebdNotificationItemState extends State<KebdNotificationItem> {
                                     widget.transaction.requesterId))
                             ? Column(
                                 children: [
-                                  DeclineTransaction(),
+                                  DeclineTransaction(widget.transaction),
                                   RequestKebdAmendment(),
                                   RequestGuarantee(),
                                 ],
@@ -198,7 +198,7 @@ class _KebdNotificationItemState extends State<KebdNotificationItem> {
                                         widget.transaction.state &&
                                     StaticDataStore.ID ==
                                         widget.transaction.requesterId)
-                                ? Column(children: [DeclineTransaction()])
+                                ? Column(children: [DeclineTransaction(widget.transaction)])
                                 : SizedBox()
                 : SizedBox(),
             // widget.kebdRequest.state != 0

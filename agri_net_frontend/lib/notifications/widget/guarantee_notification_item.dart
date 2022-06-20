@@ -168,7 +168,7 @@ class _GuaranteeNotificationItemState extends State<GuaranteeNotificationItem> {
                         StaticDataStore.ID == widget.transaction.sellerId)
                     ? Column(
                         children: [
-                          DeclineTransaction(),
+                          DeclineTransaction(widget.transaction),
                           SellerAcceptTransaction(),
                         ],
                       )
@@ -178,7 +178,7 @@ class _GuaranteeNotificationItemState extends State<GuaranteeNotificationItem> {
                                 widget.transaction.requesterId)
                         ? Column(
                             children: [
-                              DeclineTransaction(),
+                              DeclineTransaction(widget.transaction),
                               BuyerAcceptTransaction(),
                             ],
                           )
@@ -188,7 +188,7 @@ class _GuaranteeNotificationItemState extends State<GuaranteeNotificationItem> {
                                 StaticDataStore.ID ==
                                     widget.transaction.sellerId)
                             ? Column(children: [
-                                DeclineTransaction(),
+                                DeclineTransaction(widget.transaction),
                                 SellerAcceptTransaction(),
                               ])
                             : (TRANSACTION_STATES
@@ -199,7 +199,7 @@ class _GuaranteeNotificationItemState extends State<GuaranteeNotificationItem> {
                                         widget.transaction.requesterId
                                 ? Column(
                                     children: [
-                                      DeclineTransaction(),
+                                      DeclineTransaction(widget.transaction),
                                     ],
                                   )
                                 : SizedBox()))))

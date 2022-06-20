@@ -199,8 +199,9 @@ class _TransactionNotificationItemState
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          DeclineTransaction(),
-                          RequestAmendment(),
+                          DeclineTransaction(widget.transaction),
+                          RequestAmendment(
+                              widget.transaction, widget.transactionReq),
                           RequestKebd(),
                         ],
                       )
@@ -210,16 +211,18 @@ class _TransactionNotificationItemState
                                 TRANSACTION_STATES.TS_AMENDED.index)
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [DeclineTransaction()],
+                            children: [DeclineTransaction(widget.transaction)],
                           )
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              DeclineTransaction(),
+                              DeclineTransaction(widget.transaction),
                               // RequestAmendment(),
                               // RequestKebd(),
-                              AmendTransaction(),
-                              BuyerAcceptTransactionAmendment(),
+                              AmendTransaction(
+                                  widget.transaction, widget.transactionReq),
+                              BuyerAcceptTransactionAmendment(
+                                  widget.transactionReq, widget.transaction),
                             ],
                           )))
                 : SizedBox(),

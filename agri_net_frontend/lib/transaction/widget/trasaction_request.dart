@@ -265,9 +265,11 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     message = translate(lang, transactionResponse.msg);
                     messageColor = Colors.green;
                   });
-                  priceController.text = "";
-                  descriptionController.text = "";
-                  quantityController.text = "";
+                  context.read<IndexBloc>().add(1);
+                  Navigator.of(context).pushNamedAndRemoveUntil(HomeScreen.RouteName, (route) => false);
+                  // priceController.text = "";
+                  // descriptionController.text = "";
+                  // quantityController.text = "";
                 } else {
                   setState(() {
                     message = translate(lang, transactionResponse.msg);

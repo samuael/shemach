@@ -33,10 +33,46 @@ class NotificationsBloc extends Bloc<NotificationEvent, NotificationState> {
     hoolders += 1;
     this.looping = true;
     while (looping) {
-      await Future.delayed(Duration(minutes: 1), () {
+      await Future.delayed(Duration(seconds: 30), () {
         this.add(NotificationsLoadEvent());
       });
-      await Future.delayed(Duration(seconds: 40), () {});
+      await Future.delayed(Duration(seconds: 20), () {});
     }
   }
+
+  Future<SimpleResponse> declineTransaction(int transactionID) async {
+    final result = await this.repo.declineTransaction(transactionID);
+    if (result.statusCode == 200) {
+      this.add(NotificationsLoadEvent());
+    }
+    return result;
+  }
+
+
+  Future<TransactionResponse>  amendmentRequest(TransactionInputAmend input ) async {
+    final result = await this.repo.amendmentRequest(input);
+    if (result.statusCode == 200) {
+      this.add(NotificationsLoadEvent());
+    }
+    return result;
+  }
+
+  Future<TransactionResponse>  amendTheRequest(TransactionInputAmend input ) async {
+    final result = await this.repo.amendTheRequest(input);
+    if (result.statusCode == 200) {
+      this.add(NotificationsLoadEvent());
+    }
+    return result;
+  }
+
+
+  Future<TransactionResponse>  acceptTransactionAmendment(int transactionRequestID) async {
+    final result = await this.repo.acceptTransactionAmendment(transactionRequestID);
+    if (result.statusCode == 200) {
+      this.add(NotificationsLoadEvent());
+    }
+    return result;
+  }
+  
+
 }

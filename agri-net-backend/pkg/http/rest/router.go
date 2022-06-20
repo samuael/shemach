@@ -156,7 +156,7 @@ func Route(
 	//
 	router.RouterGroup.Use(FilterDirectory())
 	{
-		router.StaticFS("/images/profile/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"/images/"))
+		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"/images/"))
 	}
 	return router
 }
