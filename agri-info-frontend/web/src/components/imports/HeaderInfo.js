@@ -31,11 +31,12 @@ class HeaderInfo extends Component {
                         {/* <li class="nav-item active pl-1">
                             <Link class="nav-link" to="/marketing"><i class="fa-brands fa-product-hunt"></i>Products <i class="fa-solid fa-circle-dollar"></i></Link>
                         </li> */}
-                        <li className="nav-item active pl-1">
+                        <li className="nav-item pl-1">
                             <Link class="nav-link" to="/products"><i class="fa-solid fa-hand-holding-dollar"></i>Products & Price <i class="fa-solid fa-circle-dollar"></i></Link>
                         </li>
                         <li className="nav-item pl-1 ms-4">
-                            <Link className="nav-link" to="/broadcast/received"><i class="fa-solid fa-message"></i>Messages </Link><span class="circle">5</span>
+                            <Link className="nav-link" to="/info-admin/broadcast/received"><i class="fa-solid fa-message"></i>Messages </Link>
+                            {/* <span class="circle">5</span> */}
                         </li>
                         <li className="nav-item pl-1 logout">
                             <Link className="nav-link" to="/" onClick={this.onLogout}><i className="fa fa-sign-out me-1" aria-hidden="true"></i>Logout </Link>

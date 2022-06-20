@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import moment from 'moment'
+import Moment from 'react-moment';
 import { withRouter } from 'react-router-dom'
 import ProductService from '../../services/prodcutService'
 import { Link } from "react-router-dom";
@@ -14,6 +16,8 @@ class Products extends Component {
     this.removeAllProducts = this.removeAllProducts.bind(this);
     this.searchProduct = this.searchProduct.bind(this);
     this.renderUnitId = this.renderUnitId.bind(this);
+    this.convertToDate = this.convertToDate.bind(this);
+    this.getDifferenceInDays = this.getDifferenceInDays.bind(this);
    // this.tokenValue = this.props.location.state;
    
     this.state = {
@@ -64,14 +68,14 @@ class Products extends Component {
      var dt = this.props.location.state;
      var tokenn = window.token;
 
-     this.retrieveProducts();
+    //  this.retrieveProducts();
 
 
-    //  if(!tokenn){
-    //   this.props.history.push('/')
-    //  }else{
-    //   this.retrieveProducts();
-    //  }
+     if(!tokenn){
+      this.props.history.push('/')
+     }else{
+      this.retrieveProducts();
+     }
 
    
   }
@@ -170,6 +174,32 @@ renderUnitId(id) {
   }
 }
 
+convertToDate(number){
+  var myDate = new Date( number *1000);
+  var convertedDate = myDate.toLocaleString();
+  return convertedDate;
+  // return myDate.toGMTString()+ "<br>" + myDate.toLocaleString();
+  // document.write(myDate.toGMTString()+"<br>"+myDate.toLocaleString());
+
+}
+
+getDifferenceInDays(date2) {
+  var date1 =     new Date().toLocaleDateString();
+  var date2 = this.convertToDate(date2);
+  var date3 = new Date(date2).toLocaleDateString();
+  // var date2new = this.convertToDate(date2).toLocaleDateString();
+  // var dateonly = date2new.toLocaleDateString();
+  console.log(date1);
+  console.log(date3);
+
+  var diffDays =  new Date().getTime() - new Date(date3).getTime() ;    //Current date - Past date  return in millisecond
+  var diffDaysNew = Math.floor(diffDays / (1000 * 60 * 60 * 24));
+  console.log(diffDaysNew);
+  return diffDaysNew;
+  // return diffInMs / (1000 * 60 * 60 * 24);
+
+}
+
   searchProduct() {
     this.setState({
       currentProduct: null,
@@ -262,7 +292,7 @@ renderUnitId(id) {
                             </div>
                           
                           <p className="Time">Price :{product.current_price}</p>
-                          <p className="Time">Before {product.created_at} minutes</p>
+                          <p className="Time">Before {this.getDifferenceInDays(product.last_update_time)} days</p>
                         </li>
 
                       ))
@@ -333,14 +363,14 @@ renderUnitId(id) {
                         <label>
                           <strong>Created At : </strong>
                         </label>{" "}
-                        {currentProduct.created_at}
+                        {this.convertToDate(currentProduct.created_at)}
                       </div>
 
                       <div>
                         <label>
                           <strong>Last Update Time : </strong>
                         </label>{" "}
-                        {currentProduct.last_update_time}
+                        {this.convertToDate(currentProduct.last_update_time)}
                       </div>
 
                       {/* <div>

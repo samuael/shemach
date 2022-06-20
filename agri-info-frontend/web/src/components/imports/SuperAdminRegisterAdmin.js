@@ -272,7 +272,7 @@ class SuperAdminRegisterAdmin extends Component {
             </div> */}
 
 
-            <button data-cy="reginfo" onClick={this.saveAdmin} className="btn btn-success">
+            <button data-cy="reginfo" onClick={this.saveAdmin} className="btn btn-success mt-3">
               Register
             </button>
 

@@ -189,6 +189,41 @@ class prodcutService {
   }
 
 
+
+  //Superadmin messages
+  // Superadmin sendmessage
+   superSendMessage(data, token) {
+    return http.post("/message/new", data, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+  }
+
+  //Superadmin getall messages
+  superGetAllMessage(token) {
+    return http.get("/admins/messages", {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+  }
+
+  //superdeletemessage
+  deleteMessageSuper(id, token) {
+    return http.delete(`/message/${id}`, {
+      headers: {
+        "Authorization"  : "Bearer "+ token ,
+      }
+    }
+    );
+
+  }
+
+
+
   
 }
 

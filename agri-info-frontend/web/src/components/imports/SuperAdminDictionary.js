@@ -52,7 +52,15 @@ class SuperAdminDictionary extends Component {
 
 componentDidMount() {
   console.log(this.props)
-  this.retrieverecentDicts();
+  // this.retrieverecentDicts();
+
+  var tokenn = window.token;
+  if(!tokenn){
+   this.props.history.push('/')
+  }else{
+   this.retrieverecentDicts();
+  }
+
 }
 
 
@@ -120,12 +128,13 @@ onChangeSearchWord(e) {
           dictionaries: response.data.dictionaries,
         });
         console.log(response.data);
+        console.log(this.state.dictionaries);
       })
       .catch(e => {
         console.log(e);
       });
   }
-
+  
 
   saveDictionary(event) {
     event.preventDefault();
@@ -206,16 +215,30 @@ onChangeSearchWord(e) {
         console.log(response.data)
         this.setState({
           status_code: response.data.status_code,
-          dictionary: {
-            id: response.data.dictionary.id,
-            lang: response.data.dictionary.lang,
-            text: response.data.dictionary.text,
-            translation: response.data.dictionary.translation
-          },
+          dictionaries: response.data.dictionary,
+          // dictionary: {
+          //   id: response.data.dictionary.id,
+          //   lang: response.data.dictionary.lang,
+          //   text: response.data.dictionary.text,
+          //   translation: response.data.dictionary.translation
+          // },
          // dictionaries: Object.keys(response.data.dictionary)
+        
           
          
         });
+        // console.log(this.state.dictionary);
+        // var obj = this.state.dictionary;  
+        // console.log(obj);  
+        // this.state.dictionaries = [];  
+        // this.state.dictionaries = Object.values(obj);   
+        // this.state.dictionaries[0] = obj; 
+        // for(var i in obj){
+        //     this.state.dictionaries.push(obj[i]);
+        // }
+        console.log(this.state.dictionaries);
+
+
 
         // var dictionaries = [];
         // for (var key in this.state.dictionary){
@@ -256,7 +279,7 @@ onChangeSearchWord(e) {
     DictionaryDataService.deleteDictWord(this.state.currentWord.id, token)
       .then(response => {
         console.log(response.data);
-        this.searchWord()
+        // this.searchWord()
        // this.props.history.push('/super-admin/control-admins')
       })
       .catch(e => {
@@ -291,7 +314,7 @@ onChangeSearchWord(e) {
                                             <option value="amh">Amharic</option>
                                             <option value="oro">Oromic</option>
                                             <option value="som">Somalic</option>
-                                            <option value="sid">Sidex</option>
+                                            <option value="sid">Sidama</option>
                                     </select>
                                 </div>
                             </div>
@@ -366,7 +389,7 @@ onChangeSearchWord(e) {
                 
                     <div className="row mt-4 ml-5">
                     <div className="col-md-8 col-md-offset-2 main">
-                      <h3 className="page-header">Recent Searches</h3>
+                      <a className="page-header" onClick={this.retrieverecentDicts}>Recent Translations</a>
                     </div>
                 </div>
 
@@ -446,7 +469,7 @@ onChangeSearchWord(e) {
                             </Link>
                           </div>
 
-                            <div className="col-sm-1">
+                            {/* <div className="col-sm-1">
                           <button
                           className="badge badge-danger mr-2 btn btn-primary"
                           onClick={this.deleteWord}
@@ -454,7 +477,7 @@ onChangeSearchWord(e) {
                           Delete
                         </button>
 
-                          </div>
+                          </div> */}
                       </div>
 
                             

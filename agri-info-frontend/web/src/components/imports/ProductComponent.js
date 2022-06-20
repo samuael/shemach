@@ -9,7 +9,7 @@ export default class ProductComponent extends Component {
     super(props);
     this.onChangeCurrPrice = this.onChangeCurrPrice.bind(this);
     this.getProduct = this.getProduct.bind(this);
- //   this.getProduct = this.getProduct.bind(this);
+    this.convertToDate = this.convertToDate.bind(this);
     this.updateProduct = this.updateProduct.bind(this);
     this.deleteProduct = this.deleteProduct.bind(this);
 
@@ -31,9 +31,16 @@ export default class ProductComponent extends Component {
   }
 
   componentDidMount() {
-    this.getProduct(this.props.match.params.id);
+    // this.getProduct(this.props.match.params.id);
     console.log(this.tkvalue);
     console.log(this.props.location.state);
+
+    var tokenn = window.token;
+     if(!tokenn){
+      this.props.history.push('/')
+     }else{
+      this.getProduct(this.props.match.params.id);
+     }
   }
 
   // onChangeTitle(e) {
@@ -50,6 +57,23 @@ export default class ProductComponent extends Component {
   //       }
   //     };
   //   });
+  // }
+
+  convertToDate(id){
+    var myDate = new Date(id*1000);
+    var convertedDate = myDate.toLocaleDateString();
+    console.log(convertedDate);
+    return convertedDate;
+  }
+
+  // convertToDate(number){
+  //   var myDate = new Date( number *1000);
+  //   var convertedDate = myDate.toLocaleString();
+  //   console.log(convertedDate);
+  //   return convertedDate;
+  //   // return myDate.toGMTString()+ "<br>" + myDate.toLocaleString();
+  //   // document.write(myDate.toGMTString()+"<br>"+myDate.toLocaleString());
+  
   // }
 
   onChangeCurrPrice(e) {
@@ -222,7 +246,7 @@ export default class ProductComponent extends Component {
                   // onChange={this.onChangeProductionArea}
                 />
               </div>
-              <div className="form-group">
+              <div className="form-group mb-3">
                 <label htmlFor="measurement">Created By</label>
                 <input
                   type="text"
@@ -240,12 +264,11 @@ export default class ProductComponent extends Component {
               <div className="form-group">
                 <label htmlFor="prevprice">Created At</label>
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   disabled="disabled"
                   id="prevprice"
-                  value={currentProduct.created_at}
-                 // onChange={this.onChangePrevPrice}
+                  value={this.convertToDate(currentProduct.created_at)}
                 />
               </div>
               <div className="form-group">
@@ -295,7 +318,7 @@ export default class ProductComponent extends Component {
 
             <button
               type="submit"
-              className="updatebutton badge badge-success btn btn-primary"
+              className="updatebutton badge badge-success btn btn-primary mt-3"
               data-cy="updatepricebutton"
               onClick={this.updateProduct}
             >

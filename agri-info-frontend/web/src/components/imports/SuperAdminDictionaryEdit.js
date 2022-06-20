@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import {Switch, Route, Link} from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import currentDictionaryDataService from "../../services/prodcutService";
 import './superAdminDictionaryEdit.css'
-import { withRouter } from 'react-router-dom'
 import './headerInfo.css'   //For Header
-import {Switch, Route, Link} from 'react-router-dom'
+
 
 class SuperAdmincurrentDictionaryEdit extends Component {
   constructor(props) {
@@ -31,6 +32,15 @@ class SuperAdmincurrentDictionaryEdit extends Component {
 
   componentDidMount() {
     this.getWord();
+
+    var tokenn = window.token;
+    //  if(!tokenn){
+    //   this.props.history.push('/')
+    //  }else{
+    //   this.retreveAdmins();
+    //  }
+
+    
     // var dicdataa = this.props.location.state;
     // console.log(this.props.location.state);
     // console.log(dicdataa);
@@ -156,6 +166,7 @@ class SuperAdmincurrentDictionaryEdit extends Component {
 
   deleteWord() {    
       var token = window.token;
+      console.log(token);
       currentDictionaryDataService.deleteDictWord(this.state.id, token)
       .then(response => {
         console.log(response.data);
@@ -164,7 +175,7 @@ class SuperAdmincurrentDictionaryEdit extends Component {
       .catch(e => {
         console.log(e);
       });
-  }
+  } 
 
   render() {
    const {currentDictionary, dicdata} = this.state;
@@ -183,7 +194,7 @@ class SuperAdmincurrentDictionaryEdit extends Component {
                 <Link className="navbar-brand text-white" to='/super-admin/dic'><i className="fa-solid fa-angles-left"></i> Home </Link>
                 <div className="collapse navbar-collapse" id="nvbCollapse">
                     <ul className="navbar-nav ml-auto nav-menu">
-                        <p data-cy="naveditdict" className="nav-item pl-1 nav-link">Super Admin currentDictionary Edit Page</p>
+                        <p data-cy="naveditdict" className="nav-item pl-1 nav-link">Super Admin Current Dictionary Edit Page</p>
                     </ul>
                 </div>
                 </div>
@@ -196,20 +207,8 @@ class SuperAdmincurrentDictionaryEdit extends Component {
             <h4>Word</h4>
             <form className="row infoeditprice">
               <div className="col-sm-6">
-              {/* <div className="form-group">
-                <label htmlFor="title">Lang</label>
-                <input
-                  type="text"
-                  className="form-control"
-                //  disabled="disabled"
-                  id="title"
-                  value={this.state.lang}
-                  onChange={this.onChangeCurrLang}
-                />
-              </div> */}
-
               <div className="form-group">
-              <label data-cy="langlabel" htmlFor="lang">Lang</label>
+              <label data-cy="langlabel" htmlFor="lang" className="mb-1">Lang</label>
               <select data-cy="selecttranslation" name="lang" id="lang" required className="form-control" value={this.state.lang} onChange={this.onChangeCurrLang} type="text">
                   {/* <option value="" selected disabled hidden>Choose here</option> */}
                       <option value="amh">amh</option>
@@ -218,10 +217,8 @@ class SuperAdmincurrentDictionaryEdit extends Component {
                       <option value="sid">sid</option>
              </select>
             </div>
-
-
               <div className="form-group">
-                <label data-cy="textlabel" htmlFor="description">Text</label>
+                <label data-cy="textlabel" htmlFor="description" className="mb-1">Text</label>
                 <input
                   type="text"
                   className="form-control"
@@ -233,7 +230,7 @@ class SuperAdmincurrentDictionaryEdit extends Component {
                 />
               </div>
               <div className="form-group">
-                <label data-cy="translabel"htmlFor="productionarea">Translation</label>
+                <label data-cy="translabel"htmlFor="productionarea" className="mb-1">Translation</label>
                 <input
                   type="text"
                   className="form-control"
@@ -247,42 +244,36 @@ class SuperAdmincurrentDictionaryEdit extends Component {
   
               </div>
             </form>
-
-            {/* {product.published ? (
-              <button
-                classlang="badge badge-primary mr-2"
-                onClick={() => this.updatePublished(false)}
-              >
-                UnPublish
-              </button>
-            ) : (
-              <button
-                classlang="badge badge-primary mr-2"
-                onClick={() => this.updatePublished(true)}
-              >
-                Publish
-              </button>
-            )} */}
-
-
-            <button
-              type="submit"
-              className="badge badge-success btn btn-primary"
             
-              onClick={this.updateWord}
-              data-cy="updatetranslation"
-            >
-              Update
-            </button>
-            <p>{this.state.msg}</p>
+            <div className="row">
+              <div className="col-sm-4 ms-3"> 
+                  <button
+                    type="submit"
+                    className="badge badge-success btn btn-primary"
+                  
+                    onClick={this.updateWord}
+                    data-cy="updatetranslation"
+                  >
+                    Update
+                  </button>
+              </div>
 
-            <button
-              className="badge badge-danger mr-2 btn btn-primary"
-              onClick={this.deleteWord}
-              data-cy="deletetranslation"
-            >
-              Delete
-            </button> 
+              <div className="col-sm-4 ms-4">
+                    <button
+                      className="badge badge-danger mr-2 btn btn-primary"
+                      onClick={this.deleteWord}
+                      data-cy="deletetranslation"
+                    >
+                      Delete
+                    </button> 
+              </div>
+           
+              <p>{this.state.msg}</p>
+
+             
+
+            </div>
+ 
             {/* <p>{this.state.message}</p> */}
 
   

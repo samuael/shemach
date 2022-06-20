@@ -46,85 +46,7 @@ export default class SuperAdminAddPr extends Component {
 
 
 
-  // onChangeProdName(e) {
-  //   const name = e.target.value;
 
-  //   this.setState(function(prevState) {
-  //     return {
-  //       response_data: {
-  //         ...prevState.response_data,
-  //         product: {
-  //           ...prevState.product,
-  //           name: name
-  //         }
-  //       }
-  //     };
-  //   });
-  // }
-
-  // onChangeProdName(e) {
-  //   const name = e.target.value;
-    
-  //   this.setState(prevState => ({
-  //     response_data: {
-  //       ...prevState.response_data,
-  //       product: {
-  //         ...prevState.product,
-  //         name: name
-  //       }
-  //     }
-  //   }));
-  // }
-
-
-
-  // onChangeProdUnitId(e) {
-  //   this.setState({
-  //     unit_id: e.target.value
-  //   });
-  // }
-
-  // onChangeProdUnitId(e) {
-  //   const unit_id = e.target.value;
-
-  //   this.setState(function(prevState) {
-  //     return {
-  //       response_data: {
-  //         ...prevState.response_data,
-  //         product: {
-  //           ...prevState.product,
-  //           unit_id: unit_id
-  //         }
-  //       }
-  //     };
-  //   });
-  // }
-
-  // onChangeProdUnitId(e) {
-  //   const unit_id = e.target.value;
-    
-  //   this.setState(prevState => ({
-  //     response_data: {
-  //       ...prevState.response_data,
-  //       product: {
-  //         ...prevState.product,
-  //         unit_id: unit_id
-  //       }
-  //     }
-  //   }));
-  // }
-
-
-  // onChangeProdUnitId(e) {
-  //  // const unit_id = e.target.value;
-    
-  //   this.setState({
-  //       product: {
-  //         unit_id : e.target.value
-  //       }
-  //     }
-  //   );
-  // }
 
   onChangeProdUnitId(e) {
     this.setState({
@@ -133,57 +55,6 @@ export default class SuperAdminAddPr extends Component {
   }
 
 
-  
-
-  // onChangeProdArea(e) {
-  //   this.setState({
-  //     production_area: e.target.value
-  //   });
-  // }
-
-  // onChangeProdArea(e) {
-  //   const production_area = e.target.value;
-
-  //   this.setState(function(prevState) {
-  //     return {
-  //       response_data: {
-  //         ...prevState.response_data,
-  //         product: {
-  //           ...prevState.product,
-  //           production_area: production_area
-  //         }
-  //       }
-  //     };
-  //   });
-  // }
-
-  // onChangeProdArea(e) {
-  //   const production_area = e.target.value;
-    
-  //   this.setState(prevState => ({
-  //     response_data: {
-  //       ...prevState.response_data,
-  //       product: {
-  //         ...prevState.product,
-  //         production_area: production_area
-  //       }
-  //     }
-  //   }));
-  // }
-
-
-  // onChangeProdArea(e) {
-  //   //const unit_id = e.target.value;
-    
-  //   this.setState({
-  //       product: {
-  //         production_area: e.target.value
-  //       }
-  //     }
-  //   );
-  // }
-  
-
   onChangeProdArea(e) {
     this.setState({
       production_area: e.target.value
@@ -191,54 +62,6 @@ export default class SuperAdminAddPr extends Component {
   }
 
   
-
-  // onChangeCurrPrice(e) {
-  //   this.setState({
-  //     current_price: e.target.value
-  //   });
-  // }
-
-  // onChangeCurrPrice(e) {
-  //   const current_price = e.target.value;
-
-  //   this.setState(function(prevState) {
-  //     return {
-  //       response_data: {
-  //         ...prevState.response_data,
-  //         product: {
-  //           ...prevState.product,
-  //           current_price: current_price
-  //         }
-  //       }
-  //     };
-  //   });
-  // }
-
-  // onChangeCurrPrice(e) {
-  //   const current_price = e.target.value;
-    
-  //   this.setState(prevState => ({
-  //     response_data: {
-  //       ...prevState.response_data,
-  //       product: {
-  //         ...prevState.product,
-  //         current_price: current_price
-  //       }
-  //     }
-  //   }));
-  // }
-
-  // onChangeCurrPrice(e) {
-  //   //const unit_id = e.target.value;
-    
-  //   this.setState({
-  //       product: {
-  //         current_price: e.target.value
-  //       }
-  //     }
-  //   );
-  // }
-
 
   onChangeCurrPrice(e) {
     this.setState({
@@ -289,20 +112,6 @@ export default class SuperAdminAddPr extends Component {
        // }
           submitted: true
         
-
-
-
-
-          // id: response.data.response_data.id,
-          // name: response.data.response_data.name,
-          // unit_id: response.data.response_data.unit_id,
-          // production_area: response.data.response_data.production_area,
-          // current_price: response.data.response_data.current_price,
-          // created_by: response.data.response_data.created_by,
-          // created_at: response.data.response_data.created_at,
-          // last_update_time: response.data.response_data.last_update_time
-
-         // submitted: true
         });
         console.log(response.data);
       //  console.log(response_data);
@@ -463,7 +272,7 @@ export default class SuperAdminAddPr extends Component {
             </div>
 
 
-            <button  data-cy="submitprod" onClick={this.saveProduct} className="btn btn-success">
+            <button  data-cy="submitprod" onClick={this.saveProduct} className="btn btn-success mt-3">
               Submit
             </button>
           </div>

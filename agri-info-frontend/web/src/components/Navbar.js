@@ -62,7 +62,7 @@ function Navbar() {
               Price Information 
             </Link>
           </li>
-          <li className='nav-item'>
+          {/* <li className='nav-item'>
             <Link
               to='/'
               className='nav-links'
@@ -70,7 +70,7 @@ function Navbar() {
             >
               Desk
             </Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </>

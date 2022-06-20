@@ -16,39 +16,15 @@ class SuperControlAdmin extends Component {
     this.removeAllAdmins = this.removeAllAdmins.bind(this);
     this.searchAdmin = this.searchAdmin.bind(this);
     this.deleteAdmin = this.deleteAdmin.bind(this);
+    this.convertToDate = this.convertToDate.bind(this);
+
 
     this.state = {
      
         admins: [],
         msg: "",
         status_code: 0,
-        prodducts: [
-    //     {
-    //     id: 1,
-    //     title: 'admin 1',
-    //     description: 'Create tasks',
-    //     published : false,
-    // },
-    // {
-    //     id: 2,
-    //     title: 'admin 2',
-    //     description: 'Create tasks',
-    //     published : false,
-    // },
-    // {
-    //     id: 3,
-    //     title: 'admin 3',
-    //     description: 'Create tasks',
-    //     published : false,
-    // },
-    // {
-    //     id: 4,
-    //     title: 'admin 4',
-    //     description: 'Create tasks',
-    //     published : false,
-    // },
-
-      ],
+        prodducts: [],
       currentAdmin: null,
       currentIndex: -1,
       searchAdmin: ""
@@ -57,7 +33,16 @@ class SuperControlAdmin extends Component {
 
   componentDidMount() {
     console.log(this.props)
-    this.retreveAdmins();
+    // this.retreveAdmins();
+
+    var tokenn = window.token;
+     if(!tokenn){
+      this.props.history.push('/')
+     }else{
+      this.retreveAdmins();
+     }
+
+    
   }
 
   onChangeSearchAdmin(e) {
@@ -94,6 +79,15 @@ class SuperControlAdmin extends Component {
       currentAdmin: admin,
       currentIndex: index
     });
+  }
+
+  convertToDate(number){
+    var myDate = new Date( number *1000);
+    var convertedDate = myDate.toLocaleDateString();
+    return convertedDate;
+    // return myDate.toGMTString()+ "<br>" + myDate.toLocaleString();
+    // document.write(myDate.toGMTString()+"<br>"+myDate.toLocaleString());
+  
   }
 
   removeAllAdmins() {
@@ -271,7 +265,8 @@ class SuperControlAdmin extends Component {
                 <label>
                   <strong>Created At :</strong>
                 </label>{" "}
-                {currentAdmin.created_at}
+                
+                {this.convertToDate(currentAdmin.created_at)}
               </div>
 
               <div>
@@ -283,32 +278,13 @@ class SuperControlAdmin extends Component {
 
 
               </div>
-              {/* <div>
-                <label>
-                  <strong>Curr Price</strong>
-                </label>{" "}
-                {currentAdmin.currentprice}
-              </div> */}
-              {/* <div>
-                <label>
-                  <strong>Status:</strong>
-                </label>{" "}
-                {currentAdmin.published ? "Published" : "Pending"}
-              </div> */}
 
-              {/* <Link
-                to={"/super-admin/admins/" + currentAdmin.id}
-                className="badge badge-warning col-sm-2 btn btn-primary"
-              >
-                Edit
-              </Link> */}
-
-              <button
-              className="badge badge-danger col-sm-2 btn btn-primary"
-              onClick={this.deleteAdmin}
-            >
-              Delete
-            </button>
+                  <button
+                  className="badge badge-danger col-sm-2 btn btn-primary"
+                  onClick={this.deleteAdmin}
+                >
+                  Delete
+                </button>
 
               </div>
               

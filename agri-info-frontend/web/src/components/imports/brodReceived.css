@@ -50,6 +50,7 @@
 } */
 #brodreceived .Name {
   font-weight: bold;
+  overflow: hidden;
   font-size: 20px;
 
  }
@@ -71,6 +72,7 @@
   height: fit-content;
   margin-top: 4rem;
   padding: 1rem 1rem;
+  overflow: hidden;
 
   
   /* width: 90rem; */
@@ -188,5 +190,10 @@ textarea {
   cursor: pointer;
 }  */
 
+.refreshlink {
+  text-decoration: none; 
+  color: black;
+  cursor: pointer;
+}
 
  

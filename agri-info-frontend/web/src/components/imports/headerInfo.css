@@ -6,7 +6,7 @@
 #navitem .navbar {
     /* background: linear-gradient(90deg, rgb(28, 27, 27) 0%, rgb(26, 23, 23) 100%); */
     /* background:#020c1b; */
-    background: #172a45;
+    background: #008000;
     height: 80px;
     display: flex;
     justify-content: flex;
@@ -55,7 +55,7 @@
 
   #navitem .logout:hover{
     /* background-color: rgb(247, 7, 7); */
-    color: #00FF00;
+    color: #ff6600;
     
   }
 

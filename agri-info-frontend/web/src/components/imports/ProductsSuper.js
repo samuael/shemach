@@ -14,6 +14,8 @@ class ProductsSuper extends Component {
     this.removeAllProducts = this.removeAllProducts.bind(this);
     this.searchProduct = this.searchProduct.bind(this);
     this.renderUnitId = this.renderUnitId.bind(this);
+    this.convertToDate = this.convertToDate.bind(this);
+    this.getDifferenceInDays = this.getDifferenceInDays.bind(this);
 
     this.state = {
       tokenValue: this.props.location.state,
@@ -59,13 +61,13 @@ class ProductsSuper extends Component {
     console.log(this.props.location.state);
     console.log(this.state.tokenValue);
     var tokenn = window.token;
-    this.retrieveProducts();
+    // this.retrieveProducts();
 
-    //  if(!tokenn){
-    //   this.props.history.push('/')
-    //  }else{
-    //   this.retrieveProducts();
-    //  }
+     if(!tokenn){
+      this.props.history.push('/')
+     }else{
+      this.retrieveProducts();
+     }
   }
 
   onChangesearchProduct(e) {
@@ -156,6 +158,32 @@ renderUnitId(id) {
     }
 }
 
+convertToDate(number){
+  var myDate = new Date( number *1000);
+  var convertedDate = myDate.toLocaleString();
+  return convertedDate;
+  // return myDate.toGMTString()+ "<br>" + myDate.toLocaleString();
+  // document.write(myDate.toGMTString()+"<br>"+myDate.toLocaleString());
+
+}
+
+getDifferenceInDays(date2) {
+  var date1 =     new Date().toLocaleDateString();
+  var date2 = this.convertToDate(date2);
+  var date3 = new Date(date2).toLocaleDateString();
+  // var date2new = this.convertToDate(date2).toLocaleDateString();
+  // var dateonly = date2new.toLocaleDateString();
+  console.log(date1);
+  console.log(date3);
+
+  var diffDays =  new Date().getTime() - new Date(date3).getTime() ;    //Current date - Past date  return in millisecond
+  var diffDaysNew = Math.floor(diffDays / (1000 * 60 * 60 * 24));
+  console.log(diffDaysNew);
+  return diffDaysNew;
+  // return diffInMs / (1000 * 60 * 60 * 24);
+
+}
+
   searchProduct() {
     this.setState({
       currentProduct: null,
@@ -241,7 +269,7 @@ renderUnitId(id) {
                     Crop Name :{product.name}
                     </div>
                   <p className="Place">Price :{product.current_price}</p>
-                  <p className="Price"> Before :{product.created_at} min</p>
+                  <p className="Price"> Before :{this.getDifferenceInDays(product.created_at)} days</p>
                 </div>
 
               ))}
@@ -299,14 +327,14 @@ renderUnitId(id) {
                 <label>
                   <strong>Created At :</strong>
                 </label>{" "}
-                {currentProduct.created_at}
+                {this.convertToDate(currentProduct.created_at)}
               </div>
 
               <div>
                 <label>
                   <strong>Last Update Time : </strong>
                 </label>{" "}
-                {currentProduct.last_update_time}
+                {this.convertToDate(currentProduct.last_update_time)}
               </div>
 
              
@@ -317,7 +345,7 @@ renderUnitId(id) {
                 {currentProduct.published ? "Published" : "Pending"}
               </div> */}
 
-              <Link
+              {/* <Link
               to={"/super/products/" + currentProduct.id}
               //   to={{
               //     pathname: "/super/products/" + currentProduct.id,
@@ -326,7 +354,7 @@ renderUnitId(id) {
                 className="badge badge-warning"
               >
                 Edit
-              </Link>
+              </Link> */}
             </div>
           ) : (
             <div className="clickon">

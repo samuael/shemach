@@ -62,6 +62,8 @@ textarea {
     /* margin-top: 1rem; */
     /* margin-bottom: 5rem; */
     margin-left: 4rem;
+    text-decoration: none;
+    cursor: pointer;
     font-size: 15px;
 }
 

@@ -46,61 +46,12 @@ class LoginPageImp extends Component {
           Createdby: 0
         },
         role: "",
-        token: ""
+        token: "",
+        errormsg:""
   //    },
      
     };
   }
-
-
-
-
-    // // handle Submit handler function
-    // handleSubmit = (event) =>{
-    //     event.preventDefault();
-
-    //     const userCredential = {
-    //         email,
-    //         password
-    //     }
-    //     // const userdata = { email: "fantahunfekadu1@gmail.com", password : "admin123"}
-    //     const login = dispatch(loginAction(userCredential))
-    //     login
-    //         .then(data => {
-    //             if (data.role == "infoadmin"){
-    //                 history.push('/products')
-    //             }
-    //             else if (data.role == "superadmin"){
-    //                 history.push('/super-admin/products')
-    //             }
-    //             else if (data.role == "admin"){
-    //                 history.push('/super-admin/products')
-    //             }
-    //             else if (data.role == "agent"){
-    //                 history.push('/super-admin/products')
-    //             }
-    //             else if (data.role == "merchant"){
-    //                 history.push('/super-admin/products')
-    //             }
-    //             else {
-    //                 history.push('/super-admin/products')
-    //             }
-    //             console.log(data.role);
-                
-    //         }
-            
-    //         )
-    //         .catch(error => { 
-    //             console.log(error.err)
-    //             setError(error.err)
-    //         })
-    // }
-
-
-
-
-
-
 
   onChangePassword(e) {
     this.setState({
@@ -152,12 +103,6 @@ class LoginPageImp extends Component {
           },
           role: response.data.role,
           token: response.data.token
-          // measurement: response.data.measurement,
-          // prevprice: response.data.prevprice,
-          // currentprice: response.data.currentprice,
-          // published: response.data.published,
-
-        //   submitted: true
         });
 
         var data = this.state;
@@ -189,7 +134,7 @@ class LoginPageImp extends Component {
           this.props.history.push('/super-admin/products')
         }
         else {
-          this.props.history.push('/super-admin/products')
+          this.props.history.push('/products')
         }
         console.log(response.data);
         console.log(this.state);
@@ -206,8 +151,11 @@ class LoginPageImp extends Component {
       }
       })
       .catch(e => {
+        console.log(e);
+        console.log(e.data);
         this.setState({
-          msg:e.msg,
+          errormsg: "Incorrect User Credential. Please try again!!",
+          // msg:e.msg,
           // errors: e.errors
         })
         console.log(e);
@@ -241,7 +189,7 @@ class LoginPageImp extends Component {
   }
 
   render() {
-  var  {msg} = this.state;
+  const  {errormsg} = this.state;
   console.log(this.state);
    console.log(this.state.msg)
     return (
@@ -284,7 +232,7 @@ class LoginPageImp extends Component {
                                             {/* {
                                                 errorMessage && <ErrorAlter errorMessage={errorMessage} clearError={() => setError(undefined) }></ErrorAlter>
                                             } */}
-                                             <h1>{this.state.msg}</h1>
+                                             <p>{errormsg}</p>
 
                                             <div className="form-group">
                                             <button 
@@ -293,9 +241,6 @@ class LoginPageImp extends Component {
                                             >
                                               Login
                                             </button>
-
-                                           
-
                                                 {/* <button className="btn primary-btn" onClick={this.onHandleSubmit}>Login</button> */}
                                             </div>
 

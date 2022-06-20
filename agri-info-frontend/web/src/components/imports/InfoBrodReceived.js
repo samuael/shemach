@@ -1,15 +1,10 @@
 import React, { Component } from "react";
 import MessageService from "../../services/prodcutService";
 import { Link } from "react-router-dom";
-import useWebSocket, { ReadyState } from 'react-use-websocket';
-// import WebSocket, { WebSocketServer } from 'ws';
-// import WebSocket from 'websocket';
-
-
-
 import "./brodReceived.css";
 
-export default class BrodReceived extends Component {
+export default class InfoBrodReceived extends Component { 
+
 
   constructor(props) {
     super(props);
@@ -21,11 +16,10 @@ export default class BrodReceived extends Component {
     this.onChangeShowToAdmins = this.onChangeShowToAdmins.bind(this);
     this.onChangeLang = this.onChangeLang.bind(this);
     this.onChangeData = this.onChangeData.bind(this);
-    this.connect = this.connect.bind(this);
+    // this.connect = this.connect.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.convertToDate = this.convertToDate.bind(this);
     this.deleteMessage = this.deleteMessage.bind(this);
-
 // 
     this.state = {
       status_code: 0,
@@ -45,56 +39,7 @@ export default class BrodReceived extends Component {
 
   componentDidMount() {
 
-    // var conn;
-    // var msg = document.getElementById("msg");
-    // var log = document.getElementById("log");
-  
-    // function appendLog(item) {
-    //     var doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
-    //     log.appendChild(item);
-    //     if (doScroll) {
-    //         log.scrollTop = log.scrollHeight - log.clientHeight;
-    //     }
-    // }
-
-    // document.getElementById("form").onsubmit = function () {
-    //     if (!conn) {
-    //         return false;
-    //     }
-    //     if (!msg.value) {
-    //         return false;
-    //     }
-    //     conn.send(msg.value);
-    //     msg.value = "";
-    //     return false;
-    // };
-
-
-    // if (window["WebSocket"]) {
-    //     var id  = window.id;
-    //     conn = new WebSocket(`ws://localhost:8080/api/connection/admins/${id}`);
-    //     // const conn = new WebSocket("wss://ws.bitstamp.net");
-    //     conn.onclose = function (evt) {
-    //         var item = document.createElement("div");
-    //         item.innerHTML = "<b>Connection closed.</b>";
-    //         appendLog(item);
-    //     };
-    //     conn.onmessage = function (evt) {
-    //         var messages = evt.data.split('\n');
-    //         for (var i = 0; i < messages.length; i++) {
-    //             var item = document.createElement("div");
-    //             item.innerText = messages[i];
-    //             appendLog(item);
-    //         }
-    //     };
-    // } else {
-    //     var item = document.createElement("div");
-    //     item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
-    //     appendLog(item);
-    // }
-
     this.retrieveMessage();
-    // this.connect();
 
 
   }
@@ -103,86 +48,6 @@ export default class BrodReceived extends Component {
     // console.log("closing websocket is closed...");
     // this.ws.close();
   }
-
-  
-
-  // componentDidMount(){
-  //   // this is an "echo" websocket service
-  // //   // this.connection = new WebSocket('ws://localhost:3000/api/connection/admins');
-  //   this.connection = new WebSocket('wss://echo.websocket.org');
-
-  //   // listen to onmessage event
-  //   this.connection.onmessage = evt => {
-  //     // add the new message to state
-  //       this.setState({
-  //       messages : this.state.messages.concat([ evt.data ])
-  //     })
-  //   };
-
-  //   // for testing purposes: sending to the echo service which will send it back back
-  //   // setInterval( _ =>{
-  //   //     this.connection.send( Math.random() )
-  //   // }, 2000 )
-  // }
-
-  timeout = 250; // Initial timeout duration as a class variable
-
-  connect = () => {
-    var token = window.token;
-    var id = window.id;
-    console.log(token);
-    var ws = new WebSocket(`ws://localhost:8080/api/connection/admins/${id}`);
-
-    // {
-    //   "Authorization": "Bearer" + token
-    // }
-
-    console.log(ws);
-
-    let that = this; // cache the this
-    var connectInterval;
-
-    // websocket onopen event listener
-    ws.onopen = () => {
-      console.log("connected websocket main component");
-
-      this.setState({ wsoc: ws });
-      ws.send("Message from the Server")
-
-      that.timeout = 250; // reset timer to 250 on open of websocket connection
-    //  clearTimeout(connectInterval); // clear Interval on on open of websocket connection
-    };
-
-    // websocket onclose event listener
-    ws.onclose = (e) => {
-      console.log(
-        `Socket is closed. Reconnect will be attempted in ${Math.min(
-          10000 / 1000,
-          (that.timeout + that.timeout) / 1000
-        )} second.`,
-        e.reason
-      );
-
-      that.timeout = that.timeout + that.timeout; //increment retry interval
-    //  connectInterval = setTimeout(this.check, Math.min(10000, that.timeout)); //call check function after timeout
-    };
-
-    // websocket onerror event listener
-    ws.onerror = (err) => {
-      console.error(
-        "Socket encountered error: ",
-        err.message,
-        "Closing socket"
-      );
-
-      ws.close();
-    };
-  };
-
-  check = () => {
-    const { ws } = this.state;
-    if (!ws || ws.readyState == WebSocket.CLOSED) this.connect(); //check if websocket instance is closed, if so call `connect` function.
-  };
 
 
 
@@ -210,16 +75,18 @@ export default class BrodReceived extends Component {
   //   });
   // }
 
+  
   onChangeSelectedProduct(event) {
-  let value = Array.from(
-    event.target.selectedOptions,
-    (option) => parseInt(option.value)
-    // console.log(option.value)
-  );
-  this.setState({
-    targets: value,
-  });
-}
+    let value = Array.from(
+      event.target.selectedOptions,
+      (option) => parseInt(option.value)
+      // console.log(option.value)
+    );
+    this.setState({
+      targets: value,
+    });
+  }
+
 
   onChangeSearchMessage(e) {
     const searchMessage = e.target.value;
@@ -228,7 +95,6 @@ export default class BrodReceived extends Component {
       searchMessage: searchMessage,
     });
   }
-
 
   refreshList() {
     this.retrieveMessage();
@@ -310,24 +176,6 @@ export default class BrodReceived extends Component {
   }
 
 
-  searchMessage() {
-    this.setState({
-      currentMessage: null,
-      currentIndex: -1,
-    });
-
-    MessageService.findByTitle(this.state.searchMessage)
-      .then((response) => {
-        this.setState({
-          products: response.data,
-        });
-        console.log(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }
-
   deleteMessage() {   
     var token  = window.token
     console.log(token); 
@@ -349,20 +197,22 @@ export default class BrodReceived extends Component {
 
 
   render() {
-    const { searchMessage, message, msgres, currentMessage, currentIndex } =
+    const { msg, message, msgres, currentMessage, currentIndex } =
       this.state;
     // console.log(ws);
     return (
       <>
+        {/* <ul>{ this.state.messages.slice(-5).map( (msg, idx) => <li key={'msg-' + idx }>{ msg }</li> )}</ul>; */}
+     
         <div id="brodreceived">
 
           <div className="row">
             <div className="col-sm-4 mt-4">
-              <div className="row">
+            <div className="row">
                 <h4 className="mt-4 col-sm-4">Inboxes</h4>
                 <a className="col-sm-4 mt-4 refreshlink" onClick={this.retrieveMessage}>Refresh</a>
               </div>
-
+             
 
               <ul className="list-group ms-4">
               { 
@@ -391,34 +241,14 @@ export default class BrodReceived extends Component {
 
                       ))
 
-                    //  data = Array.from(products.data);
-                    
-                    //  res_data.products.map((product, index) => (
-                    //     <li
-                    //       className={
-                    //         "list-group-item " +
-                    //         (index === currentIndex ? "active" : "")
-                    //       }
-                    //       onClick={() => this.setActiveMessage(product, index)}
-                    //       key={index}
-                    //     >
-                    //       {product.name}
-                    //     </li>
-                    //   ))
-
-
                       }
-                    </ul>
 
-              {/* <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllMessage}
-          >
-            Remove All
-          </button> */}
+              </ul>
+
+      
             </div>
             <div className="col-sm-4 description">
-              {currentMessage ? (
+            {currentMessage ? (
                 <div>
                   <h4>Message</h4>
                   <div>
@@ -555,6 +385,8 @@ export default class BrodReceived extends Component {
                       />
                     </label>
                   </div>
+
+              
                   <button
                     className="btn btn-primary mb-3"
                     type="submit"
@@ -564,13 +396,17 @@ export default class BrodReceived extends Component {
                   >
                     Send
                   </button>
-                  <p>{msgres}</p>
+                    <p>{msgres}</p>
+                  
                 </div>
               </form>
             </div>
+
+
           </div>
         </div>
       </>
     );
   }
 }
+

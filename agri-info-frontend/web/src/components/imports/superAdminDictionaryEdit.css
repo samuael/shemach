@@ -4,6 +4,8 @@
     margin: auto;
  
   }
+
+
   
   #dictcomponent .submit-form {
     max-width: 300px;
@@ -25,7 +27,13 @@
     margin-bottom: 20px;
     padding-top: 10px;
     max-width: 100%;
+    height: 15rem;
     box-shadow: 0 0 45px rgba(131, 79, 79, 0.4);
     border-radius: 10px;
+
+  }
+
+  #dictcomponent .form-group {
+       margin: 5px;
 
   }
