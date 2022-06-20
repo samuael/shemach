@@ -43,6 +43,8 @@ type IUserHandler interface {
 	ConfirmTempoCXP(c *gin.Context)
 	ConfirmEmail(c *gin.Context)
 	GetMerchantByStoreID(c *gin.Context)
+	LogoutSubscriber(c *gin.Context)
+	Logout(c *gin.Context)
 }
 
 type UserHandler struct {
@@ -781,4 +783,22 @@ func (uhandler *UserHandler) GetMerchantByStoreID(c *gin.Context) {
 	res.User = merchant
 	res.Role = state.MERCHANT
 	c.JSON(res.StatusCode, res)
+}
+
+func (uhandler *UserHandler) LogoutSubscriber(c *gin.Context) {
+	er := uhandler.Authenticator.LogoutSubscriberSession(c.Request)
+	if er != nil {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+	} else {
+		c.Writer.WriteHeader(http.StatusOK)
+	}
+}
+
+func (uhandler *UserHandler) Logout(c *gin.Context) {
+	er := uhandler.Authenticator.LogoutSession(c.Request)
+	if er != nil {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+	} else {
+		c.Writer.WriteHeader(http.StatusOK)
+	}
 }

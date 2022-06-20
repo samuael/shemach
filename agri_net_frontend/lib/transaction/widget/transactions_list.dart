@@ -14,7 +14,7 @@ class TransactionsList extends StatelessWidget {
             return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
-                children: state.transactions.map<TransactionItemSmallView>((e) {
+                children: state.transactions.reversed.map<TransactionItemSmallView>((e) {
                   return TransactionItemSmallView(e);
                 }).toList(),
               ),

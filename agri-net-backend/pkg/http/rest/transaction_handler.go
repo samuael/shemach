@@ -418,6 +418,7 @@ func (thandler *TransactionHandler) PerformAmend(c *gin.Context) {
 			resp.StatusCode = http.StatusBadRequest
 		}
 		c.JSON(resp.StatusCode, resp)
+		return
 	}
 	transaction, er := thandler.Service.GetTransactionByID(ctx, input.TransactionID)
 	if er == nil {

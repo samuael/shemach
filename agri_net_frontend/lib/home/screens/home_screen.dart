@@ -55,10 +55,10 @@ class HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    final productsPostProvider = BlocProvider.of<ProductsBloc>(context);
-    if (!(productsPostProvider.state is ProductsLoadSuccess)) {
-      productsPostProvider.add(LoadProductsEvent());
-    }
+    // final productsPostProvider = BlocProvider.of<ProductsBloc>(context);
+    // if (!(productsPostProvider.state is ProductsLoadSuccess)) {
+    //   productsPostProvider.add(LoadProductsEvent());
+    // }
 
     if (StaticDataStore.ROLE == ROLE_MERCHANT ||
         StaticDataStore.ROLE == ROLE_AGENT) {

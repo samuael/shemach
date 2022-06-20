@@ -31,6 +31,21 @@ class AgentsResponse {
   }
 }
 
+class DeleteUserResponse {
+  int statusCode;
+  String msg;
+  Map<String, String> errors;
+  DeleteUserResponse(
+      {required this.statusCode, required this.msg, required this.errors});
+
+  factory DeleteUserResponse.fromJson(Map<String, dynamic> json) {
+    return DeleteUserResponse(
+        statusCode: json["status_code"],
+        msg: json["msg"],
+        errors: json["errors"]);
+  }
+}
+
 class AdminsResponse {
   int statusCode;
   String msg;

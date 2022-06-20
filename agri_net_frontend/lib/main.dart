@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 import 'libs.dart';
+import 'users/data_provider/admin_dataProvider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -126,13 +127,13 @@ class MyHomePageState extends State<MyHomePage> {
             return MaterialPageRoute(builder: (context) {
               return ProductScreen();
             });
-          } else if (route == RegisteredMerchantsScreen.RouteName) {
+          } else if (route == MerchantsScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
-              return RegisteredMerchantsScreen();
+              return MerchantsScreen();
             });
-          } else if (route == RegisteredAgentsScreen.RouteName) {
+          } else if (route == AgentsScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
-              return RegisteredAgentsScreen();
+              return AgentsScreen();
             });
           } else if (route == HomeScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {
@@ -153,10 +154,6 @@ class MyHomePageState extends State<MyHomePage> {
                 (setting.arguments as Map<String, ProductPost>)["post"]!;
             return MaterialPageRoute(builder: (context) {
               return CreateTransactionScreen(post);
-            });
-          } else if (route == RegisterAdminPage.RouteName) {
-            return MaterialPageRoute(builder: (context) {
-              return RegisterAdminPage();
             });
           } else if (route == ConfirmationScreen.RouteName) {
             return MaterialPageRoute(builder: (context) {

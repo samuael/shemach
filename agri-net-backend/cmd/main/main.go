@@ -24,6 +24,7 @@ import (
 	"github.com/samuael/agri-net/agri-net-backend/pkg/payment"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/product"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/resource"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/session"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
 	pgxstorage "github.com/samuael/agri-net/agri-net-backend/pkg/storage/pgx_storage"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/store"
@@ -55,7 +56,10 @@ func main() {
 	defer conn.Close()
 	defer os.Exit(0)
 
-	authenticator := auth.NewAuthenticator()
+	sessionRepo := pgx_storage.NewSessionRepo(conn)
+	sessionService := session.NewSessionService(sessionRepo)
+	authenticator := auth.NewAuthenticator(sessionService)
+
 	rules := middleware.NewRules(authenticator)
 
 	credentials := &model.Credentials{

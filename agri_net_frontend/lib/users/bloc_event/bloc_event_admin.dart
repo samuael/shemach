@@ -39,11 +39,6 @@ class CreateNewAdminEvent extends AdminsEvent {
       required this.longitude});
 }
 
-class AdminCreatedEvent extends AdminsEvent {
-  Admin admin;
-  AdminCreatedEvent({required this.admin});
-}
-
 class CreatNewMerchantEvent extends AdminsEvent {
   String firstname;
   String lastname;

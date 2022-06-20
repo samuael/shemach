@@ -149,9 +149,14 @@ func Route(
 	router.GET("/api/merchant/transaction/buyer/accept/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.BuyerAcceptTransaction)
 	router.GET("/api/cxp/mytransactions", rules.Authenticated(), rules.Authorized(), transactionhandler.GetMyTransactionNotifications)
 	router.GET("/api/cxp/transaction/reactivate/:id", rules.Authenticated(), rules.Authorized(), transactionhandler.ReactivateTransaction)
+
+	router.GET("/api/logout", rules.Authenticated(), userhandler.Logout)
+	router.GET("/api/subscriber/logout", rules.AuthenticatedSubscriber(), userhandler.LogoutSubscriber)
+
+	//
 	router.RouterGroup.Use(FilterDirectory())
 	{
-		router.StaticFS("/images/profile/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"/images/"))
+		router.StaticFS("/images/", http.Dir(os.Getenv("ASSETS_DIRECTORY")+"/images/"))
 	}
 	return router
 }

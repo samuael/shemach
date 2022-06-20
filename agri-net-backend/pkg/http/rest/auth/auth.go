@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/samuael/agri-net/agri-net-backend/pkg/constants/model"
+	"github.com/samuael/agri-net/agri-net-backend/pkg/session"
 	// "github.com/samuael/Project/RegistrationSystem/platforms/helper"
 )
 
@@ -26,15 +28,23 @@ type Authenticator interface {
 
 	RandomToken() string
 	ValidateToken(tokenstring string) bool
+
+	LogoutSubscriberSession(request *http.Request) error
+	LogoutSession(request *http.Request) error
 }
 
 // authenticator representing the Cookie methods and handler in jwt
 type authenticator struct {
+	SessionService session.ISessionService
 }
 
 // NewCookieHandler representing New Cookie thing
-func NewAuthenticator() Authenticator {
-	return &authenticator{}
+func NewAuthenticator(
+	sessionService session.ISessionService,
+) Authenticator {
+	return &authenticator{
+		SessionService: sessionService,
+	}
 }
 
 // SaveSession to save the Session in the User Session Header
@@ -51,6 +61,13 @@ func (sessh *authenticator) SaveSession(writer http.ResponseWriter, session *mod
 	// Create the JWT string
 	tokenString, err := token.SignedString([]byte(os.Getenv("SESSION_SECRET_KEY")))
 	if err != nil {
+		return false
+	}
+	er := sessh.SessionService.SaveSession(context.Background(), &model.SaveSession{
+		UserID: int(session.ID),
+		Token:  tokenString,
+	})
+	if er != nil {
 		return false
 	}
 	// Setting the bearer Authorization Token to  the header
@@ -82,6 +99,13 @@ func (sessh *authenticator) SaveSubscriberSession(writer http.ResponseWriter, se
 	// Create the JWT string
 	tokenString, err := token.SignedString([]byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")))
 	if err != nil {
+		return false
+	}
+	er := sessh.SessionService.SaveSubscriberSession(context.Background(), &model.SaveSubscriberSession{
+		SubscriberID: int(session.ID),
+		Token:        tokenString,
+	})
+	if er != nil {
 		return false
 	}
 	// Setting the bearer Authorization Token to  the header
@@ -131,6 +155,7 @@ func (sessh *authenticator) DeleteSession(writer http.ResponseWriter, request *h
 	if err != nil {
 		return false
 	}
+
 	// Finally, we set the client cookie for "token" as the JWT we just generated
 	// we also set an expiry time which is the same as the token itself
 	cookie := http.Cookie{
@@ -170,6 +195,10 @@ func (sessh *authenticator) GetSession(request *http.Request) (*model.Session, e
 			return nil, err
 		}
 		if tkn.Valid {
+			dsession, er := sessh.SessionService.GetSessionByUserID(context.Background(), uint(session.ID))
+			if dsession == nil || er != nil {
+				return nil, er
+			}
 			return session, nil
 		}
 		return nil, errors.New(" invalid login session ")
@@ -185,10 +214,14 @@ func (sessh *authenticator) GetSession(request *http.Request) (*model.Session, e
 		}
 		return nil, err
 	}
-	if !tkn.Valid {
-		return nil, err
+	if tkn.Valid {
+		dsession, er := sessh.SessionService.GetSessionByUserID(context.Background(), uint(session.ID))
+		if dsession == nil || er != nil {
+			return nil, er
+		}
+		return session, nil
 	}
-	return session, nil
+	return nil, errors.New(" invalid login session ")
 }
 
 // GetSubscriberSession(request *http.Request) (*model.Session, error)
@@ -215,6 +248,10 @@ func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.
 			return nil, err
 		}
 		if tkn.Valid {
+			dsession, er := sessh.SessionService.GetSubscriberSessionByUserID(context.Background(), uint(session.ID))
+			if dsession == nil || er != nil {
+				return nil, er
+			}
 			return session, nil
 		}
 		return nil, errors.New(" invalid login session ")
@@ -230,10 +267,14 @@ func (sessh *authenticator) GetSubscriberSession(request *http.Request) (*model.
 		}
 		return nil, err
 	}
-	if !tkn.Valid {
-		return nil, err
+	if tkn.Valid {
+		dsession, er := sessh.SessionService.GetSubscriberSessionByUserID(context.Background(), uint(session.ID))
+		if dsession == nil || er != nil {
+			return nil, er
+		}
+		return session, nil
 	}
-	return session, nil
+	return nil, errors.New(" invalid login session ")
 }
 
 // GetEmailSession(request *http.Request) (*model.Session, error)
@@ -271,4 +312,110 @@ func (sessh *authenticator) ValidateToken(tokenstring string) bool {
 		return false
 	}
 	return true
+}
+
+// LogoutSubscriberSession(request *http.Request) (*model.Session, error)
+func (sessh *authenticator) LogoutSubscriberSession(request *http.Request) error {
+	cookie, err := request.Cookie(os.Getenv("COOKIE_NAME"))
+	defer recover()
+	if err != nil {
+		// go and check for the authorization header
+		// var username string
+		var ok bool
+		token := request.Header.Get("Authorization")
+		token = strings.Trim(strings.TrimPrefix(token, "Bearer "), " ")
+		if token == "" {
+			_, token, ok = request.BasicAuth()
+			if token == "" || !ok {
+				return nil
+			}
+		}
+		session := &model.SubscriberSession{}
+		tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")), nil
+		})
+		if err != nil {
+			return err
+		}
+		if tkn.Valid {
+			er := sessh.SessionService.DeleteSubscriberSession(context.Background(), 0, uint(session.ID))
+			if er != nil {
+				return er
+			}
+			return nil
+		}
+		return errors.New(" invalid login session ")
+	}
+	tknStr := cookie.Value
+	session := &model.SubscriberSession{}
+	tkn, err := jwt.ParseWithClaims(tknStr, session, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")), nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return err
+		}
+		return err
+	}
+	if tkn.Valid {
+		er := sessh.SessionService.DeleteSubscriberSession(context.Background(), 0, uint(session.ID))
+		if er != nil {
+			return er
+		}
+		return nil
+	}
+	return errors.New(" invalid login session ")
+}
+
+// LogoutSession(request *http.Request) (*model.Session, error)
+func (sessh *authenticator) LogoutSession(request *http.Request) error {
+	cookie, err := request.Cookie(os.Getenv("COOKIE_NAME"))
+	defer recover()
+	if err != nil {
+		// go and check for the authorization header
+		// var username string
+		var ok bool
+		token := request.Header.Get("Authorization")
+		token = strings.Trim(strings.TrimPrefix(token, "Bearer "), " ")
+		if token == "" {
+			_, token, ok = request.BasicAuth()
+			if token == "" || !ok {
+				return errors.New("not authenticated")
+			}
+		}
+		session := &model.SubscriberSession{}
+		tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")), nil
+		})
+		if err != nil {
+			return err
+		}
+		if tkn.Valid {
+			er := sessh.SessionService.DeleteSesssion(context.Background(), 0, uint(session.ID))
+			if er != nil {
+				return er
+			}
+			return nil
+		}
+		return errors.New(" invalid login session ")
+	}
+	tknStr := cookie.Value
+	session := &model.SubscriberSession{}
+	tkn, err := jwt.ParseWithClaims(tknStr, session, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SUBSCRIBER_SESSION_SECRET_KEY")), nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return err
+		}
+		return err
+	}
+	if tkn.Valid {
+		er := sessh.SessionService.DeleteSesssion(context.Background(), 0, uint(session.ID))
+		if er != nil {
+			return er
+		}
+		return nil
+	}
+	return errors.New(" invalid login session ")
 }

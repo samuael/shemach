@@ -33,7 +33,7 @@ class TransactionResponse {
     return TransactionResponse(
       statusCode: json["status_code"] ?? 999,
       msg: json["msg"] ?? "internal issue",
-      transaction: json["transaction"] != null
+      transaction: (json["transaction"]?? json["amendment_request"]) != null
           ? Transaction.fromJson(json["transaction"])
           : null,
     );

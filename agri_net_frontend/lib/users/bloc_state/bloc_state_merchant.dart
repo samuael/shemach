@@ -16,3 +16,17 @@ class MerchantsLoadingFailedState extends MerchantsState {
   String msg;
   MerchantsLoadingFailedState({required this.statusCode, required this.msg});
 }
+
+class MerchaneDeleteSuccess extends MerchantsState {
+  int statusCode;
+  String msg;
+  MerchaneDeleteSuccess({required this.statusCode, required this.msg});
+}
+
+class DeletingMerchantOnProgress extends MerchantsState {}
+
+class MerchantDeleteFailed extends MerchantsState {
+  int statusCode;
+  String msg;
+  MerchantDeleteFailed({required this.statusCode, required this.msg});
+}

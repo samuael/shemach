@@ -24,7 +24,9 @@ class _NewStoreFormState extends State<NewStoreForm> {
 
   final _controller = Completer<GoogleMapController>();
   MapPickerController mapPickerController = MapPickerController();
-
+  String message = "";
+  Color messageColor = Colors.white;
+  bool onProgress = false;
   final _storeFormKey = GlobalKey<FormState>();
 
   CameraPosition cameraPosition = const CameraPosition(
@@ -59,7 +61,7 @@ class _NewStoreFormState extends State<NewStoreForm> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
@@ -75,222 +77,271 @@ class _NewStoreFormState extends State<NewStoreForm> {
             child: Form(
               key: _storeFormKey,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height / 20,
-                      width: MediaQuery.of(context).size.width - 24,
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter store name';
-                          }
-                          return null;
-                        },
-                        cursorColor: Theme.of(context).primaryColorLight,
-                        controller: storeNameController,
-                        decoration: InputDecoration(
-                          labelText: "Store Name",
-                          fillColor: Colors.lightBlue,
-                          hoverColor: Colors.lightBlue,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.lightBlue,
-                              style: BorderStyle.none,
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: SingleChildScrollView(
+                  physics: NeverScrollableScrollPhysics(),
+                  child: Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: messageColor),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 10,
+                          ),
+                          margin: EdgeInsets.symmetric(
+                            vertical: 4,
+                            horizontal: 4,
+                          ),
+                          height: MediaQuery.of(context).size.height / 50,
+                          width: MediaQuery.of(context).size.width - 20,
+                          // height: 30,
+                          child: Center(
+                            child: onProgress
+                                ? LinearProgressIndicator(
+                                    color: Theme.of(context).primaryColor,
+                                  )
+                                : Text(
+                                    message,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: messageColor,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        Container(
+                          height: MediaQuery.of(context).size.height / 20,
+                          width: MediaQuery.of(context).size.width - 24,
+                          child: TextFormField(
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter store name';
+                              }
+                              return null;
+                            },
+                            cursorColor: Theme.of(context).primaryColorLight,
+                            controller: storeNameController,
+                            decoration: InputDecoration(
+                              labelText: "Store Name",
+                              fillColor: Colors.lightBlue,
+                              hoverColor: Colors.lightBlue,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.lightBlue,
+                                  style: BorderStyle.none,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    woredaCity(context),
-                    uniqueAddress(context),
-                    zoneRegion(context),
-                    LatLon(context),
-                    Flexible(
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        child: Stack(
-                          children: [
-                            Expanded(
-                              child: MapPicker(
-                                // pass icon widget
-                                iconWidget: Icon(
-                                  Icons.location_pin,
-                                  color: Colors.red,
-                                  size: 30,
-                                ),
-                                //add map picker controller
-                                mapPickerController: mapPickerController,
-                                child: GoogleMap(
-                                  myLocationEnabled: true,
-                                  zoomControlsEnabled: false,
-                                  // hide location button
-                                  myLocationButtonEnabled: false,
-                                  mapType: MapType.hybrid,
-                                  //  camera position
-                                  initialCameraPosition: cameraPosition,
-                                  onMapCreated:
-                                      (GoogleMapController controller) {
-                                    _controller.complete(controller);
-                                  },
-                                  onCameraMoveStarted: () {
-                                    // notify map is moving
-                                    mapPickerController.mapMoving!();
-                                    textController.text = "checking ...";
-                                  },
-                                  onCameraMove: (cameraPosition) {
-                                    this.cameraPosition = cameraPosition;
-                                  },
-                                  onCameraIdle: () async {
-                                    // notify map stopped moving
-                                    mapPickerController.mapFinishedMoving!();
-                                    //get address name from camera position
-                                    List<Placemark> placemarks =
-                                        await placemarkFromCoordinates(
-                                      cameraPosition.target.latitude,
-                                      cameraPosition.target.longitude,
-                                    );
+                        woredaCity(context),
+                        uniqueAddress(context),
+                        zoneRegion(context),
+                        LatLon(context),
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.4 - 40,
+                          child: Stack(
+                            children: [
+                              Expanded(
+                                child: MapPicker(
+                                  // pass icon widget
+                                  iconWidget: Icon(
+                                    Icons.location_pin,
+                                    color: Colors.red,
+                                    size: 30,
+                                  ),
+                                  //add map picker controller
+                                  mapPickerController: mapPickerController,
+                                  child: GoogleMap(
+                                    myLocationEnabled: true,
+                                    zoomControlsEnabled: false,
+                                    // hide location button
+                                    myLocationButtonEnabled: false,
+                                    mapType: MapType.hybrid,
+                                    //  camera position
+                                    initialCameraPosition: cameraPosition,
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      _controller.complete(controller);
+                                    },
+                                    onCameraMoveStarted: () {
+                                      // notify map is moving
+                                      mapPickerController.mapMoving!();
+                                      textController.text = "checking ...";
+                                    },
+                                    onCameraMove: (cameraPosition) {
+                                      this.cameraPosition = cameraPosition;
+                                    },
+                                    onCameraIdle: () async {
+                                      // notify map stopped moving
+                                      mapPickerController.mapFinishedMoving!();
+                                      //get address name from camera position
+                                      List<Placemark> placemarks =
+                                          await placemarkFromCoordinates(
+                                        cameraPosition.target.latitude,
+                                        cameraPosition.target.longitude,
+                                      );
 
-                                    // update the ui with the address
-                                    uniqueAddressController.text =
-                                        '${placemarks.first.name}';
-                                    regionController.text =
-                                        '${placemarks.first.administrativeArea}';
-                                    zoneController.text =
-                                        '${placemarks.first.subAdministrativeArea}';
-                                    cityControler.text =
-                                        '${placemarks.first.locality}';
-                                    woredaController.text =
-                                        '${placemarks.first.subLocality}';
-                                    kebeleController.text =
-                                        '${placemarks.first.street}';
-                                    textController.text =
-                                        '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
-                                  },
+                                      // update the ui with the address
+                                      uniqueAddressController.text =
+                                          '${placemarks.first.name}';
+                                      regionController.text =
+                                          '${placemarks.first.administrativeArea}';
+                                      zoneController.text =
+                                          '${placemarks.first.subAdministrativeArea}';
+                                      cityControler.text =
+                                          '${placemarks.first.locality}';
+                                      woredaController.text =
+                                          '${placemarks.first.subLocality}';
+                                      kebeleController.text =
+                                          '${placemarks.first.street}';
+                                      textController.text =
+                                          '${placemarks.first.name}, ${placemarks.first.administrativeArea}, ${placemarks.first.country}';
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              top: MediaQuery.of(context).size.height * 0.01,
-                              width: MediaQuery.of(context).size.width - 20,
-                              height: 50,
-                              child: TextFormField(
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.zero,
-                                    border: InputBorder.none),
-                                controller: textController,
+                              Positioned(
+                                top: MediaQuery.of(context).size.height * 0.01,
+                                width: MediaQuery.of(context).size.width - 20,
+                                height: 50,
+                                child: TextFormField(
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.zero,
+                                      border: InputBorder.none),
+                                  controller: textController,
+                                ),
                               ),
-                            ),
-                            Positioned(
-                              top:
-                                  MediaQuery.of(context).size.height * 0.3 + 35,
-                              left: MediaQuery.of(context).size.width * 0.305,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: TextButton(
-                                      child: const Text(
-                                        "Track Location",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle: FontStyle.normal,
-                                          color: Colors.black,
-                                          fontSize: 19,
-                                          // height: 19/19,
+                              Positioned(
+                                top: MediaQuery.of(context).size.height * 0.3 +
+                                    35,
+                                left: MediaQuery.of(context).size.width * 0.305,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: TextButton(
+                                        child: const Text(
+                                          "Track Location",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontStyle: FontStyle.normal,
+                                            color: Colors.black,
+                                            fontSize: 19,
+                                            // height: 19/19,
+                                          ),
                                         ),
-                                      ),
-                                      onPressed: () {
-                                        latitudeControler.text =
-                                            '${cameraPosition.target.latitude}';
-                                        longitudeController.text =
-                                            '${cameraPosition.target.longitude}';
-                                        print(
-                                            "Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
-                                        print(
-                                            "Address: ${textController.text}");
-                                      },
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Color.fromARGB(
-                                                    255, 228, 223, 223)),
-                                        shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                        onPressed: () {
+                                          latitudeControler.text =
+                                              '${cameraPosition.target.latitude}';
+                                          longitudeController.text =
+                                              '${cameraPosition.target.longitude}';
+                                          print(
+                                              "Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
+                                          print(
+                                              "Address: ${textController.text}");
+                                        },
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  Color.fromARGB(
+                                                      255, 228, 223, 223)),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Theme.of(context).primaryColor),
+                                animationDuration: Duration(seconds: 1),
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
                                   ),
-                                ],
+                                ),
+                                elevation: MaterialStateProperty.all<double>(0),
                               ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Theme.of(context).primaryColor),
-                            animationDuration: Duration(seconds: 1),
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                              EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
+                              child: Text(
+                                "Create",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                            ),
-                            elevation: MaterialStateProperty.all<double>(0),
-                          ),
-                          child: Text(
-                            "Create",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () async {
-                            final bool checker = _trySubmitForm();
-                            if (checker) {
-                              print("inside input validation done");
-                              final response = await context
-                                  .read<StoreBloc>()
-                                  .createNewStore(CreateNewStoreEvent(
-                                      ownerID: widget.ownerID,
-                                      storeName: storeNameController.text,
-                                      kebele: kebeleController.text,
-                                      city: cityControler.text,
-                                      woreda: woredaController.text,
-                                      zone: zoneController.text,
-                                      region: regionController.text,
-                                      unique_address:
-                                          uniqueAddressController.text,
-                                      latitude: cameraPosition.target.latitude,
-                                      longitude:
-                                          cameraPosition.target.latitude));
+                              onPressed: () async {
+                                final bool checker = _trySubmitForm();
+                                if (checker) {
+                                  setState(() {
+                                    onProgress = true;
+                                  });
+                                  final response = await context
+                                      .read<StoreBloc>()
+                                      .createNewStore(CreateNewStoreEvent(
+                                          ownerID: widget.ownerID,
+                                          storeName: storeNameController.text,
+                                          kebele: kebeleController.text,
+                                          city: cityControler.text,
+                                          woreda: woredaController.text,
+                                          zone: zoneController.text,
+                                          region: regionController.text,
+                                          unique_address:
+                                              uniqueAddressController.text,
+                                          latitude:
+                                              cameraPosition.target.latitude,
+                                          longitude:
+                                              cameraPosition.target.latitude));
 
-                              if (response.statusCode == 200 ||
-                                  response.statusCode == 201) {
-                                // (widget.owner as Merchant).storeCount += 1;
-                                Navigator.pop(context);
-                              }
-                            }
-                            print("Outside input validation done");
-                          },
-                        ),
+                                  if (response.statusCode == 200) {
+                                    context.read<StoreBloc>().add(
+                                        LoadMyStoresEvent(
+                                            ownerId: widget.ownerID));
+                                    setState(() {
+                                      onProgress = false;
+                                      message = "Successfully Created";
+                                    });
+
+                                    Navigator.pop(context);
+                                  } else {
+                                    setState(() {
+                                      onProgress = false;
+                                      message = "Please Try Again";
+                                    });
+                                  }
+                                }
+                                print("Outside input validation done");
+                              },
+                            ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
               ),
             ),

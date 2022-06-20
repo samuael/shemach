@@ -1,4 +1,5 @@
 import '../../libs.dart';
+import '../data_provider/admin_dataProvider.dart';
 
 class AdminsRepo {
   AdminProvider adminsProvider;
@@ -37,4 +38,8 @@ class AdminsRepo {
       longitude,
     );
   }
+
+  // Future<DeleteUserResponse> deleteUser(int id) async {
+  //   return await adminsProvider.deleteUser(id);
+  // }
 }

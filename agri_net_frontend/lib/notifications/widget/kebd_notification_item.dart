@@ -14,6 +14,7 @@ class KebdNotificationItem extends StatefulWidget {
 }
 
 class _KebdNotificationItemState extends State<KebdNotificationItem> {
+  bool expand = false;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -131,60 +132,124 @@ class _KebdNotificationItemState extends State<KebdNotificationItem> {
                     : Colors.red,
               ),
               child: Text(
-                transaction_states_name[widget.kebdRequest.state] != null
-                    ? transaction_states_name[widget.kebdRequest.state]!
+                transaction_states_name[widget.transaction.state] != null
+                    ? transaction_states_name[widget.transaction.state]!
                     : "Unknown",
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
             ),
-            widget.kebdRequest.state != 0
-                ? GestureDetector(
-                    onTap: () {
-                      //
-                    },
-                    child: Card(
-                      elevation: 3,
-                      child: Container(
-                          // width: 200,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            color: Colors.white,
-                          ),
-                          child: Row(children: [
-                            Text(
-                              transaction_states_name[
-                                          widget.kebdRequest.state] !=
-                                      null
-                                  ? transaction_states_name[
-                                      widget.kebdRequest.state]!
-                                  : "Unknown",
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 25,
-                            ),
-                            Icon(Icons.arrow_right_alt_rounded,
-                                color: Theme.of(context).primaryColor),
-                          ])),
+            widget.transaction.state != 0
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: Colors.white,
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        expand ? Icons.expand_less : Icons.expand_more,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          expand = !expand;
+                        });
+                      },
                     ),
                   )
                 : SizedBox(),
+            widget.transaction.state != 0 && expand
+                ? (TRANSACTION_STATES.TS_KEBD_REQUESTED.index ==
+                            widget.transaction.state &&
+                        StaticDataStore.ID == widget.transaction.sellerId)
+                    ? (Column(children: [
+                        DeclineTransaction(widget.transaction),
+                        RequestKebd(),
+                      ]))
+                    : ((TRANSACTION_STATES.TS_KEBD_AMENDED.index ==
+                                    widget.transaction.state ||
+                                TRANSACTION_STATES
+                                        .TS_AMENDMENT_REQUESTED.index ==
+                                    widget.transaction.state) &&
+                            StaticDataStore.ID == widget.transaction.sellerId)
+                        ? Column(
+                            children: [
+                              DeclineTransaction(widget.transaction),
+                              AmendKebd(),
+                            ],
+                          )
+                        : (((TRANSACTION_STATES.TS_KEBD_REQUESTED.index ==
+                                        widget.transaction.state ||
+                                    TRANSACTION_STATES.TS_KEBD_AMENDED.index ==
+                                        widget.transaction.state) &&
+                                StaticDataStore.ID ==
+                                    widget.transaction.requesterId))
+                            ? Column(
+                                children: [
+                                  DeclineTransaction(widget.transaction),
+                                  RequestKebdAmendment(),
+                                  RequestGuarantee(),
+                                ],
+                              )
+                            : (TRANSACTION_STATES.TS_KEBD_AMENDED.index ==
+                                        widget.transaction.state &&
+                                    StaticDataStore.ID ==
+                                        widget.transaction.requesterId)
+                                ? Column(children: [DeclineTransaction(widget.transaction)])
+                                : SizedBox()
+                : SizedBox(),
+            // widget.kebdRequest.state != 0
+            //     ? GestureDetector(
+            //         onTap: () {
+            //           //
+            //         },
+            //         child: Card(
+            //           elevation: 3,
+            //           child: Container(
+            //             // width: 200,
+            //             padding: EdgeInsets.symmetric(
+            //               horizontal: 8,
+            //               vertical: 3,
+            //             ),
+            //             margin: EdgeInsets.symmetric(
+            //               horizontal: 8,
+            //               vertical: 10,
+            //             ),
+            //             decoration: BoxDecoration(
+            //               borderRadius: BorderRadius.circular(5),
+            //               border: Border.all(
+            //                 color: Theme.of(context).primaryColor,
+            //               ),
+            //               color: Colors.white,
+            //             ),
+            //             child: Row(
+            //               children: [
+            //                 Text(
+            //                   transaction_states_name[
+            //                               widget.kebdRequest.state] !=
+            //                           null
+            //                       ? transaction_states_name[
+            //                           widget.kebdRequest.state]!
+            //                       : "Unknown",
+            //                   style: TextStyle(
+            //                     color: Theme.of(context).primaryColor,
+            //                     fontWeight: FontWeight.bold,
+            //                   ),
+            //                 ),
+            //                 SizedBox(
+            //                   width: 25,
+            //                 ),
+            //                 Icon(Icons.arrow_right_alt_rounded,
+            //                     color: Theme.of(context).primaryColor),
+            //               ],
+            //             ),
+            //           ),
+            //         ),
+            //       )
+            //     : SizedBox(),
           ],
         ),
       ),

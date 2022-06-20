@@ -133,7 +133,9 @@ class AdminsListView extends StatelessWidget {
                       ),
                       elevation: MaterialStateProperty.all<double>(0),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
                     child: Text("Cancel")),
                 ElevatedButton(
                     style: ButtonStyle(
@@ -148,7 +150,11 @@ class AdminsListView extends StatelessWidget {
                       ),
                       elevation: MaterialStateProperty.all<double>(0),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      context
+                          .read<MercahntsBloc>()
+                          .add(DeleteMerchantEvent(userID: adminID));
+                    },
                     child: Text("Delete"))
               ],
             )
