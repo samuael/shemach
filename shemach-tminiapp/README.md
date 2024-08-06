@@ -1,0 +1,1 @@
+# This folder holds an implementation of our applications user interface for telegram mini app.

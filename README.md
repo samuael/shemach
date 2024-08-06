@@ -1,5 +1,5 @@
-# Agri-Net ( Agricultural Products Commercial Network )
-	This is the source code for our final Year project Agri-net; Web based 
+# shemach ( Agricultural Products Commercial Network )
+	This is the source code for our final Year project shemach; Web based 
 	Solution for facilitating agricultural products commercial products exchange.
 
 	Group Members Name:
