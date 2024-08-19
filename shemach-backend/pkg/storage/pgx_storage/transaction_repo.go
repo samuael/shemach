@@ -9,6 +9,7 @@ import (
 	"github.com/samuael/shemach/shemach-backend/pkg/transaction"
 )
 
+// TransactionRepo represents a repository to hold transaction related datasbase access.
 type TransactionRepo struct {
 	DB *pgxpool.Pool
 }

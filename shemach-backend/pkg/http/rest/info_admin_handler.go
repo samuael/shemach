@@ -78,17 +78,15 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, resp)
 				return
 			}
-			random := "admin" //helper.GenerateRandomString(5, helper.CHARACTERS)
+			random := "admin"
 			hashed, _ := helper.HashPassword(random)
 
 			admin := &model.Infoadmin{}
 			admin.Firstname = input.Firstname
 			admin.Lastname = input.Lastname
-			admin.Email = input.Email //
+			admin.Email = input.Email
 			admin.CreatedAt = uint64(time.Now().Unix())
 			admin.Password = hashed
-			// Send Email for the password if this doesn't work raise internal server error
-			// if success := mail.SendPasswordEmailSMTP([]string{admin.Email}, random, true, admin.Firstname+" "+admin.Lastname, c.Request.Host); success {
 			ctx = c.Request.Context()
 			ctx = context.WithValue(ctx, "info_admin", admin)
 			if admin, er = ihandler.Service.CreateInfoadmin(ctx); admin != nil && er == nil {
@@ -105,11 +103,6 @@ func (ihandler InfoadminHandler) Registerinfoadmin(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, resp)
 				return
 			}
-			// } else {
-			// 	resp.Msg = "Internal server error!"
-			// 	c.JSON(http.StatusInternalServerError, resp)
-			// 	return
-			// }
 		}
 	}
 	c.JSON(http.StatusBadRequest, resp)

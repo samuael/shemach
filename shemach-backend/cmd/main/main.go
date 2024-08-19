@@ -1,27 +1,19 @@
 package main
 
 import (
-	"context"
 	"html/template"
 	"os"
 	"sync"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/samuael/shemach/shemach-backend/cmd/main/service"
-	"github.com/samuael/shemach/shemach-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/shemach/shemach-backend/pkg/admin"
 	"github.com/samuael/shemach/shemach-backend/pkg/agent"
-	"github.com/samuael/shemach/shemach-backend/pkg/constants/model"
-	"github.com/samuael/shemach/shemach-backend/pkg/contract"
-	"github.com/samuael/shemach/shemach-backend/pkg/crop"
-	"github.com/samuael/shemach/shemach-backend/pkg/dictionary"
 	"github.com/samuael/shemach/shemach-backend/pkg/http/rest"
 	"github.com/samuael/shemach/shemach-backend/pkg/http/rest/auth"
 	"github.com/samuael/shemach/shemach-backend/pkg/http/rest/middleware"
-	"github.com/samuael/shemach/shemach-backend/pkg/infoadmin"
 	"github.com/samuael/shemach/shemach-backend/pkg/merchant"
 	"github.com/samuael/shemach/shemach-backend/pkg/message"
-	"github.com/samuael/shemach/shemach-backend/pkg/payment"
 	"github.com/samuael/shemach/shemach-backend/pkg/product"
 	"github.com/samuael/shemach/shemach-backend/pkg/resource"
 	"github.com/samuael/shemach/shemach-backend/pkg/session"
@@ -30,7 +22,6 @@ import (
 	"github.com/samuael/shemach/shemach-backend/pkg/store"
 	"github.com/samuael/shemach/shemach-backend/pkg/subscriber"
 	"github.com/samuael/shemach/shemach-backend/pkg/superadmin"
-	"github.com/samuael/shemach/shemach-backend/pkg/transaction"
 	"github.com/samuael/shemach/shemach-backend/pkg/user"
 	"github.com/subosito/gotenv"
 )
@@ -47,7 +38,7 @@ var templates *template.Template
 
 func main() {
 	once.Do(func() {
-		conn, connError = pgxstorage.NewStorage(os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"), os.Getenv("DB_NAME"))
+		conn, connError = pgxstorage.NewStorage()
 		if connError != nil {
 			os.Exit(1)
 		}
@@ -62,25 +53,8 @@ func main() {
 
 	rules := middleware.NewRules(authenticator)
 
-	credentials := &model.Credentials{
-		Principal:   os.Getenv("PAYMENT_PRINCIPAL"),
-		Credentials: os.Getenv("PAYMENT_CREDENTIALS"),
-		System:      os.Getenv("PAYMENT_SYSTEM"),
-	}
-	paymentrepo := pgx_storage.NewPaymentRepo(conn, credentials)
-	paymentservice := payment.NewPaymentService(paymentrepo)
-	if er := paymentservice.Authenticate(context.Background()); er != nil || paymentservice == nil {
-		println(er.Error())
-		os.Exit(1)
-	}
 	userrepo := pgx_storage.NewUserRepo(conn)
 	userservice := user.NewUserService(userrepo)
-
-	contractrepo := pgx_storage.NewContractRepo(conn)
-	contractservice := contract.NewContractService(contractrepo)
-
-	tpacroutine := service.NewTPACRoutine(paymentservice, userservice, contractservice)
-	go tpacroutine.Run()
 
 	subscriberRepo := pgx_storage.NewSubscriberRepo(conn)
 	subscriberService := subscriber.NewSubscriberService(subscriberRepo)
@@ -90,22 +64,16 @@ func main() {
 	otpService := service.NewOtpService(subscriberService, userservice)
 
 	superadminhandler := rest.NewSuperadminHandler(superadminservice, authenticator, userservice)
-	subscriberhandler := rest.NewSubscriberHandler(authenticator, subscriberService, otpService)
 
 	productrepo := pgx_storage.NewProductRepo(conn)
 	productservice := product.NewProductService(productrepo)
 	go otpService.Run()
 	messagerepo := pgx_storage.NewMessageRepo(conn)
 	messageservice := message.NewMessageService(messagerepo)
-	broadcastHub := message_broadcast_service.NewMainBroadcastHub(messageservice)
 
-	messagehandler := rest.NewMessageHandler(messageservice, subscriberService, broadcastHub)
+	messagehandler := rest.NewMessageHandler(messageservice, subscriberService)
 
-	infoadminrepo := pgx_storage.NewInfoadminRepo(conn)
-	infoadminservice := infoadmin.NewInfoadminService(infoadminrepo)
-	infoadminhandler := rest.NewInfoAdminHandler(infoadminservice)
-
-	producthandler := rest.NewProductHandler(productservice, broadcastHub)
+	producthandler := rest.NewProductHandler(productservice)
 
 	adminrepo := pgx_storage.NewAdminRepo(conn)
 	adminservice := admin.NewAdminService(adminrepo)
@@ -113,15 +81,11 @@ func main() {
 
 	agentrepo := pgx_storage.NewAgentRepo(conn)
 	agentservice := agent.NewAgentService(agentrepo)
-	agenthandler := rest.NewAgentHandler(agentservice, userservice, paymentservice)
+	agenthandler := rest.NewAgentHandler(agentservice, userservice)
 
 	merchantrepo := pgx_storage.NewMerchantRepo(conn)
 	merchantservice := merchant.NewMerchantService(merchantrepo)
-	merchanthandler := rest.NewMerchantHandler(merchantservice, userservice, paymentservice)
-
-	dictionaryrepo := pgx_storage.NewDictionaryRepo(conn)
-	dictionaryservice := dictionary.NewDictionaryService(dictionaryrepo)
-	dictionaryhandler := rest.NewDictionaryHandler(dictionaryservice)
+	merchanthandler := rest.NewMerchantHandler(merchantservice, userservice)
 
 	storerepo := pgx_storage.NewStoreRepo(conn)
 	storeservice := store.NewStoreService(storerepo)
@@ -132,44 +96,20 @@ func main() {
 
 	resourcehandler := rest.NewResourceHandler(resourceservice)
 
-	croprepo := pgx_storage.NewCropRepo(conn)
-	cropservice := crop.NewCropService(croprepo)
-	crophandler := rest.NewCropHandler(cropservice, productservice,
-		storeservice, merchantservice,
-		agentservice, resourceservice)
-
-	transactionrepo := pgx_storage.NewTransactionRepo(conn)
-	transactionservice := transaction.NewTransactionService(transactionrepo,
-		paymentrepo, contractrepo)
-	transactionhandler :=
-		rest.NewTransactionHandler(transactionservice, userservice, cropservice,
-			merchantservice, storeservice, paymentservice)
-
-	userhandler := rest.NewUserHandler(templates, userservice, authenticator,
+	userhandler := rest.NewUserHandler(templates,
+		userservice, authenticator,
 		adminservice, superadminservice,
-		agentservice, merchantservice, infoadminservice, storeservice)
-
-	communicationHandler := message_broadcast_service.NewClientConnectionHandler(
-		subscriberService,
-		userservice,
-		broadcastHub,
-	)
-	go broadcastHub.Run()
+		agentservice, merchantservice,
+		storeservice)
 	rest.Route(rules,
-		subscriberhandler,
 		superadminhandler,
 		producthandler,
-		communicationHandler,
 		messagehandler,
-		infoadminhandler,
 		userhandler,
 		adminhandler,
 		agenthandler,
-		dictionaryhandler,
 		merchanthandler,
 		storehandler,
-		crophandler,
 		resourcehandler,
-		transactionhandler,
 	).Run(":8080")
 }

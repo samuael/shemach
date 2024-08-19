@@ -19,7 +19,6 @@ type Authenticator interface {
 	SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
 	SaveEmailConfirmationSession(session *model.EmailConfirmationSession) (string, bool)
 	SaveSession(writer http.ResponseWriter, session *model.Session) bool
-	// SaveSubscriberSession(writer http.ResponseWriter, session *model.SubscriberSession) bool
 	DeleteSession(writer http.ResponseWriter, request *http.Request) bool
 
 	GetSession(request *http.Request) (*model.Session, error)

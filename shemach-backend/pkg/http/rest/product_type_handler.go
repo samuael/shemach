@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/samuael/shemach/shemach-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/shemach/shemach-backend/pkg/constants/model"
 	"github.com/samuael/shemach/shemach-backend/pkg/constants/state"
 	"github.com/samuael/shemach/shemach-backend/pkg/product"
@@ -21,22 +20,19 @@ type IProductHandler interface {
 	GetProductByID(c *gin.Context)
 	SubscribeForProduct(c *gin.Context)
 	UnsubscriberForProduct(c *gin.Context)
-	UpdateProduct(c *gin.Context)
 	SearchProduct(c *gin.Context)
 	GetProductUnits(c *gin.Context)
 }
 
 type ProductHandler struct {
-	Service      product.IProductService
-	BroadcastHub *message_broadcast_service.MainBroadcastHub
+	Service product.IProductService
 }
 
+// NewProductHandler
 func NewProductHandler(
-	service product.IProductService,
-	broadcasstHub *message_broadcast_service.MainBroadcastHub) IProductHandler {
+	service product.IProductService) IProductHandler {
 	return &ProductHandler{
-		Service:      service,
-		BroadcastHub: broadcasstHub,
+		Service: service,
 	}
 }
 
@@ -244,59 +240,6 @@ func (phandler *ProductHandler) UnsubscriberForProduct(c *gin.Context) {
 		return
 	}
 	res.Msg = translation.Translate(session.Lang, "un-subscribed succesfuly")
-	res.StatusCode = http.StatusOK
-	c.JSON(res.StatusCode, res)
-}
-
-func (phandler *ProductHandler) UpdateProduct(c *gin.Context) {
-	ctx := c.Request.Context()
-	in := &model.ProductUpdate{}
-	res := &struct {
-		Msg        string            `json:"msg"`
-		StatusCode int               `json:"status_code"`
-		Errors     map[string]string `json:"errors"`
-		Cost       float64           `json:"cost,omitempty"`
-	}{
-		Errors: map[string]string{},
-	}
-	// --
-	session := ctx.Value("session").(*model.Session)
-	jsonDecode := json.NewDecoder(c.Request.Body)
-	er := jsonDecode.Decode(in)
-	if er != nil || in.ID == 0 {
-		res.StatusCode = http.StatusBadRequest
-		if in.ID == 0 {
-			res.Msg = translation.Translate(session.Lang, "invalid product id value")
-			res.Errors["inputs"] = translation.Translate(session.Lang, "invalid product id value")
-		}
-		res.Msg = translation.Translate(session.Lang, "product was updated succesfuly")
-		res.Errors["inputs"] = translation.Translate(session.Lang, "invalid input body")
-		c.JSON(res.StatusCode, res)
-		return
-	}
-	ctx = context.WithValue(ctx, "product_id", uint8(in.ID))
-	ctx = context.WithValue(ctx, "product_price", float64(in.Price))
-	res.Cost = float64(in.Price)
-	_, status, era := phandler.Service.UpdateProductPrice(ctx)
-	if era != nil || status == state.STATUS_DBQUERY_ERROR || status == state.STATUS_RECORD_NOT_FOUND {
-		if status == state.STATUS_DBQUERY_ERROR {
-			res.StatusCode = http.StatusInternalServerError
-			res.Msg = translation.Translate(session.Lang, "internal problem, please try again")
-		} else if status == state.STATUS_RECORD_NOT_FOUND {
-			res.StatusCode = http.StatusNotFound
-			res.Msg = translation.Translate(session.Lang, "product not found")
-		} else if status == state.STATUS_NO_RECORD_UPDATED {
-			res.StatusCode = http.StatusNotModified
-			res.Msg = translation.Translate(session.Lang, "no update was made")
-		} else {
-			res.StatusCode = http.StatusConflict
-			res.Msg = translation.Translate(session.Lang, "no new update on the product price ")
-		}
-		c.JSON(res.StatusCode, res)
-		return
-	}
-	phandler.BroadcastHub.ProductUpdate <- in
-	res.Msg = translation.Translate(session.Lang, "product price updated succesfuly.")
 	res.StatusCode = http.StatusOK
 	c.JSON(res.StatusCode, res)
 }

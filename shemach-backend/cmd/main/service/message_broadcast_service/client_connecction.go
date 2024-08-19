@@ -19,7 +19,6 @@ type Client struct {
 	Email         string
 	Subscriptions []int
 	Conn          *websocket.Conn
-	TheHub        *MainBroadcastHub
 	Message       chan *BinaryMessage
 	// -----------------------------------
 	MessageService message.IMessageService
@@ -37,7 +36,7 @@ func (client *Client) WriteMessage() {
 	defer func() {
 		defer func() {
 			recover()
-			client.TheHub.UnRegister <- client
+			// client.TheHub.UnRegister <- client
 		}()
 		ticker.Stop()
 		client.Conn.Close()
@@ -67,7 +66,7 @@ func (client *Client) ReadMessage() {
 	defer func() {
 		defer func() {
 			recover()
-			client.TheHub.UnRegister <- client
+			// client.TheHub.UnRegister <- client
 		}()
 		client.Conn.Close()
 	}()
@@ -93,8 +92,7 @@ func (client *Client) ReadMessage() {
 			continue
 		}
 		// Brodcast the message
-		//
+
 		message.CreatedBy = uint(client.ID)
-		client.TheHub.BroadcastMessage <- message
 	}
 }

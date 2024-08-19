@@ -55,7 +55,6 @@ func NewTransactionHandler(
 	productService crop.ICropService,
 	merchantService merchant.IMerchantService,
 	storeService store.IStoreService,
-	paymentService payment.IPaymentService,
 ) ITransactionHandler {
 	return &TransactionHandler{
 		Service:         service,
@@ -63,7 +62,6 @@ func NewTransactionHandler(
 		ProductService:  productService,
 		MerchantService: merchantService,
 		StoreService:    storeService,
-		PaymentService:  paymentService,
 	}
 }
 

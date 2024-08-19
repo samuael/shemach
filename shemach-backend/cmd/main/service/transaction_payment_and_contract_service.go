@@ -23,12 +23,10 @@ type TransactionPaymentAndContractRoutine struct {
 
 // NewTPACRoutine
 func NewTPACRoutine(
-	paymentservice payment.IPaymentService,
 	userService user.IUserService,
 	contractService contract.IContractService,
 ) *TransactionPaymentAndContractRoutine {
 	return &TransactionPaymentAndContractRoutine{
-		PaymentService:  paymentservice,
 		UserService:     userService,
 		ContractService: contractService,
 	}

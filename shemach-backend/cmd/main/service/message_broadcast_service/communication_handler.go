@@ -24,17 +24,16 @@ type IClientConnetionHandler interface {
 type ClientConnetionHandler struct {
 	SubscriberService subscriber.ISubscriberService
 	UserService       user.IUserService
-	TheHub            *MainBroadcastHub
 }
 
 // NewClientConnectionHandler ...
 func NewClientConnectionHandler(
 	subscriberService subscriber.ISubscriberService,
 	userservice user.IUserService,
-	hub *MainBroadcastHub,
+	// hub *MainBroadcastHub,
 ) IClientConnetionHandler {
 	return &ClientConnetionHandler{
-		TheHub:            hub,
+		// TheHub:            hub,
 		SubscriberService: subscriberService,
 		UserService:       userservice,
 		// MessageService:    messageservice,
@@ -86,9 +85,9 @@ func (cch *ClientConnetionHandler) SubscriberHandleWebsocketConnection(c *gin.Co
 		Phone:         session.Phone,
 		Subscriptions: isubscriptions,
 		Message:       make(chan *BinaryMessage),
-		TheHub:        cch.TheHub,
+		// TheHub:        cch.TheHub,
 	}
-	cch.TheHub.Register <- client
+	// cch.TheHub.Register <- client
 	go client.WriteMessage()
 	message := map[string]interface{}{
 		"type": 1,
@@ -157,9 +156,9 @@ func (cch *ClientConnetionHandler) AdminsHandleWebsocketConnection(c *gin.Contex
 		Phone:         session.Email,
 		Message:       make(chan *BinaryMessage),
 		Subscriptions: []int{0},
-		TheHub:        cch.TheHub,
+		// TheHub:        cch.TheHub,
 	}
-	cch.TheHub.Register <- client
+	// cch.TheHub.Register <- client
 	go client.ReadMessage()
 	go client.WriteMessage()
 	message := map[string]interface{}{

@@ -43,7 +43,6 @@ type IUserHandler interface {
 	ConfirmTempoCXP(c *gin.Context)
 	ConfirmEmail(c *gin.Context)
 	GetMerchantByStoreID(c *gin.Context)
-	LogoutSubscriber(c *gin.Context)
 	Logout(c *gin.Context)
 }
 
@@ -67,7 +66,6 @@ func NewUserHandler(
 	superadminService superadmin.ISuperadminService,
 	agentService agent.IAgentService,
 	merchantService merchant.IMerchantService,
-	infoadminService infoadmin.IInfoadminService,
 	storeService store.IStoreService,
 ) IUserHandler {
 	return &UserHandler{
@@ -78,7 +76,6 @@ func NewUserHandler(
 		AgentService:      agentService,
 		AdminService:      adminservice,
 		SuperadminService: superadminService,
-		InfoadminService:  infoadminService,
 		StoreService:      storeService,
 	}
 }
@@ -785,16 +782,9 @@ func (uhandler *UserHandler) GetMerchantByStoreID(c *gin.Context) {
 	c.JSON(res.StatusCode, res)
 }
 
-func (uhandler *UserHandler) LogoutSubscriber(c *gin.Context) {
-	er := uhandler.Authenticator.LogoutSubscriberSession(c.Request)
-	if er != nil {
-		c.Writer.WriteHeader(http.StatusUnauthorized)
-	} else {
-		c.Writer.WriteHeader(http.StatusOK)
-	}
-}
-
 func (uhandler *UserHandler) Logout(c *gin.Context) {
+	// TODO: remove it from an active sessions list.
+
 	er := uhandler.Authenticator.LogoutSession(c.Request)
 	if er != nil {
 		c.Writer.WriteHeader(http.StatusUnauthorized)

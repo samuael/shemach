@@ -8,12 +8,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/samuael/shemach/shemach-backend/cmd/main/service/message_broadcast_service"
 	"github.com/samuael/shemach/shemach-backend/pkg/constants/model"
 	"github.com/samuael/shemach/shemach-backend/pkg/constants/state"
 	"github.com/samuael/shemach/shemach-backend/pkg/message"
 	"github.com/samuael/shemach/shemach-backend/pkg/subscriber"
-	"github.com/samuael/shemach/shemach-backend/platforms/helper"
 	"github.com/samuael/shemach/shemach-backend/platforms/translation"
 )
 
@@ -27,16 +25,13 @@ type IMessageHandler interface {
 type MessageHandler struct {
 	Service           message.IMessageService
 	SubscriberService subscriber.ISubscriberService
-	BroadcastHub      *message_broadcast_service.MainBroadcastHub
 }
 
 func NewMessageHandler(service message.IMessageService, ser subscriber.ISubscriberService,
-	broadcastHub *message_broadcast_service.MainBroadcastHub,
 ) IMessageHandler {
 	return &MessageHandler{
 		Service:           service,
 		SubscriberService: ser,
-		BroadcastHub:      broadcastHub,
 	}
 }
 
@@ -48,7 +43,6 @@ func (mhan *MessageHandler) GetRecentMessages(c *gin.Context) {
 		StatusCode int              `json:"status_code"`
 	}{}
 	subscriberSession := ctx.Value("session").(*model.SubscriberSession)
-	// println(subscriberSession.ID, subscriberSession.Lang, subscriberSession.Phone, subscriberSession.Fullname)
 	unix, era := strconv.Atoi(c.Query("unix"))
 	if era != nil {
 		unix = 0
@@ -90,7 +84,6 @@ func (mhan *MessageHandler) GetRecentMessages(c *gin.Context) {
 		return
 	}
 	res.Messages = messages
-	println(helper.MarshalThis(messages))
 	res.StatusCode = http.StatusOK
 	c.JSON(res.StatusCode, res)
 }
@@ -127,7 +120,6 @@ func (mhan *MessageHandler) SendMessage(c *gin.Context) {
 	input.CreatedAt = uint64(time.Now().Unix())
 	resp.Message = input
 	resp.Msg = translation.Translate(session.Lang, "created succesfuly")
-	mhan.BroadcastHub.BroadcastMessage <- input
 	c.JSON(resp.StatusCode, resp)
 }
 
@@ -177,7 +169,6 @@ func (mhan MessageHandler) DeleteMessageByID(c *gin.Context) {
 	}
 	er := mhan.Service.DeleteMessageBYID(ctx, uint(messageid))
 	if er != nil {
-		println(er.Error())
 		resp.StatusCode = http.StatusNotFound
 		resp.Msg = translation.Translate(session.Lang, "message instance not found")
 		c.JSON(resp.StatusCode, resp)
