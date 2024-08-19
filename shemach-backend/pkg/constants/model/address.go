@@ -12,18 +12,3 @@ type Address struct {
 	Latitude          float64 `json:"latitude"`
 	Longitude         float64 `json:"longitude"`
 }
-
-/*
-
-{
-	"kebele":"04",
-	"woreda":"01",
-	"city":"Assosa",
-	"unique_address":"Ambab Ber",
-	"region":"Benishangul",
-	"zone":"Assosa",
-	"latitude":45898955.44343,
-	"longitude":432423423423.99
-}
-
-*/

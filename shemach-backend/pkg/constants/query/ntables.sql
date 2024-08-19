@@ -9,28 +9,6 @@ create table address (
     latitude varchar(20),
     longitude varchar(20)
 );
-
--- name: create-admin
-CREATE TABLE subscriber (
-    id SERIAL PRIMARY KEY,
-    fullname VARCHAR(250) NOT NULL,
-    Phone VARCHAR(250) NOT NULL UNIQUE,
-    lang text NOT NULL,
-    role smallint not null default 2,
-    subscriptions smallint [] default array[]::smallint[]
-);
-
-create table tempo_subscriber(
-    id serial primary key , 
-    fullname VARCHAR(250) NOT NULL,
-    Phone VARCHAR(250) NOT NULL UNIQUE,
-    lang text NOT NULL,
-    role smallint not null default 2,
-    confirmation char(5) not null,
-    trials smallint default 0,
-    unix integer not null
-);
-
 create table tempo_subscribers_login(
     id serial primary key,
     phone varchar(13) not null,
@@ -49,16 +27,6 @@ create table users(
     created_at integer default ROUND(extract(epoch from now())),
     password text not null,
     lang char(3) default 'amh'
-);
-
-create table infoadmin(
-    messages_count integer default 0,
-    created_by integer not null
-) inherits(users);
-
-
-create tempo_infoadmin (
-    registration_second
 );
 
 create table superadmin(
@@ -275,9 +243,3 @@ create table session (
     userid integer unique not null, 
     token text not null
 );  
-
-create table subscriber_session (
-    id serial primary key,
-    subscriberid integer unique not null ,
-    token text not null
-);
